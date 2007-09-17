@@ -41,8 +41,7 @@ public class CASlopesDirections implements IIntCA {
 					(currentElevation - getDEMValue(r - 1, c - 1, i - ncols - 1))
 							/ SQRT2,
 					currentElevation - getDEMValue(r - 1, c, i - ncols),
-					(currentElevation - getDEMValue(r - 1, c + 1, i - ncols
-							+ 1))
+					(currentElevation - getDEMValue(r - 1, c + 1, i - ncols + 1))
 							/ SQRT2 };
 
 			final int idx = getIdxForMaxValue(tmpSlopes);

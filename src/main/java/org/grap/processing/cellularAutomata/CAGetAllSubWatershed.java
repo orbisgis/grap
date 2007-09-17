@@ -7,8 +7,8 @@ public class CAGetAllSubWatershed implements IIntCA {
 
 	private int[] slopesDirections;
 
-	public CAGetAllSubWatershed(final int[] slopesDirections,
-			final int nrows, final int ncols) {
+	public CAGetAllSubWatershed(final int[] slopesDirections, final int nrows,
+			final int ncols) {
 		this.nrows = nrows;
 		this.ncols = ncols;
 		this.slopesDirections = slopesDirections;

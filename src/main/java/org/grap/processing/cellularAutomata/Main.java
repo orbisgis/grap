@@ -12,10 +12,10 @@ public class Main {
 		can1.getStableState();
 		can1.print();
 
-		 final IFloatCA ca2 = new CASlopesInPercent(DEM, nrows, ncols);
-		 final ACAN can2 = new FloatCAN(ca2);
-		 can2.getStableState();
-		 can2.print();
+		final IFloatCA ca2 = new CASlopesInPercent(DEM, nrows, ncols);
+		final ACAN can2 = new FloatCAN(ca2);
+		can2.getStableState();
+		can2.print();
 
 		final int[] slopesDirections = (int[]) can1.getValuesSnapshot();
 
