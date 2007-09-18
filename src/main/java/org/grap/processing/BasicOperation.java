@@ -8,7 +8,7 @@ public abstract class BasicOperation {
 	public BasicOperation() {
 	}
 
-	public BasicOperation(GeoRaster geoRaster) {
+	public BasicOperation(final GeoRaster geoRaster) {
 		this.geoRaster = geoRaster;
 	}
 }

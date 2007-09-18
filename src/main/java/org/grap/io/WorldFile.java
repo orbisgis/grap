@@ -43,7 +43,7 @@ import org.grap.model.RasterMetadata;
 
 public class WorldFile {
 
-	public static final WorldFile DEFAULT = new WorldFile();
+	// public static final WorldFile DEFAULT = new WorldFile();
 
 	private String filename;
 
@@ -70,14 +70,13 @@ public class WorldFile {
 	 * @param file
 	 * @return
 	 */
-	public static WorldFile read(File file) throws IOException {
-
-		FileReader fin = new FileReader(file);
-		BufferedReader in = new BufferedReader(fin);
+	public static WorldFile read(final File file) throws IOException {
+		final FileReader fin = new FileReader(file);
+		final BufferedReader in = new BufferedReader(fin);
 		String lineIn = in.readLine();
 		int line = 0;
 
-		WorldFile wf = new WorldFile();
+		final WorldFile wf = new WorldFile();
 		wf.filename = file.getPath();
 
 		while ((in.ready() || lineIn != null) && line < 6) {
@@ -105,10 +104,10 @@ public class WorldFile {
 			}
 			line++;
 			lineIn = null;
-			if (in.ready())
+			if (in.ready()) {
 				lineIn = in.readLine();
+			}
 		}
-
 		return wf;
 	}
 
@@ -140,21 +139,16 @@ public class WorldFile {
 		return yUpperLeft;
 	}
 
-	public static void save(String fileName, RasterMetadata rasterMetadata)
-			throws IOException {
-
-		PrintWriter file;
-
-		file = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
-
-		file.println(rasterMetadata.pixelSize_X);
-		file.println(rasterMetadata.rotationX);
-		file.println(rasterMetadata.rotationY);
-		file.println(-rasterMetadata.pixelSize_Y);
-		file.println(rasterMetadata.xllcorner);
-		file.println(rasterMetadata.yllcorner);
-
+	public static void save(final String fileName,
+			final RasterMetadata rasterMetadata) throws IOException {
+		final PrintWriter file = new PrintWriter(new BufferedWriter(
+				new FileWriter(fileName)));
+		file.println(rasterMetadata.getPixelSize_X());
+		file.println(rasterMetadata.getRotation_X());
+		file.println(rasterMetadata.getRotation_Y());
+		file.println(-rasterMetadata.getPixelSize_Y());
+		file.println(rasterMetadata.getXllcorner());
+		file.println(rasterMetadata.getYllcorner());
 		file.close();
-
 	}
 }

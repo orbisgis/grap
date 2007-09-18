@@ -1,14 +1,14 @@
 package org.grap.processing.cellularAutomata;
 
-public class CAGetAllSubWatershed implements IIntCA {
+public class CAGetAllSubWatershed implements IFloatCA {
 	private int nrows;
 
 	private int ncols;
 
-	private int[] slopesDirections;
+	private short[] slopesDirections;
 
-	public CAGetAllSubWatershed(final int[] slopesDirections, final int nrows,
-			final int ncols) {
+	public CAGetAllSubWatershed(final short[] slopesDirections,
+			final int nrows, final int ncols) {
 		this.nrows = nrows;
 		this.ncols = ncols;
 		this.slopesDirections = slopesDirections;
@@ -22,37 +22,29 @@ public class CAGetAllSubWatershed implements IIntCA {
 		return nrows;
 	}
 
-	public int init(final int r, final int c, final int i) {
+	public float init(final int r, final int c, final int i) {
 		return i;
 	}
 
-	public int localTransition(final int[] rac, final int r, final int c,
+	public float localTransition(final float[] rac, final int r, final int c,
 			final int i) {
 		switch (getSlopeDirection(r, c, i)) {
 		case 1:
-			getRacValue(rac, r, c + 1, i + 1);
-			break;
+			return getRacValue(rac[i], rac, r, c + 1, i + 1);
 		case 2:
-			getRacValue(rac, r + 1, c + 1, i + ncols + 1);
-			break;
+			return getRacValue(rac[i], rac, r + 1, c + 1, i + ncols + 1);
 		case 4:
-			getRacValue(rac, r + 1, c, i + ncols);
-			break;
+			return getRacValue(rac[i], rac, r + 1, c, i + ncols);
 		case 8:
-			getRacValue(rac, r + 1, c - 1, i + ncols - 1);
-			break;
+			return getRacValue(rac[i], rac, r + 1, c - 1, i + ncols - 1);
 		case 16:
-			getRacValue(rac, r, c - 1, i - 1);
-			break;
+			return getRacValue(rac[i], rac, r, c - 1, i - 1);
 		case 32:
-			getRacValue(rac, r - 1, c - 1, i - ncols - 1);
-			break;
+			return getRacValue(rac[i], rac, r - 1, c - 1, i - ncols - 1);
 		case 64:
-			getRacValue(rac, r - 1, c, i - ncols);
-			break;
+			return getRacValue(rac[i], rac, r - 1, c, i - ncols);
 		case 128:
-			getRacValue(rac, r - 1, c + 1, i - ncols + 1);
-			break;
+			return getRacValue(rac[i], rac, r - 1, c + 1, i - ncols + 1);
 		}
 		return -1;
 	}
@@ -62,9 +54,14 @@ public class CAGetAllSubWatershed implements IIntCA {
 				: slopesDirections[i];
 	}
 
-	private int getRacValue(final int[] rac, final int r, final int c,
-			final int i) {
-		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? -1
-				: rac[i];
+	private float getRacValue(final float currentValue, final float[] rac,
+			final int r, final int c, final int i) {
+		if ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) {
+			return Float.NaN;
+		} else if (Float.isNaN(rac[i]) || (-1 == rac[i])) {
+			return currentValue;
+		} else {
+			return rac[i];
+		}
 	}
 }

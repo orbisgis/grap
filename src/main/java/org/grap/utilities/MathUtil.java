@@ -37,19 +37,16 @@ package org.grap.utilities;
  * 
  * @see Math
  */
-public class MathUtil {
-	public MathUtil() {
-	}
-
-	public static double orderOfMagnitude(double x) {
+abstract public class MathUtil {
+	public static double orderOfMagnitude(final double x) {
 		return base10Log(x);
 	}
 
-	public static double base10Log(double x) {
+	public static double base10Log(final double x) {
 		return Math.log(x) / Math.log(10);
 	}
 
-	public static int mostSignificantDigit(double x) {
+	public static int mostSignificantDigit(final double x) {
 		return (int) (x / Math
 				.pow(10, Math.floor(MathUtil.orderOfMagnitude(x))));
 	}
@@ -63,7 +60,7 @@ public class MathUtil {
 	 *            the other double to average
 	 * @return the average of two doubles
 	 */
-	public static double avg(double a, double b) {
+	public static double avg(final double a, final double b) {
 		return (a + b) / 2d;
 	}
 }

@@ -78,7 +78,6 @@ public class LutGenerator {
 	}
 
 	public static int rgb332(byte[] reds, byte[] greens, byte[] blues) {
-		Color c;
 		for (int i = 0; i < 256; i++) {
 			reds[i] = (byte) (i & 0xe0);
 			greens[i] = (byte) ((i << 3) & 0xe0);

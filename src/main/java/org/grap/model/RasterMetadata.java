@@ -9,33 +9,33 @@ public class RasterMetadata implements Serializable {
 	 * Upper left corner coordinate of first dimension. Be carefull It can be
 	 * alos upper center left
 	 */
-	public double xllcorner = 0;
+	private double xllcorner = 0;
 
 	/**
 	 * Upper left corner coordinate of second dimension. Be carefull It can be
 	 * alos upper center left
 	 */
-	public double yllcorner = 0;
+	private double yllcorner = 0;
 
 	/** Resolution for the pixel. */
-	public float pixelSize_X = 0;
+	private float pixelSize_X = 0;
 
-	public float pixelSize_Y;
+	private float pixelSize_Y;
 
-	public static float noDataValue = Short.MIN_VALUE; /* -9999 */
+	private float noDataValue = Short.MIN_VALUE; /* -9999 */
 
-	public int ncols = 0;
+	private int ncols = 0;
 
-	public int nrows = 0;
+	private int nrows = 0;
 
-	public Envelope envelope;
+	private Envelope envelope;
 
 	/** Rotation on the first dimension. */
 
-	public double rotationX = 0.0;
+	private double rotationX = 0.0;
 
 	/** Rotation on the second dimension. */
-	public double rotationY = 0.0;
+	private double rotationY = 0.0;
 
 	public RasterMetadata(final float x, final float y,
 			final float pixelSize_X, final float pixelSize_Y, final int nodata) {
@@ -83,11 +83,11 @@ public class RasterMetadata implements Serializable {
 				+ yllcorner + ") and envelope ( " + envelope + ")");
 	}
 
-	public void setNoData(final float nodata) {
-		this.noDataValue = nodata;
+	public void setNoData(final float noDataValue) {
+		this.noDataValue = noDataValue;
 	}
 
-	public float getNoData() {
+	public float getNoDataValue() {
 		return noDataValue;
 	}
 
@@ -146,5 +146,13 @@ public class RasterMetadata implements Serializable {
 
 	public void setYRotation(final double rotationY) {
 		this.rotationY = rotationY;
+	}
+
+	public double getXllcorner() {
+		return xllcorner;
+	}
+
+	public double getYllcorner() {
+		return yllcorner;
 	}
 }

@@ -53,17 +53,14 @@ public class EnvelopeUtil {
 		 * (0-size)
 		 */
 		if (distance < 0) {
-			double minSize = 2.0 * -distance;
-
+			final double minSize = 2.0 * -distance;
 			if (env.getWidth() < minSize) {
 				return new Envelope();
 			}
-
 			if (env.getHeight() < minSize) {
 				return new Envelope();
 			}
 		}
-
 		return new Envelope(env.getMinX() - distance, env.getMaxX() + distance,
 				env.getMinY() - distance, env.getMaxY() + distance);
 	}
@@ -88,7 +85,7 @@ public class EnvelopeUtil {
 	public static Envelope bufferByFraction(Envelope originalEnvelope,
 			double extentFraction) {
 		Envelope bufferedEnvelope = new Envelope(originalEnvelope);
-		double averageExtent = (bufferedEnvelope.getWidth() + bufferedEnvelope
+		final double averageExtent = (bufferedEnvelope.getWidth() + bufferedEnvelope
 				.getHeight()) / 2d;
 		double buffer = averageExtent * extentFraction;
 

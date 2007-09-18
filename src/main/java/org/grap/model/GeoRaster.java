@@ -13,17 +13,16 @@ import org.grap.io.EsriGRIDReader;
 import org.grap.io.WorldFile;
 import org.grap.io.WorldImageReader;
 import org.grap.lut.LutGenerator;
+import org.grap.processing.OperationFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * A GeoRaster object is composed of an ImageJ ImageProcessor object and some
- * spatial fields such as : - a projection system, - an envelop, - a pixel size,
- * 
- * and, at least, a set of pixels with values that may be Nan...
+ * spatial fields such as : a projection system, an envelop, a pixel size and,
+ * at least, a set of pixels with values that may be Nan...
  */
 public class GeoRaster {
-
 	// Un objet georaster est un objet ImageProcessor d'imageJ etendu de
 	// caracteristiques
 	// spatiales
@@ -35,116 +34,90 @@ public class GeoRaster {
 	// géographiques
 	// Un ensemble de pixels avec des valeurs qui peuvent etre NaN.
 
-	public static ImagePlus imp;
+	private ImagePlus imp;
 
 	// public static ImageProcessor ip;
 
-	private static RasterMetadata rasterMetadata;
+	private RasterMetadata rasterMetadata;
 
-	static int dotIndex;
+	private String fileNamePrefix;
 
-	static String fileNamePrefix;
+	private String fileNameExtension;
 
-	static String fileNameExtension;
+	private Coordinate pixelsCoords;
 
-	private static Coordinate pixelsCoords;
-
-	private static Coordinate pixelToWorldCoord;
+	private Coordinate pixelToWorldCoord;
 
 	private String fileName;
+	
+	OperationFactory opf = new OperationFactory();
+	
 
-	public GeoRaster(String fileName) {
+	public GeoRaster(final String fileName) {
 		this.fileName = fileName;
 
-		dotIndex = fileName.lastIndexOf('.');
+		final int dotIndex = fileName.lastIndexOf('.');
 		fileNamePrefix = fileName.substring(0, dotIndex);
 		fileNameExtension = fileName.substring(dotIndex + 1);
-
 	}
 
-	public GeoRaster(ImagePlus impResult, RasterMetadata metadata) {
+	public GeoRaster(final ImagePlus impResult, final RasterMetadata metadata) {
 		this.imp = impResult;
 		this.rasterMetadata = metadata;
 	}
 
-	public GeoRaster(Image image, RasterMetadata metadata) {
-		this.imp = new ImagePlus("", image);
-		this.rasterMetadata = metadata;
+	public GeoRaster(final Image image, final RasterMetadata metadata) {
+		this(new ImagePlus("", image), metadata);
 	}
 
 	public void open() {
-
-		ReadImage(fileName);
-		ReadMetadata(fileName);
-
+		readImage(fileName);
+		readMetadata(fileName);
 	}
 
-	private void ReadMetadata(String fileName) {
-
+	private void readMetadata(final String fileName) {
 		try {
 			if (fileNameExtension.toLowerCase().endsWith("asc")) {
-
-				EsriGRIDReader esriAsciiReader = new EsriGRIDReader(fileName);
-
+				final EsriGRIDReader esriAsciiReader = new EsriGRIDReader(
+						fileName);
 				rasterMetadata = esriAsciiReader.readHead();
 			} else {
-
-				WorldImageReader worldImageReader = new WorldImageReader(
+				final WorldImageReader worldImageReader = new WorldImageReader(
 						fileName);
-
 				rasterMetadata = worldImageReader.getRasterMetadata();
 			}
-
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
-	public static ImagePlus ReadImage(String fileName) {
-
+	public ImagePlus readImage(final String fileName) {
 		try {
-
 			if (fileNameExtension.toLowerCase().endsWith("asc")) {
-
-				EsriGRIDReader esriAsciiReader = new EsriGRIDReader(fileName);
-
+				final EsriGRIDReader esriAsciiReader = new EsriGRIDReader(
+						fileName);
 				imp = esriAsciiReader.getFloatImagePlus();
-
 				// ip = imp.getProcessor();
-
 			} else {
-
-				WorldImageReader worldImageReader = new WorldImageReader(
+				final WorldImageReader worldImageReader = new WorldImageReader(
 						fileName);
 				imp = worldImageReader.getImagePlus();
-
 				// ip = imp.getProcessor();
-
 			}
-		}
-
-		catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return imp;
-
 	}
 
 	// We use this method because it's more faster than read also
 	// image + metadata. Just read here metadata.
 
 	public RasterMetadata getMetadata() {
-
 		return rasterMetadata;
-
 	}
 
 	public ImagePlus getImagePlus() {
-
 		return imp;
 	}
 
@@ -155,97 +128,63 @@ public class GeoRaster {
 	 */
 
 	public void setRange(double min, double max) {
-
 		imp.getProcessor().setThreshold(min, max, ImageProcessor.RED_LUT);
-
 		WindowManager.setTempCurrentImage(imp);
 		IJ.run("NaN Background");
-
 	}
 
-	public void setNodataValue(float value) {
-
-		float[] pixels = (float[]) imp.getProcessor().getPixels();
-		for (int i = 0; i < pixels.length; i++)
+	public void setNodataValue(final float value) {
+		final float[] pixels = (float[]) imp.getProcessor().getPixels();
+		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] == value)
 				pixels[i] = Float.NaN;
-
+		}
 	}
 
-	public static Coordinate pixelToWorldCoord(final int xpixel,
-			final int ypixel) {
-
-		double xWorld = ((xpixel * rasterMetadata.pixelSize_X) + rasterMetadata.xllcorner);
-		double yWorld = ((ypixel * rasterMetadata.pixelSize_Y) + rasterMetadata.yllcorner);
+	public Coordinate pixelToWorldCoord(final int xpixel, final int ypixel) {
+		final double xWorld = ((xpixel * rasterMetadata.getPixelSize_X()) + rasterMetadata
+				.getXllcorner());
+		final double yWorld = ((ypixel * rasterMetadata.getPixelSize_Y()) + rasterMetadata
+				.getYllcorner());
 
 		pixelToWorldCoord = new Coordinate(xWorld, yWorld);
 		return pixelToWorldCoord;
-
 	}
 
-	public static Coordinate getPixelCoords(final double mouseX,
-			final double mouseY) {
-		int x = new Double((mouseX - rasterMetadata.xllcorner)
-				/ rasterMetadata.pixelSize_X).intValue();
-		int y = new Double((mouseY - rasterMetadata.yllcorner)
-				/ rasterMetadata.pixelSize_Y).intValue();
+	public Coordinate getPixelCoords(final double mouseX, final double mouseY) {
+		final int x = new Double((mouseX - rasterMetadata.getXllcorner())
+				/ rasterMetadata.getPixelSize_X()).intValue();
+		final int y = new Double((mouseY - rasterMetadata.getYllcorner())
+				/ rasterMetadata.getPixelSize_Y()).intValue();
 		pixelsCoords = new Coordinate(Math.abs(x), Math.abs(y));
 
 		return pixelsCoords;
 	}
 
 	public void save(String dest) throws IOException {
-
-		dotIndex = dest.lastIndexOf('.');
+		final int dotIndex = dest.lastIndexOf('.');
 		fileNamePrefix = dest.substring(0, dotIndex);
 		fileNameExtension = dest.substring(dotIndex + 1);
-		FileSaver fileSaver = new FileSaver(imp);
+		final FileSaver fileSaver = new FileSaver(imp);
 
-		if (fileNameExtension.toLowerCase().endsWith("tif")
-				|| (fileNameExtension.toLowerCase().endsWith("tiff"))) {
-
+		final String tmp = fileNameExtension.toLowerCase();
+		if (tmp.endsWith("tif") || (tmp.endsWith("tiff"))) {
 			fileSaver.saveAsTiff(dest);
-
 			WorldFile.save(fileNamePrefix + ".tfw", rasterMetadata);
-
-		}
-
-		else if (fileNameExtension.toLowerCase().endsWith("png")) {
-
+		} else if (tmp.endsWith("png")) {
 			fileSaver.saveAsPng(dest);
 			WorldFile.save(fileNamePrefix + ".pgw", rasterMetadata);
-
-		}
-
-		else if (fileNameExtension.toLowerCase().endsWith("jpg")
-				|| (fileNameExtension.toLowerCase().endsWith("jpeg"))) {
-
+		} else if (tmp.endsWith("jpg") || (tmp.endsWith("jpeg"))) {
 			fileSaver.saveAsJpeg(dest);
-
 			WorldFile.save(fileNamePrefix + ".jgw", rasterMetadata);
-
-		}
-
-		else if (fileNameExtension.toLowerCase().endsWith("gif")) {
-
+		} else if (tmp.endsWith("gif")) {
 			fileSaver.saveAsGif(dest);
-
 			WorldFile.save(fileNamePrefix + ".gfw", rasterMetadata);
-
-		}
-
-		else if (fileNameExtension.toLowerCase().endsWith("bmp")) {
-
+		} else if (tmp.endsWith("bmp")) {
 			fileSaver.saveAsGif(dest);
-
 			WorldFile.save(fileNamePrefix + ".bpw", rasterMetadata);
-
+		} else {
 		}
-
-		else {
-
-		}
-
 	}
 
 	public void show() {
@@ -253,9 +192,6 @@ public class GeoRaster {
 	}
 
 	public void setLUT(String LUTName) {
-
 		imp.getProcessor().setColorModel(LutGenerator.colorModel(LUTName));
-
 	}
-
 }

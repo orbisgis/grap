@@ -1,6 +1,6 @@
 package org.grap.processing.cellularAutomata;
 
-public class CASlopesDirections implements IIntCA {
+public class CASlopesDirections implements IShortCA {
 	private int nrows;
 
 	private int ncols;
@@ -24,7 +24,7 @@ public class CASlopesDirections implements IIntCA {
 		return nrows;
 	}
 
-	public int init(int r, int c, int i) {
+	public short init(int r, int c, int i) {
 		final float currentElevation = DEM[i];
 
 		if (Float.isNaN(currentElevation)) {
@@ -48,12 +48,12 @@ public class CASlopesDirections implements IIntCA {
 			if (-1 == idx) {
 				return -1;
 			} else {
-				return 1 << idx;
+				return (short) (1 << idx);
 			}
 		}
 	}
 
-	public int localTransition(int[] rac, int r, int c, int i) {
+	public short localTransition(short[] rac, int r, int c, int i) {
 		/* remain unchanged : one step of computation (init) */
 		return rac[i];
 	}

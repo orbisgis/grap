@@ -18,9 +18,9 @@ public class JTSConverter {
 
 	private static Roi roi;
 
-	public static Roi ToROI(Geometry geom) {
+	public static Roi toRoi(final GeoRaster geoRaster, final Geometry geom) {
 		if (geom instanceof Polygon) {
-			roi = toPolygonRoi(geom);
+			roi = toPolygonRoi(geoRaster, geom);
 		}
 		return roi;
 	}
@@ -29,22 +29,21 @@ public class JTSConverter {
 	 * todo take into account hole and shell
 	 * 
 	 */
-	public static PolygonRoi toPolygonRoi(Geometry geom) {
+	public static PolygonRoi toPolygonRoi(final GeoRaster geoRaster,
+			final Geometry geom) {
 		if (geom instanceof Polygon) {
-			Polygon p = (Polygon) geom;
-			Coordinate[] coordinates = p.getExteriorRing().getCoordinates();
-			int[] coordsX = new int[coordinates.length];
-			int[] coordsY = new int[coordinates.length];
+			final Polygon p = (Polygon) geom;
+			final Coordinate[] coordinates = p.getExteriorRing()
+					.getCoordinates();
+			final int[] coordsX = new int[coordinates.length];
+			final int[] coordsY = new int[coordinates.length];
 
 			for (int i = 0; i < coordinates.length; i++) {
-
-				Coordinate arrayPixelsCoords = GeoRaster.getPixelCoords(
+				final Coordinate arrayPixelsCoords = geoRaster.getPixelCoords(
 						coordinates[i].x, coordinates[i].y);
 
 				coordsX[i] = (int) arrayPixelsCoords.x;
 				coordsY[i] = (int) arrayPixelsCoords.y;
-				// System.out.println( "x =" + coordsX[i] + " y = "+
-				// coordsY[i]);
 			}
 			polygonRoi = new PolygonRoi(coordsX, coordsY, coordsX.length,
 					Roi.POLYGON);
@@ -57,19 +56,19 @@ public class JTSConverter {
 	 * 
 	 */
 
-	public static Geometry RoitoJTS(Roi roi) {
+	public static Geometry roiToJTS(final GeoRaster geoRaster, final Roi roi) {
 		Geometry geomResult = null;
 		if (roi instanceof PolygonRoi) {
 			java.awt.Polygon p = roi.getPolygon();
-			Coordinate[] coordinates = new Coordinate[p.npoints];
+			final Coordinate[] coordinates = new Coordinate[p.npoints];
 
 			for (int i = 0; i < p.npoints; i++) {
-				int x = p.xpoints[i];
-				int y = p.ypoints[i];
-				Coordinate xycoords = GeoRaster.pixelToWorldCoord(x, y);
+				final int x = p.xpoints[i];
+				final int y = p.ypoints[i];
+				final Coordinate xycoords = geoRaster.pixelToWorldCoord(x, y);
 				coordinates[i] = xycoords;
 			}
-			GeometryFactory factory = new GeometryFactory();
+			final GeometryFactory factory = new GeometryFactory();
 			geomResult = factory.createPolygon(factory
 					.createLinearRing(coordinates), null);
 		}

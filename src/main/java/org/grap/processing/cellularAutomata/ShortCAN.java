@@ -1,21 +1,21 @@
 package org.grap.processing.cellularAutomata;
 
-public class IntCAN extends ACAN {
+public class ShortCAN extends ACAN {
 	private int nrows;
 
 	private int ncols;
 
-	private int[] rac0;
+	private short[] rac0;
 
-	private int[] rac1;
+	private short[] rac1;
 
-	private IIntCA ca;
+	private IShortCA ca;
 
-	public IntCAN(final IIntCA ca) {
+	public ShortCAN(final IShortCA ca) {
 		this.nrows = ca.getNRows();
 		this.ncols = ca.getNCols();
-		rac0 = new int[nrows * ncols];
-		rac1 = new int[nrows * ncols];
+		rac0 = new short[nrows * ncols];
+		rac1 = new short[nrows * ncols];
 		this.ca = ca;
 
 		int i = 0;

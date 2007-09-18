@@ -7,23 +7,16 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 
 public class Smooth implements Operation {
-
 	private GeoRaster geoRaster;
 
-	public Smooth(GeoRaster geoRaster) {
-
+	public Smooth(final GeoRaster geoRaster) {
 		this.geoRaster = geoRaster;
-
 	}
 
 	public GeoRaster execute() {
-
-		ImagePlus imp = geoRaster.getImagePlus();
-		RasterMetadata rasterMetadata = geoRaster.getMetadata();
-
+		final ImagePlus imp = geoRaster.getImagePlus();
+		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 		imp.getProcessor().smooth();
-
 		return new GeoRaster(imp, rasterMetadata);
 	}
-
 }

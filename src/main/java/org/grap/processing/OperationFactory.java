@@ -13,31 +13,31 @@ import org.grap.processing.operation.Smooth;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class OperationFactory {
-	public Operation crop(GeoRaster geoRaster, Geometry geom) {
+	public static Operation crop(final GeoRaster geoRaster, final Geometry geom) {
 		return new Crop(geoRaster, geom);
 	}
 
-	public Operation crop(GeoRaster geoRaster, Rectangle rectangle) {
+	public Operation crop(final GeoRaster geoRaster, final Rectangle rectangle) {
 		return new Crop(geoRaster, rectangle);
 	}
 
-	public Operation smooth(GeoRaster geoRaster) {
+	public Operation smooth(final GeoRaster geoRaster) {
 		return new Smooth(geoRaster);
 	}
 
-	public Operation erode(GeoRaster geoRaster) {
+	public Operation erode(final GeoRaster geoRaster) {
 		return new Erode(geoRaster);
 	}
 
-	public Operation shadows(GeoRaster geoRaster, int orientation) {
+	public Operation shadows(final GeoRaster geoRaster, final int orientation) {
 		return new Shadows(geoRaster, orientation);
 	}
 
-	public Operation focalMean(GeoRaster geoRaster, int window) {
+	public Operation focalMean(final GeoRaster geoRaster, final int window) {
 		return new FocalMean(geoRaster, window);
 	}
 
-	public Operation slope(GeoRaster geoRaster) {
+	public Operation slope(final GeoRaster geoRaster) {
 		return new Slope(geoRaster);
 	}
 }

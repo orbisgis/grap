@@ -7,27 +7,27 @@ public class Main {
 		final int nrows = 5;
 		final int ncols = 5;
 
-		final IIntCA ca1 = new CASlopesDirections(DEM, nrows, ncols);
-		final ACAN can1 = new IntCAN(ca1);
+		final IShortCA ca1 = new CASlopesDirections(DEM, nrows, ncols);
+		final ACAN can1 = new ShortCAN(ca1);
 		can1.getStableState();
 		can1.print();
 
-		final IFloatCA ca2 = new CASlopesInPercent(DEM, nrows, ncols);
-		final ACAN can2 = new FloatCAN(ca2);
-		can2.getStableState();
-		can2.print();
+//		final IFloatCA ca2 = new CASlopesInPercent(DEM, nrows, ncols);
+//		final ACAN can2 = new FloatCAN(ca2);
+//		can2.getStableState();
+//		can2.print();
 
-		final int[] slopesDirections = (int[]) can1.getValuesSnapshot();
+		final short[] slopesDirections = (short[]) can1.getValuesSnapshot();
 
-		final IIntCA ca3 = new CASlopesAccumulation(slopesDirections, nrows,
+//		final IFloatCA ca3 = new CASlopesAccumulation(slopesDirections, nrows,
+//				ncols);
+//		final ACAN can3 = new FloatCAN(ca3);
+//		can3.getStableState();
+//		can3.print();
+
+		final IFloatCA ca4 = new CAGetAllSubWatershed(slopesDirections, nrows,
 				ncols);
-		final ACAN can3 = new IntCAN(ca3);
-		can3.getStableState();
-		can3.print();
-
-		final IIntCA ca4 = new CAGetAllSubWatershed(slopesDirections, nrows,
-				ncols);
-		final ACAN can4 = new IntCAN(ca4);
+		final ACAN can4 = new FloatCAN(ca4);
 		can4.getStableState();
 		can4.print();
 	}

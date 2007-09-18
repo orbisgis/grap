@@ -9,20 +9,17 @@ import org.grap.processing.ComplexOperation;
 import org.grap.processing.Operation;
 
 public class FocalMean extends ComplexOperation implements Operation {
-	public FocalMean() {
-	}
-
 	public FocalMean(GeoRaster geoRaster, Object object) {
 		super(geoRaster, object);
 	}
 
 	public GeoRaster execute() {
-		ImagePlus imp = geoRaster.getImagePlus();
-		RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final ImagePlus imp = geoRaster.getImagePlus();
+		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 
 		if ((object != null) && (object instanceof Integer)) {
-			Integer window = (Integer) object;
-			ImageProcessor ip = imp.getProcessor();
+			final Integer window = (Integer) object;
+			final ImageProcessor ip = imp.getProcessor();
 
 			if (window == 3) {
 				ip.convolve(buildKernel(window), window, window);
@@ -37,7 +34,7 @@ public class FocalMean extends ComplexOperation implements Operation {
 	}
 
 	public float[] buildKernel(int size) {
-		float[] kernel = new float[size * size];
+		final float[] kernel = new float[size * size];
 		for (int i = 0; i < kernel.length; i++) {
 			kernel[i] = 1;
 		}

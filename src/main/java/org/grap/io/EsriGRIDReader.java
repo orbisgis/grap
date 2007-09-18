@@ -1,8 +1,6 @@
 package org.grap.io;
 
 import ij.ImagePlus;
-import ij.io.FileSaver;
-import ij.measure.Calibration;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
@@ -47,13 +45,13 @@ import org.grap.model.RasterMetadata;
 public class EsriGRIDReader {
 	private InputStream in = null;
 
-	public float[] fValues = null;
+	private float[] fValues = null;
 
 	private short[] iValues = null;
 
-	public int ncols = 0;
+	private int ncols = 0;
 
-	public int nrows = 0;
+	private int nrows = 0;
 
 	private double xllcorner = Double.MAX_VALUE;
 
@@ -63,22 +61,16 @@ public class EsriGRIDReader {
 
 	private float noDataValue = Integer.MIN_VALUE;
 
-	String fileName = null;
-
-	RasterMetadata rasterMetadata = new RasterMetadata(0.0F, 0.0F, 0.0F, 0.0F,
-			0);
+	private RasterMetadata rasterMetadata = new RasterMetadata(0.0F, 0.0F,
+			0.0F, 0.0F, 0);
 
 	/**
 	 * 
 	 * @param fileName
 	 * @throws IOException
 	 */
-
 	public EsriGRIDReader(final String fileName) throws IOException {
-
 		this(new FileInputStream(fileName), fileName);
-		this.fileName = fileName;
-
 	}
 
 	public EsriGRIDReader(final URL src) throws IOException {
@@ -87,10 +79,11 @@ public class EsriGRIDReader {
 
 	public EsriGRIDReader(InputStream src, final String srcName)
 			throws IOException {
-		if (srcName.toLowerCase().endsWith(".gz"))
+		if (srcName.toLowerCase().endsWith(".gz")) {
 			src = new GZIPInputStream(src);
-		else if (srcName.toLowerCase().endsWith(".zip"))
+		} else if (srcName.toLowerCase().endsWith(".zip")) {
 			src = new ZipInputStream(src); // pose pb
+		}
 		in = new BufferedInputStream(src);
 	}
 
@@ -98,8 +91,9 @@ public class EsriGRIDReader {
 	private final char readWhiteSpaces() throws IOException {
 		int c = in.read();
 		// ((' ' == c) || ('\t' == c) || ('\n' == c) || ('\r' == c));
-		while ((32 == c) || (9 == c) || (10 == c) || (13 == c))
+		while ((32 == c) || (9 == c) || (10 == c) || (13 == c)) {
 			c = in.read();
+		}
 		return (char) c;
 	}
 
@@ -197,8 +191,9 @@ public class EsriGRIDReader {
 	public void printHeaderValues() throws IllegalArgumentException,
 			IllegalAccessException {
 		for (Field x : getClass().getDeclaredFields()) {
-			if (x.getType().isPrimitive())
+			if (x.getType().isPrimitive()) {
 				System.err.printf("%12s : %s\n", x.getName(), x.get(this));
+			}
 		}
 	}
 
@@ -207,20 +202,22 @@ public class EsriGRIDReader {
 			float min = Float.MAX_VALUE;
 			float max = Float.MIN_VALUE;
 			for (float item : fValues) {
-				if (item > max)
+				if (item > max) {
 					max = item;
-				if (item < min)
+				} else if (item < min) {
 					min = item;
+				}
 			}
 			System.out.printf("min = %g\nmax = %g\n", min, max);
 		} else if (null != iValues) {
 			int min = Integer.MAX_VALUE;
 			int max = Integer.MIN_VALUE;
 			for (int item : iValues) {
-				if (item > max)
+				if (item > max) {
 					max = item;
-				else if (item < min)
+				} else if (item < min) {
 					min = item;
+				}
 			}
 			System.out.printf("min = %d\nmax = %d\n", min, max);
 		} else {
@@ -230,78 +227,23 @@ public class EsriGRIDReader {
 
 	public ImageProcessor getFloatProcessor() throws IOException {
 		fRead();
-
-		ImageProcessor ip = new FloatProcessor(ncols, nrows, fValues, null);
-
-		return ip;
+		return new FloatProcessor(ncols, nrows, fValues, null);
 	}
 
 	public ImagePlus getFloatImagePlus() throws IOException {
-
 		return new ImagePlus("", getFloatProcessor());
 	}
 
 	public ImageProcessor getIntProcessor() throws IOException {
 		iRead();
-
-		ImageProcessor ip = new ShortProcessor(ncols, nrows, iValues, null);
-
-		return ip;
+		return new ShortProcessor(ncols, nrows, iValues, null);
 	}
 
 	public ImagePlus getIntImagePlus() throws IOException {
-
 		return new ImagePlus("", getIntProcessor());
 	}
 
 	public RasterMetadata getRasterMetadata() {
-
 		return rasterMetadata;
 	}
-
-	public static void main(String[] args) throws IOException,
-			IllegalArgumentException, IllegalAccessException {
-
-		String src = "C://temp/grid//grille2.txt";
-
-		long start = System.currentTimeMillis();
-		EsriGRIDReader ar = new EsriGRIDReader(src);
-		ar.fRead();
-
-		ImageProcessor imp = new FloatProcessor(ar.ncols, ar.nrows, ar.fValues,
-				null);
-
-		// Get the pixel value
-		System.out.println(imp.getPixelValue(0, 3));
-
-		ImagePlus imagePlus = new ImagePlus("Ascii grid", imp);
-
-		Calibration calibration = new Calibration();
-
-		// pixel distance in the world
-		double known = ar.cellsize;
-
-		// In general equal 1
-		double measured = 1;
-
-		double resolution = known / measured;
-
-		calibration.pixelHeight = resolution;
-		calibration.pixelWidth = resolution;
-
-		// Unit� de mesure
-		calibration.setUnit("m");
-
-		imagePlus.setCalibration(calibration);
-
-		// imagePlus.show();
-
-		FileSaver save = new FileSaver(imagePlus);
-
-		save.saveAsText("../datas2tests/temp/outsample2.asc");
-
-		System.out.println(System.currentTimeMillis() - start);
-
-	}
-
 }
