@@ -1,15 +1,17 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.parallelImpl;
 
-class CANShort implements Runnable {
+import org.grap.processing.cellularAutomata.IFloatCA;
+
+class CANFloat implements Runnable {
 	private int ncols;
 
 	private CAN can;
 
-	private short[] rac0;
+	private float[] rac0;
 
-	private short[] rac1;
+	private float[] rac1;
 
-	private IShortCA ca;
+	private IFloatCA ca;
 
 	private int startIdx;
 
@@ -17,12 +19,12 @@ class CANShort implements Runnable {
 
 	private int currentThreadIdx;
 
-	public CANShort(final CAN can, final int startIdx, final int endIdx,
+	CANFloat(final CAN can, final int startIdx, final int endIdx,
 			final int currentThreadIdx) {
 		this.can = can;
-		rac0 = (short[]) can.getRac0();
-		rac1 = (short[]) can.getRac1();
-		ca = (IShortCA) can.getCa();
+		rac0 = (float[]) can.getRac0();
+		rac1 = (float[]) can.getRac1();
+		ca = (IFloatCA) can.getCa();
 		ncols = ca.getNCols();
 		this.startIdx = startIdx;
 		this.endIdx = endIdx;
@@ -37,7 +39,6 @@ class CANShort implements Runnable {
 			rac0[i] = ca.init(r, c, i);
 		}
 		can.synchronization();
-		System.err.printf("[%d] end of initialization\n", currentThreadIdx);
 
 		// get stable state
 		do {
@@ -47,7 +48,7 @@ class CANShort implements Runnable {
 					final int r = i / ncols;
 					final int c = i % ncols;
 					rac1[i] = ca.localTransition(rac0, r, c, i);
-					if (rac0[i] != rac1[i]) {
+					if (!equal(rac0[i], rac1[i])) {
 						modified = true;
 					}
 				}
@@ -56,7 +57,7 @@ class CANShort implements Runnable {
 					final int r = i / ncols;
 					final int c = i % ncols;
 					rac0[i] = ca.localTransition(rac1, r, c, i);
-					if (rac0[i] != rac1[i]) {
+					if (!equal(rac0[i], rac1[i])) {
 						modified = true;
 					}
 				}
@@ -65,8 +66,9 @@ class CANShort implements Runnable {
 					currentThreadIdx);
 			can.synchronization();
 		} while (can.getBreakCondition().doIContinue());
-		
-		// the end...
-		System.err.printf("[%d] end\n", currentThreadIdx);
+	}
+
+	private boolean equal(final float a, final float b) {
+		return ((Float.isNaN(a) && Float.isNaN(b)) || (a == b)) ? true : false;
 	}
 }

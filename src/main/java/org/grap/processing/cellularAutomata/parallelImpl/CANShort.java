@@ -1,17 +1,17 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.parallelImpl;
 
-import java.util.concurrent.CyclicBarrier;
+import org.grap.processing.cellularAutomata.IShortCA;
 
-class CANFloat implements Runnable {
+class CANShort implements Runnable {
 	private int ncols;
 
 	private CAN can;
 
-	private float[] rac0;
+	private short[] rac0;
 
-	private float[] rac1;
+	private short[] rac1;
 
-	private IFloatCA ca;
+	private IShortCA ca;
 
 	private int startIdx;
 
@@ -19,12 +19,12 @@ class CANFloat implements Runnable {
 
 	private int currentThreadIdx;
 
-	public CANFloat(final CAN can, final int startIdx, final int endIdx,
+	CANShort(final CAN can, final int startIdx, final int endIdx,
 			final int currentThreadIdx) {
 		this.can = can;
-		rac0 = (float[]) can.getRac0();
-		rac1 = (float[]) can.getRac1();
-		ca = (IFloatCA) can.getCa();
+		rac0 = (short[]) can.getRac0();
+		rac1 = (short[]) can.getRac1();
+		ca = (IShortCA) can.getCa();
 		ncols = ca.getNCols();
 		this.startIdx = startIdx;
 		this.endIdx = endIdx;
@@ -48,7 +48,7 @@ class CANFloat implements Runnable {
 					final int r = i / ncols;
 					final int c = i % ncols;
 					rac1[i] = ca.localTransition(rac0, r, c, i);
-					if (!equal(rac0[i], rac1[i])) {
+					if (rac0[i] != rac1[i]) {
 						modified = true;
 					}
 				}
@@ -57,7 +57,7 @@ class CANFloat implements Runnable {
 					final int r = i / ncols;
 					final int c = i % ncols;
 					rac0[i] = ca.localTransition(rac1, r, c, i);
-					if (!equal(rac0[i], rac1[i])) {
+					if (rac0[i] != rac1[i]) {
 						modified = true;
 					}
 				}
@@ -66,9 +66,5 @@ class CANFloat implements Runnable {
 					currentThreadIdx);
 			can.synchronization();
 		} while (can.getBreakCondition().doIContinue());
-	}
-
-	private boolean equal(final float a, final float b) {
-		return ((Float.isNaN(a) && Float.isNaN(b)) || (a == b)) ? true : false;
 	}
 }

@@ -21,6 +21,8 @@ public class SlopeTest {
 			throws NoninvertibleTransformException, ParseException, IOException {
 
 		String fileName = "../..//datas2tests//grid//sample.asc";
+		// String fileName = "../..//datas2tests//grid//mntzee_500.asc";
+		// String fileName = "../..//datas2tests//grid//saipan-5.asc";
 		String dest = "/tmp/slope.tif";
 		GeoRaster geoRaster = new GeoRaster(fileName);
 		geoRaster.open();
@@ -40,7 +42,5 @@ public class SlopeTest {
 		result.show();
 
 		result.save(dest);
-
 	}
-
 }

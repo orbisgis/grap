@@ -1,11 +1,15 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.parallelImpl;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
+import org.grap.processing.cellularAutomata.ICA;
+import org.grap.processing.cellularAutomata.IFloatCA;
+import org.grap.processing.cellularAutomata.IShortCA;
+
 public class CAN {
-	private final static int NUMBER_OF_THREADS = 1;
-		/* 2 * Runtime.getRuntime().availableProcessors(); */
+	 private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
+			.availableProcessors();
 
 	private CyclicBarrier barrier;
 

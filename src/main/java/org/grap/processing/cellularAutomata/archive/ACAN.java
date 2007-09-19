@@ -1,9 +1,9 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.seqImpl;
 
 abstract public class ACAN {
 	public abstract boolean globalTransition(final int step);
 
-	abstract public Object getValuesSnapshot();
+	abstract public Object getCANValues();
 
 	public int getStableState() {
 		final long globalStart = System.currentTimeMillis();

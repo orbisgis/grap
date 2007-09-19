@@ -1,4 +1,4 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.parallelImpl;
 
 public class BreakCondition implements Runnable {
 	private boolean[] collectOfModificationsValues;

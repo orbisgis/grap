@@ -1,21 +1,23 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.seqImpl;
 
-public class FloatCAN extends ACAN {
+import org.grap.processing.cellularAutomata.IShortCA;
+
+public class ShortCAN extends ACAN {
 	private int nrows;
 
 	private int ncols;
 
-	private float[] rac0;
+	private short[] rac0;
 
-	private float[] rac1;
+	private short[] rac1;
 
-	private IFloatCA ca;
+	private IShortCA ca;
 
-	public FloatCAN(final IFloatCA ca) {
+	public ShortCAN(final IShortCA ca) {
 		this.nrows = ca.getNRows();
 		this.ncols = ca.getNCols();
-		rac0 = new float[nrows * ncols];
-		rac1 = new float[nrows * ncols];
+		rac0 = new short[nrows * ncols];
+		rac1 = new short[nrows * ncols];
 		this.ca = ca;
 
 		int i = 0;
@@ -35,7 +37,7 @@ public class FloatCAN extends ACAN {
 			for (int r = 0; r < nrows; r++) {
 				for (int c = 0; c < ncols; c++) {
 					rac1[i] = ca.localTransition(rac0, r, c, i);
-					if (!equal(rac0[i], rac1[i])) {
+					if (rac0[i] != rac1[i]) {
 						modified = true;
 					}
 					i++;
@@ -45,7 +47,7 @@ public class FloatCAN extends ACAN {
 			for (int r = 0; r < nrows; r++) {
 				for (int c = 0; c < ncols; c++) {
 					rac0[i] = ca.localTransition(rac1, r, c, i);
-					if (!equal(rac0[i], rac1[i])) {
+					if (rac0[i] != rac1[i]) {
 						modified = true;
 					}
 					i++;
@@ -55,22 +57,18 @@ public class FloatCAN extends ACAN {
 		return modified;
 	}
 
-	private boolean equal(final float a, final float b) {
-		return ((Float.isNaN(a) && Float.isNaN(b)) || (a == b)) ? true : false;
-	}
-
 	@Override
 	public void print() {
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++) {
-				System.out.printf("%.1f\t", rac0[r * ncols + c]);
+				System.out.printf("%3d\t", rac0[r * ncols + c]);
 			}
 			System.out.println();
 		}
 	}
 
 	@Override
-	public Object getValuesSnapshot() {
+	public Object getCANValues() {
 		return rac0;
 	}
 }

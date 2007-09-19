@@ -1,6 +1,10 @@
 package org.grap.processing.cellularAutomata;
 
-public class Main {
+import org.grap.processing.cellularAutomata.seqImpl.ACAN;
+import org.grap.processing.cellularAutomata.seqImpl.FloatCAN;
+import org.grap.processing.cellularAutomata.seqImpl.ShortCAN;
+
+public class MainSeq {
 	public static void main(String[] args) {
 		final float[] DEM = new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 				0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
@@ -17,7 +21,7 @@ public class Main {
 //		can2.getStableState();
 //		can2.print();
 
-		final short[] slopesDirections = (short[]) can1.getValuesSnapshot();
+		final short[] slopesDirections = (short[]) can1.getCANValues();
 
 //		final IFloatCA ca3 = new CASlopesAccumulation(slopesDirections, nrows,
 //				ncols);
