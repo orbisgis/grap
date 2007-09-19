@@ -1,4 +1,4 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.cam;
 
 public interface IShortCA extends ICA {
 	public short init(final int r, final int c, final int i);

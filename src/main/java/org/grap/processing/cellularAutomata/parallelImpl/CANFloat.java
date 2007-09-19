@@ -1,6 +1,6 @@
 package org.grap.processing.cellularAutomata.parallelImpl;
 
-import org.grap.processing.cellularAutomata.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.IFloatCA;
 
 class CANFloat implements Runnable {
 	private int ncols;

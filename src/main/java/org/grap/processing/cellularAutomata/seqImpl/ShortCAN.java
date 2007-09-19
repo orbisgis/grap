@@ -1,6 +1,6 @@
-package org.grap.processing.cellularAutomata.seq;
+package org.grap.processing.cellularAutomata.seqImpl;
 
-import org.grap.processing.cellularAutomata.IShortCA;
+import org.grap.processing.cellularAutomata.cam.IShortCA;
 
 public class ShortCAN extends ACAN {
 	private int nrows;

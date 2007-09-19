@@ -1,6 +1,6 @@
 package org.grap.processing.cellularAutomata.parallelImpl;
 
-import org.grap.processing.cellularAutomata.IShortCA;
+import org.grap.processing.cellularAutomata.cam.IShortCA;
 
 class CANShort implements Runnable {
 	private int ncols;

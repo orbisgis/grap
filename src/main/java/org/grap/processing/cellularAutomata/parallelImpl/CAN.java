@@ -3,12 +3,12 @@ package org.grap.processing.cellularAutomata.parallelImpl;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import org.grap.processing.cellularAutomata.ICA;
-import org.grap.processing.cellularAutomata.IFloatCA;
-import org.grap.processing.cellularAutomata.IShortCA;
+import org.grap.processing.cellularAutomata.cam.ICA;
+import org.grap.processing.cellularAutomata.cam.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.IShortCA;
 
 public class CAN {
-	 private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
+	private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
 			.availableProcessors();
 
 	private CyclicBarrier barrier;
@@ -120,7 +120,8 @@ public class CAN {
 		}
 	}
 
-	public void print() {
+	public void print(final String title) {
+		System.out.println(title);
 		if (ca instanceof IShortCA) {
 			short[] _rac0 = (short[]) rac0;
 			for (int r = 0; r < ca.getNRows(); r++) {

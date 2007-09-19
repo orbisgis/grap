@@ -1,6 +1,6 @@
-package org.grap.processing.cellularAutomata.seq;
+package org.grap.processing.cellularAutomata.seqImpl;
 
-import org.grap.processing.cellularAutomata.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.IFloatCA;
 
 public class FloatCAN extends ACAN {
 	private int nrows;

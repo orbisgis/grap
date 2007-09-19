@@ -1,5 +1,7 @@
 package org.grap.processing.cellularAutomata;
 
+import org.grap.processing.cellularAutomata.cam.IShortCA;
+
 public class CASlopesDirections implements IShortCA {
 	private int nrows;
 
@@ -28,7 +30,8 @@ public class CASlopesDirections implements IShortCA {
 		final float currentElevation = DEM[i];
 
 		if (Float.isNaN(currentElevation)) {
-			return -1;
+			// noDataValue
+			return Short.MIN_VALUE;
 		} else {
 			final float[] tmpSlopes = new float[] {
 					currentElevation - getDEMValue(r, c + 1, i + 1),

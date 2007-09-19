@@ -1,5 +1,7 @@
 package org.grap.processing.cellularAutomata;
 
+import org.grap.processing.cellularAutomata.cam.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.IShortCA;
 import org.grap.processing.cellularAutomata.seqImpl.ACAN;
 import org.grap.processing.cellularAutomata.seqImpl.FloatCAN;
 import org.grap.processing.cellularAutomata.seqImpl.ShortCAN;

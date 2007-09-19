@@ -1,4 +1,4 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.cam;
 
 public interface ICA {
 	public int getNCols();

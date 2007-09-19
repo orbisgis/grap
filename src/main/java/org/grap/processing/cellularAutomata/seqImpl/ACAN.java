@@ -1,4 +1,4 @@
-package org.grap.processing.cellularAutomata.seq;
+package org.grap.processing.cellularAutomata.seqImpl;
 
 abstract public class ACAN {
 	public abstract boolean globalTransition(final int step);

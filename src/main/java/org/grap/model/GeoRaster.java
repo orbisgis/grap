@@ -4,6 +4,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.FileSaver;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.awt.Image;
@@ -49,9 +50,8 @@ public class GeoRaster {
 	private Coordinate pixelToWorldCoord;
 
 	private String fileName;
-	
+
 	OperationFactory opf = new OperationFactory();
-	
 
 	public GeoRaster(final String fileName) {
 		this.fileName = fileName;
@@ -139,6 +139,9 @@ public class GeoRaster {
 			if (pixels[i] == value)
 				pixels[i] = Float.NaN;
 		}
+		imp = new ImagePlus("", new FloatProcessor(getMetadata().getNCols(),
+				getMetadata().getNRows(), pixels, imp.getProcessor()
+						.getColorModel()));
 	}
 
 	public Coordinate pixelToWorldCoord(final int xpixel, final int ypixel) {

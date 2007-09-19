@@ -1,4 +1,4 @@
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.cam;
 
 public interface IFloatCA extends ICA {
 	public float init(final int r, final int c, final int i);

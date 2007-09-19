@@ -1,5 +1,7 @@
 package org.grap.processing.cellularAutomata;
 
+import org.grap.processing.cellularAutomata.cam.IFloatCA;
+
 public class CASlopesInPercent implements IFloatCA {
 	private int nrows;
 
@@ -27,6 +29,7 @@ public class CASlopesInPercent implements IFloatCA {
 		final float currentElevation = DEM[i];
 
 		if (Float.isNaN(currentElevation)) {
+			// noDataValue
 			return Float.NaN;
 		} else {
 			final float[] tmpSlopes = new float[] {
@@ -45,7 +48,9 @@ public class CASlopesInPercent implements IFloatCA {
 
 			final int idx = getIdxForMaxValue(tmpSlopes);
 			if (-1 == idx) {
-				return Float.NaN;
+				// possible outlet (exutoire)
+				// sink (depression)
+				return Float.NEGATIVE_INFINITY;
 			} else {
 				return getSlopeInPercent(tmpSlopes[idx]);
 			}
@@ -65,7 +70,7 @@ public class CASlopesInPercent implements IFloatCA {
 		float max = 0;
 		int result = -1;
 		for (int i = 0; i < values.length; i++) {
-			if ((!Float.isNaN(values[i])) && (values[i] > max)) {
+			if ((!Float.isNaN(values[i])) && (values[i] >= max)) {
 				result = i;
 				max = values[i];
 			}

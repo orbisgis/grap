@@ -1,5 +1,7 @@
 package org.grap.processing.cellularAutomata;
 
+import org.grap.processing.cellularAutomata.cam.IFloatCA;
+
 public class CAGetAllSubWatershed implements IFloatCA {
 	private int nrows;
 
