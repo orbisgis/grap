@@ -19,4 +19,11 @@ public class Smooth implements Operation {
 		imp.getProcessor().smooth();
 		return new GeoRaster(imp, rasterMetadata);
 	}
+
+	public GeoRaster execute(final GeoRaster raster) {
+		final ImagePlus imp = geoRaster.getImagePlus();
+		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		imp.getProcessor().smooth();
+		return new GeoRaster(imp, rasterMetadata);
+	}
 }

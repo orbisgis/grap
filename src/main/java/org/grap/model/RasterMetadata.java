@@ -22,7 +22,7 @@ public class RasterMetadata implements Serializable {
 
 	private float pixelSize_Y;
 
-	private float noDataValue = Short.MIN_VALUE; /* -9999 */
+	private float noDataValue = 0;
 
 	private int ncols = 0;
 
@@ -36,6 +36,9 @@ public class RasterMetadata implements Serializable {
 
 	/** Rotation on the second dimension. */
 	private double rotationY = 0.0;
+
+	public RasterMetadata() {
+	}
 
 	public RasterMetadata(final float x, final float y,
 			final float pixelSize_X, final float pixelSize_Y, final int nodata) {

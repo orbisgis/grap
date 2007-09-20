@@ -42,9 +42,6 @@ import java.io.PrintWriter;
 import org.grap.model.RasterMetadata;
 
 public class WorldFile {
-
-	// public static final WorldFile DEFAULT = new WorldFile();
-
 	private String filename;
 
 	private float xSize = 1;

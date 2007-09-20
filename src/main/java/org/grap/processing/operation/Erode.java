@@ -19,4 +19,9 @@ public class Erode extends BasicOperation implements Operation {
 		imp.show();
 		return new GeoRaster(imp, rasterMetadata);
 	}
+
+	public GeoRaster execute(GeoRaster raster) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

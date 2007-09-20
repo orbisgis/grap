@@ -61,7 +61,7 @@ public class Slope extends BasicOperation implements Operation {
 			// final ACAN can4 = new FloatCAN(ca4);
 			// can4.getStableState();
 			final CAN ccan4 = new CAN(ca4);
-			ccan4.getStableState();
+			// ccan4.getStableState();
 
 			// SlopeFunction slope = new SlopeFunction(pixels, nrows, ncols);
 			// slope.computeSlopes();
@@ -70,7 +70,7 @@ public class Slope extends BasicOperation implements Operation {
 			// ipResult = new FloatProcessor(ncols, nrows, slopes, null);
 			// ipResult = new FloatProcessor(ncols, nrows, (float[]) can4
 			// .getValuesSnapshot(), null);
-			ipResult = new FloatProcessor(ncols, nrows, (float[]) ccan4
+			ipResult = new FloatProcessor(ncols, nrows, (float[]) ccan3
 					.getCANValues(), null);
 
 			try {
@@ -83,5 +83,10 @@ public class Slope extends BasicOperation implements Operation {
 			break;
 		}
 		return new GeoRaster(new ImagePlus("", ipResult), rasterMetadata);
+	}
+
+	public GeoRaster execute(GeoRaster raster) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

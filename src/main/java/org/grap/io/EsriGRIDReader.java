@@ -57,12 +57,11 @@ public class EsriGRIDReader {
 
 	private double yllcorner = Double.MAX_VALUE;
 
-	private float cellsize = Integer.MIN_VALUE;
+	private float cellsize = Float.MIN_VALUE;
 
-	private float noDataValue = Integer.MIN_VALUE;
+	private float noDataValue = Float.MIN_VALUE;
 
-	private RasterMetadata rasterMetadata = new RasterMetadata(0.0F, 0.0F,
-			0.0F, 0.0F, 0);
+	private RasterMetadata rasterMetadata = null;
 
 	/**
 	 * 
@@ -79,6 +78,7 @@ public class EsriGRIDReader {
 
 	public EsriGRIDReader(InputStream src, final String srcName)
 			throws IOException {
+		rasterMetadata = new RasterMetadata();
 		if (srcName.toLowerCase().endsWith(".gz")) {
 			src = new GZIPInputStream(src);
 		} else if (srcName.toLowerCase().endsWith(".zip")) {
@@ -98,7 +98,7 @@ public class EsriGRIDReader {
 	}
 
 	private final String readString() throws IOException {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append(readWhiteSpaces());
 		int c = in.read();
 		while ((32 != c) && (9 != c) && (10 != c) && (13 != c) && (-1 != c)) {
@@ -109,7 +109,7 @@ public class EsriGRIDReader {
 	}
 
 	private final String readNumber(final char initial) throws IOException {
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 		sb.append(initial);
 		int c = in.read();
 		while (((c > 47) && (c < 58)) || (45 == c) || (46 == c)) {

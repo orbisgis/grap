@@ -66,4 +66,9 @@ public class Shadows extends ComplexOperation implements Operation {
 		}
 		return new GeoRaster(imp, rasterMetadata);
 	}
+
+	public GeoRaster execute(GeoRaster raster) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

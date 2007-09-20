@@ -40,4 +40,9 @@ public class FocalMean extends ComplexOperation implements Operation {
 		}
 		return kernel;
 	}
+
+	public GeoRaster execute(GeoRaster raster) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

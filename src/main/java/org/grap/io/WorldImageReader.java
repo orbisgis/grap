@@ -13,8 +13,7 @@ import org.grap.model.RasterMetadata;
 public class WorldImageReader {
 	private String fileName;
 
-	private RasterMetadata rasterMetadata = new RasterMetadata(0.0F, 0.0F,
-			0.0F, 0.0F, 0);
+	private RasterMetadata rasterMetadata;
 
 	private ImagePlus imp;
 
@@ -37,6 +36,7 @@ public class WorldImageReader {
 
 	public WorldImageReader(final String fileName) {
 		this.fileName = fileName;
+		rasterMetadata = new RasterMetadata();
 		readFile(fileName);
 	}
 

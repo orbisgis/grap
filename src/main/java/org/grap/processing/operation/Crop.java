@@ -44,7 +44,7 @@ public class Crop extends BasicOperation implements Operation {
 						.toGeometry(rasterMetadata.getEnvelope());
 				if (geomEnvelope.intersects(geom)) {
 					final PolygonRoi roi = JTSConverter.toPolygonRoi(geoRaster,
-							geom);
+							(Polygon) geom);
 					imp.setRoi(roi);
 					impResult = new ImagePlus("", imp.getProcessor().crop());
 					Envelope newEnvelope = JTSConverter
@@ -79,5 +79,10 @@ public class Crop extends BasicOperation implements Operation {
 			metadata.setNRows(imp.getHeight());
 		}
 		return new GeoRaster(impResult, metadata);
+	}
+
+	public GeoRaster execute(GeoRaster raster) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
