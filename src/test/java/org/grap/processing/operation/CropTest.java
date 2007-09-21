@@ -1,4 +1,4 @@
-package org.grap.operationFactory;
+package org.grap.processing.operation;
 
 import java.awt.Rectangle;
 import java.awt.geom.NoninvertibleTransformException;
@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.Crop;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;

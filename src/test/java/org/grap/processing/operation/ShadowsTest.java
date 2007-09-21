@@ -1,9 +1,8 @@
-package org.grap.operationFactory;
+package org.grap.processing.operation;
 
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.Orientations;
-import org.grap.processing.operation.Shadows;
 
 public class ShadowsTest {
 	public static void main(String[] args) {

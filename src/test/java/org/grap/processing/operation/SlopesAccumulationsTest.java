@@ -1,9 +1,7 @@
-package org.grap.operationFactory;
+package org.grap.processing.operation;
 
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.SlopesAccumulations;
-import org.grap.processing.operation.SlopesDirections;
 
 public class SlopesAccumulationsTest {
 	public static void main(String[] args) {
