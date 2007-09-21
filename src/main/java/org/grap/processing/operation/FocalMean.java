@@ -33,7 +33,7 @@ public class FocalMean extends ComplexOperation implements Operation {
 		return new GeoRaster(imp, rasterMetadata);
 	}
 
-	public float[] buildKernel(int size) {
+	private float[] buildKernel(int size) {
 		final float[] kernel = new float[size * size];
 		for (int i = 0; i < kernel.length; i++) {
 			kernel[i] = 1;

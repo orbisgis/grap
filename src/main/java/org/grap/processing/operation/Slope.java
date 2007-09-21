@@ -23,8 +23,8 @@ public class Slope extends BasicOperation implements Operation {
 	}
 
 	public GeoRaster execute() {
-		ImagePlus imp = geoRaster.getImagePlus();
-		RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final ImagePlus imp = geoRaster.getImagePlus();
+		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 		final float[] pixels;
 		final int nrows = rasterMetadata.getNRows();
 		final int ncols = rasterMetadata.getNCols();

@@ -183,4 +183,10 @@ public class GeoRaster {
 	public GeoRaster doOperation(final Operation operation) {
 		return operation.execute(this);
 	}
+
+	public int getType() {
+		// ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, ImagePlus.GRAY8,
+		// ImagePlus.GRAY16, ImagePlus.GRAY32
+		return imp.getType();
+	}
 }
