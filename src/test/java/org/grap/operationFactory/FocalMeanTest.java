@@ -2,28 +2,17 @@ package org.grap.operationFactory;
 
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.OperationFactory;
+import org.grap.processing.operation.FocalMean;
 
 public class FocalMeanTest {
-
 	public static void main(String[] args) {
+		final String src = "../../datas2tests/grid/sample.asc";
 
-		String src = "..//datas2tests//grid//sample.asc";
-
-		GeoRaster geoRaster = new GeoRaster(src);
-
+		final GeoRaster geoRaster = new GeoRaster(src);
 		geoRaster.open();
-
-		OperationFactory opf = new OperationFactory();
-
-		Operation operation = opf.focalMean(geoRaster, 7);
-
-		GeoRaster result = operation.execute();
-
-		result.setLUT("ice");
-
+		final Operation focalMean = new FocalMean(7);
+		final GeoRaster result = geoRaster.doOperation(focalMean);
+		result.setLUT("fire");
 		result.show();
-
 	}
-
 }

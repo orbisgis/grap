@@ -12,11 +12,7 @@ import org.grap.processing.cellularAutomata.cam.IShortCA;
 import org.grap.processing.cellularAutomata.parallelImpl.CAN;
 
 public class SlopesDirections implements Operation {
-	public GeoRaster execute() {
-		throw new Error();
-	}
-
-	public GeoRaster execute(GeoRaster geoRaster) {
+	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
 		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 		final float[] pixels;

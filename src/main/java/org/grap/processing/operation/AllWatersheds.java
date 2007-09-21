@@ -7,28 +7,29 @@ import ij.process.ImageProcessor;
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
-import org.grap.processing.cellularAutomata.CASlopesInPercent;
+import org.grap.processing.cellularAutomata.CAGetAllSubWatershed;
 import org.grap.processing.cellularAutomata.cam.IFloatCA;
 import org.grap.processing.cellularAutomata.parallelImpl.CAN;
 
-public class SlopesInPercent implements Operation {
+public class AllWatersheds implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
 		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
-		final float[] pixels;
+		final short[] pixels;
 		final int nrows = rasterMetadata.getNRows();
 		final int ncols = rasterMetadata.getNCols();
 
-		if (ImagePlus.GRAY16 == geoRaster.getType()) {
-			pixels = (float[]) imp.getProcessor().convertToFloat().getPixels();
-		} else if (ImagePlus.GRAY32 == geoRaster.getType()) {
-			pixels = (float[]) imp.getProcessor().getPixels();
+		if (ImagePlus.GRAY8 == geoRaster.getType()) {
+			// TODO : verify doScaling
+			pixels = (short[]) imp.getProcessor().convertToShort(false).getPixels();
+		} else if (ImagePlus.GRAY16 == geoRaster.getType()) {
+			pixels = (short[]) imp.getProcessor().getPixels();
 		} else {
 			throw new RuntimeException(
-					"The DEM must be a GRAY16 or a GRAY32 image !");
+					"The DEM directions must be a GRAY16 or a GRAY32 image !");
 		}
 
-		final IFloatCA ca = new CASlopesInPercent(pixels, nrows, ncols);
+		final IFloatCA ca = new CAGetAllSubWatershed(pixels, nrows, ncols);
 		CAN ccan = new CAN(ca);
 		ccan.getStableState();
 		

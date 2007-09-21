@@ -7,7 +7,6 @@ import java.awt.Rectangle;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
-import org.grap.processing.BasicOperation;
 import org.grap.processing.Operation;
 import org.grap.utilities.EnvelopeUtil;
 import org.grap.utilities.JTSConverter;
@@ -17,40 +16,40 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class Crop extends BasicOperation implements Operation {
-	private Geometry geom;
+public class Crop implements Operation {
+	private Geometry geometry;
 
 	private Rectangle rectangle;
 
-	public Crop(final GeoRaster geoRaster, final Geometry geom) {
-		this.geoRaster = geoRaster;
-		this.geom = geom;
+	public Crop(final Geometry geometry) {
+		this.geometry = geometry;
 	}
 
-	public Crop(final GeoRaster geoRaster, final Rectangle rectangle) {
-		this.geoRaster = geoRaster;
+	public Crop(final Rectangle rectangle) {
 		this.rectangle = rectangle;
 	}
 
-	public GeoRaster execute() {
+	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
 		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 		ImagePlus impResult = null;
-		final RasterMetadata metadata = new RasterMetadata(0, 0, 0, 0, 0);
+		final RasterMetadata metadata = new RasterMetadata();
 
-		if (geom != null) {
-			if (geom instanceof Polygon) {
+		if (geometry != null) {
+			if (geometry instanceof Polygon) {
 				final Geometry geomEnvelope = EnvelopeUtil
 						.toGeometry(rasterMetadata.getEnvelope());
-				if (geomEnvelope.intersects(geom)) {
+				if (geomEnvelope.intersects(geometry)) {
 					final PolygonRoi roi = JTSConverter.toPolygonRoi(geoRaster,
-							(Polygon) geom);
+							(Polygon) geometry);
+
 					imp.setRoi(roi);
 					impResult = new ImagePlus("", imp.getProcessor().crop());
 					Envelope newEnvelope = JTSConverter
 							.roiToJTS(geoRaster, roi).getEnvelopeInternal();
 					metadata.setXOrigin(newEnvelope.getMinX());
 					metadata.setYOrigin(newEnvelope.getMaxY());
+
 					metadata.setPixelSize_X(rasterMetadata.getPixelSize_X());
 					metadata.setPixelSize_Y(rasterMetadata.getPixelSize_Y());
 					metadata.setXRotation(rasterMetadata.getRotation_X());
@@ -71,6 +70,7 @@ public class Crop extends BasicOperation implements Operation {
 					(int) newEnvelope.getMinX(), (int) newEnvelope.getMaxY());
 			metadata.setXOrigin(coordinates.x);
 			metadata.setYOrigin(coordinates.y);
+
 			metadata.setPixelSize_X(rasterMetadata.getPixelSize_X());
 			metadata.setPixelSize_Y(rasterMetadata.getPixelSize_Y());
 			metadata.setXRotation(rasterMetadata.getRotation_X());
@@ -79,10 +79,5 @@ public class Crop extends BasicOperation implements Operation {
 			metadata.setNRows(imp.getHeight());
 		}
 		return new GeoRaster(impResult, metadata);
-	}
-
-	public GeoRaster execute(GeoRaster raster) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

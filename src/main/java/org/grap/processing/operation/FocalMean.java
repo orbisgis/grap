@@ -5,44 +5,35 @@ import ij.process.ImageProcessor;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
-import org.grap.processing.ComplexOperation;
 import org.grap.processing.Operation;
 
-public class FocalMean extends ComplexOperation implements Operation {
-	public FocalMean(GeoRaster geoRaster, Object object) {
-		super(geoRaster, object);
+public class FocalMean implements Operation {
+	private int focalMeanSize;
+
+	public FocalMean(final int focalMeanSize) {
+		this.focalMeanSize = focalMeanSize;
 	}
 
-	public GeoRaster execute() {
+	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
 		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final ImageProcessor ip = imp.getProcessor();
 
-		if ((object != null) && (object instanceof Integer)) {
-			final Integer window = (Integer) object;
-			final ImageProcessor ip = imp.getProcessor();
-
-			if (window == 3) {
-				ip.convolve(buildKernel(window), window, window);
-			} else if (window == 5) {
-				ip.convolve(buildKernel(window), window, window);
-			} else if (window == 7) {
-				ip.convolve(buildKernel(window), window, window);
-			} else {
-			}
+		if ((3 == focalMeanSize) || (5 == focalMeanSize)
+				|| (7 == focalMeanSize)) {
+			ip.convolve(buildKernel(focalMeanSize), focalMeanSize,
+					focalMeanSize);
+		} else {
+			throw new RuntimeException("Bad focal mean size (only 3, 5 or 7) !");
 		}
 		return new GeoRaster(imp, rasterMetadata);
 	}
 
-	private float[] buildKernel(int size) {
+	private float[] buildKernel(final int size) {
 		final float[] kernel = new float[size * size];
 		for (int i = 0; i < kernel.length; i++) {
 			kernel[i] = 1;
 		}
 		return kernel;
-	}
-
-	public GeoRaster execute(GeoRaster raster) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

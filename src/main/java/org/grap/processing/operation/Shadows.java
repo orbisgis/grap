@@ -5,70 +5,47 @@ import ij.process.ImageProcessor;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
-import org.grap.processing.ComplexOperation;
 import org.grap.processing.Operation;
+import org.grap.processing.Orientations;
 
-public class Shadows extends ComplexOperation implements Operation {
-	private final static int north = 1;
+public class Shadows implements Operation {
+	private Orientations orientation;
 
-	private final static int northeast = 2;
-
-	private final static int east = 3;
-
-	private final static int southeast = 4;
-
-	private final static int south = 5;
-
-	private final static int southwest = 6;
-
-	private final static int west = 7;
-
-	private final static int northwest = 8;
-
-	public Shadows(GeoRaster geoRaster, Object object) {
-		super(geoRaster, object);
+	public Shadows(final Orientations orientation) {
+		this.orientation = orientation;
 	}
 
-	public GeoRaster execute() {
+	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
 		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final ImageProcessor ip = imp.getProcessor();
 
-		if ((object != null) && (object instanceof Integer)) {
-			final Integer orientation = (Integer) object;
-			final ImageProcessor ip = imp.getProcessor();
-
-			switch (orientation) {
-			case north:
-				ip.convolve3x3(new int[] { 1, 2, 1, 0, 1, 0, -1, -2, -1 });
-				break;
-			case south:
-				ip.convolve3x3(new int[] { -1, -2, -1, 0, 1, 0, 1, 2, 1 });
-				break;
-			case east:
-				ip.convolve3x3(new int[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 });
-				break;
-			case west:
-				ip.convolve3x3(new int[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 });
-				break;
-			case northwest:
-				ip.convolve3x3(new int[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 });
-				break;
-			case southeast:
-				ip.convolve3x3(new int[] { -2, -1, 0, -1, 1, 1, 0, 1, 2 });
-				break;
-			case northeast:
-				ip.convolve3x3(new int[] { 0, 1, 2, -1, 1, 1, -2, -1, 0 });
-				break;
-			case southwest:
-				ip.convolve3x3(new int[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 });
-				break;
-			}
+		switch (orientation) {
+		case NORTH:
+			ip.convolve3x3(new int[] { 1, 2, 1, 0, 1, 0, -1, -2, -1 });
+			break;
+		case SOUTH:
+			ip.convolve3x3(new int[] { -1, -2, -1, 0, 1, 0, 1, 2, 1 });
+			break;
+		case EAST:
+			ip.convolve3x3(new int[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 });
+			break;
+		case WEST:
+			ip.convolve3x3(new int[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 });
+			break;
+		case NORTHWEST:
+			ip.convolve3x3(new int[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 });
+			break;
+		case SOUTHEAST:
+			ip.convolve3x3(new int[] { -2, -1, 0, -1, 1, 1, 0, 1, 2 });
+			break;
+		case NORTHEAST:
+			ip.convolve3x3(new int[] { 0, 1, 2, -1, 1, 1, -2, -1, 0 });
+			break;
+		case SOUTHWEST:
+			ip.convolve3x3(new int[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 });
+			break;
 		}
 		return new GeoRaster(imp, rasterMetadata);
-	}
-
-	public GeoRaster execute(GeoRaster raster) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
