@@ -1,7 +1,9 @@
-package org.grap.processing.operation;
+package org.grap.processing.operation.manual;
 
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
+import org.grap.processing.operation.AllWatersheds;
+import org.grap.processing.operation.SlopesDirections;
 
 public class AllWatershedsTest {
 	public static void main(String[] args) {
