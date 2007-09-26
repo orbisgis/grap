@@ -5,19 +5,15 @@ import java.io.Serializable;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RasterMetadata implements Serializable {
-	
-	
-	
-	
 	private double xllcorner = 0;
-	
+
 	private double yllcorner = 0;
 
 	/** Resolution for the pixel. */
-	
-	private float pixelSize_X = 0;
 
-	private float pixelSize_Y;
+	private float pixelSize_X = 1;
+
+	private float pixelSize_Y = 1;
 
 	private float noDataValue = 0;
 
@@ -46,13 +42,12 @@ public class RasterMetadata implements Serializable {
 		this.noDataValue = nodata;
 	}
 
-	
 	/**
-     * Retourne la position du point X en haut à gauche.
-     *
-     * @return type double. 
-     */
-	
+	 * Retourne la position du point X en haut à gauche.
+	 * 
+	 * @return type double.
+	 */
+
 	public double getXOrigin() {
 		return xllcorner;
 	}
@@ -60,14 +55,12 @@ public class RasterMetadata implements Serializable {
 	public void setXOrigin(final double xllcorner2) {
 		xllcorner = xllcorner2;
 	}
-	
-	
+
 	/**
-     * Retourne la position du point Y en haut à gauche.
-     *
-     * @return type double. 
-     */
-	
+	 * Retourne la position du point Y en haut à gauche.
+	 * 
+	 * @return type double.
+	 */
 
 	public double getYOrigin() {
 		return yllcorner;
@@ -77,13 +70,12 @@ public class RasterMetadata implements Serializable {
 		yllcorner = yllcorner2;
 	}
 
-	
-	 /**
-     * Renvoie la largeur d'un pixel.
-     *
-     * @return type int. La lareur.
-     */
-	
+	/**
+	 * Renvoie la largeur d'un pixel.
+	 * 
+	 * @return type int. La lareur.
+	 */
+
 	public float getPixelSize_X() {
 		return pixelSize_X;
 	}
@@ -92,13 +84,12 @@ public class RasterMetadata implements Serializable {
 		this.pixelSize_X = pixelSize_X;
 	}
 
-	
-	  /**
-     * Renvoie la hauteur d'un pixel.
-     *
-     * @return type int. La hauteur.
-     */
-	
+	/**
+	 * Renvoie la hauteur d'un pixel.
+	 * 
+	 * @return type int. La hauteur.
+	 */
+
 	public float getPixelSize_Y() {
 		return pixelSize_Y;
 	}
