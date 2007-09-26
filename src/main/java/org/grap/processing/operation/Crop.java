@@ -38,16 +38,20 @@ public class Crop implements Operation {
 		if (null != polygon) {
 			final Geometry geomEnvelope = EnvelopeUtil
 					.toGeometry(rasterMetadata.getEnvelope());
+			
+			System.out.println(geomEnvelope);
+			
 			if (geomEnvelope.intersects(polygon)) {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(geoRaster,
 						(Polygon) polygon);
 
 				imp.setRoi(roi);
 				impResult = new ImagePlus("", imp.getProcessor().crop());
-				final Envelope newEnvelope = JTSConverter.roiToJTS(geoRaster,
-						roi).getEnvelopeInternal();
+				final Envelope newEnvelope = geomEnvelope.intersection(polygon).getEnvelopeInternal();
+				System.out.println(EnvelopeUtil
+						.toGeometry(newEnvelope));
 				metadataResult.setXOrigin(newEnvelope.getMinX());
-				metadataResult.setYOrigin(newEnvelope.getMaxY());
+				metadataResult.setYOrigin((newEnvelope.getMaxY()));
 			}
 		} else if (null != rectangle) {
 			imp.setRoi(rectangle);
