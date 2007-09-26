@@ -1,4 +1,4 @@
-package org.grap;
+package org.grap.archive;
 
 import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;

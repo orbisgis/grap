@@ -1,4 +1,4 @@
-package org.grap;
+package org.grap.archive;
 
 import ij.IJ;
 import ij.ImagePlus;
