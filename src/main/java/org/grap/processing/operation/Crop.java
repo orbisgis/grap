@@ -38,18 +38,19 @@ public class Crop implements Operation {
 		if (null != polygon) {
 			final Geometry geomEnvelope = EnvelopeUtil
 					.toGeometry(rasterMetadata.getEnvelope());
-			
-			System.out.println(geomEnvelope);
-			
+
+			System.err.println("-- " + geomEnvelope);
+
 			if (geomEnvelope.intersects(polygon)) {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(geoRaster,
 						(Polygon) polygon);
 
 				imp.setRoi(roi);
 				impResult = new ImagePlus("", imp.getProcessor().crop());
-				final Envelope newEnvelope = geomEnvelope.intersection(polygon).getEnvelopeInternal();
-				System.out.println(EnvelopeUtil
-						.toGeometry(newEnvelope));
+				final Envelope newEnvelope = geomEnvelope.intersection(polygon)
+						.getEnvelopeInternal();
+				System.err
+						.println("++ " + EnvelopeUtil.toGeometry(newEnvelope));
 				metadataResult.setXOrigin(newEnvelope.getMinX());
 				metadataResult.setYOrigin((newEnvelope.getMaxY()));
 			}
@@ -65,13 +66,16 @@ public class Crop implements Operation {
 			metadataResult.setYOrigin(coordinates.y);
 		}
 
-		metadataResult.setPixelSize_X(rasterMetadata.getPixelSize_X());
-		metadataResult.setPixelSize_Y(rasterMetadata.getPixelSize_Y());
-		metadataResult.setXRotation(rasterMetadata.getRotation_X());
-		metadataResult.setYRotation(rasterMetadata.getRotation_Y());
-		metadataResult.setNCols(impResult.getWidth());
-		metadataResult.setNRows(impResult.getHeight());
-
-		return new GeoRaster(impResult, metadataResult);
+		if (null != impResult) {
+			metadataResult.setPixelSize_X(rasterMetadata.getPixelSize_X());
+			metadataResult.setPixelSize_Y(rasterMetadata.getPixelSize_Y());
+			metadataResult.setXRotation(rasterMetadata.getRotation_X());
+			metadataResult.setYRotation(rasterMetadata.getRotation_Y());
+			metadataResult.setNCols(impResult.getWidth());
+			metadataResult.setNRows(impResult.getHeight());
+			return new GeoRaster(impResult, metadataResult);
+		} else {
+			return null;
+		}
 	}
 }

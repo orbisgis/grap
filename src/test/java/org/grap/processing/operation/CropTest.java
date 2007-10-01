@@ -39,13 +39,21 @@ public class CropTest extends TestCase {
 	}
 
 	public void testCropPolygon() throws Exception {
-		// final Polygon polygon = (Polygon) new WKTReader()
-		// .read("POLYGON((0 0 , 0 10, 10 10, 10 0, 0 0))");
-		final Polygon polygon = (Polygon) new WKTReader()
-				.read("POLYGON((0 5, 10 5, 10 7, 0 7, 0 5))");
-		geoRasterSrc.save("/tmp/1.tif");
+		final String[] polygons = new String[] {
+				"POLYGON((0 0 , 0 -10, 10 -10, 10 0, 0 0))",
+				"POLYGON((0 0 , 0 10, 10 10, 10 0, 0 0))",
+				"POLYGON((1 5, 9 5, 9 7, 1 7, 1 5))" };
+		for (String item : polygons) {
+			final Polygon p = (Polygon) new WKTReader().read(item);
+			System.err.println("\n" + p);
+			if (!testCropPolygonAux(p)) {
+				fail();
+			}
+		}
+	}
+
+	private boolean testCropPolygonAux(final Polygon polygon) {
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(polygon));
-		
 		int i = 0;
 		for (int r = 0; r < geoRasterDst.getMetadata().getNRows(); r++) {
 			for (int c = 0; c < geoRasterDst.getMetadata().getNCols(); c++) {
@@ -53,11 +61,16 @@ public class CropTest extends TestCase {
 				// .getImagePlus().getProcessor().getPixelValue(c, r));
 				if (i != geoRasterDst.getImagePlus().getProcessor()
 						.getPixelValue(c, r)) {
-					fail("pixel[" + r + ", " + c + "] != " + i);
+					return false;
+					// fail("pixel[" + r + ", " + c + "] != " + i);
 				}
 				i++;
 			}
 		}
+		System.err.printf("geoRasterDst : %d x %d\n", geoRasterDst
+				.getMetadata().getNRows(), geoRasterDst.getMetadata()
+				.getNCols());
+		return true;
 	}
 
 	public void testCropRectangle() {
