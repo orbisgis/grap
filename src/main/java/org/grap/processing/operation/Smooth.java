@@ -9,7 +9,7 @@ import org.grap.processing.Operation;
 public class Smooth implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
 		imp.getProcessor().smooth();
 		return new GeoRaster(imp, rasterMetadata);
 	}

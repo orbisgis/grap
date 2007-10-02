@@ -14,7 +14,7 @@ import org.grap.processing.cellularAutomata.parallelImpl.CAN;
 public class SlopesDirections implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
 		final float[] pixels;
 		final int nrows = rasterMetadata.getNRows();
 		final int ncols = rasterMetadata.getNCols();

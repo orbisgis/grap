@@ -4,6 +4,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 
 import com.vividsolutions.jts.io.ParseException;
 
@@ -17,13 +18,11 @@ public class NodataValueRangeTest {
 	 */
 	public static void main(String[] args)
 			throws NoninvertibleTransformException, ParseException, IOException {
-
 		// String fileName = "..//datas2tests//geotif//440607.tif";
 
 		String fileName = "..//datas2tests//grid//sample.asc";
 
-		GeoRaster geoRaster = new GeoRaster(fileName);
-		geoRaster.open();
+		final GeoRaster geoRaster = GeoRasterFactory.read(fileName);
 
 		System.out.println(geoRaster.getImagePlus().getProcessor().getMin());
 

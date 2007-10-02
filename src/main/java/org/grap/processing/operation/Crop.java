@@ -31,7 +31,7 @@ public class Crop implements Operation {
 
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
 		ImagePlus impResult = null;
 		final RasterMetadata metadataResult = new RasterMetadata();
 

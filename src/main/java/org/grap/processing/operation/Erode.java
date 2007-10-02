@@ -9,7 +9,7 @@ import org.grap.processing.Operation;
 public class Erode implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
 		imp.getProcessor().erode();
 		imp.show();
 		return new GeoRaster(imp, rasterMetadata);

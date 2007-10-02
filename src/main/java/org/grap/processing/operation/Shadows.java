@@ -17,7 +17,7 @@ public class Shadows implements Operation {
 
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
 		final ImageProcessor ip = imp.getProcessor();
 
 		switch (orientation) {

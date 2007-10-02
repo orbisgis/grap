@@ -7,41 +7,43 @@ import ij.process.ImageProcessor;
 
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 
 public class ColorRangeTest {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException,
+			IOException {
 
-		LutLoader lutViewer = new LutLoader();
+		final LutLoader lutViewer = new LutLoader();
 
 		lutViewer.run("/home/bocher/ImageJ/luts/erwan.lut");
 
-		LookUpTable lut = lutViewer.createLut();
+		final LookUpTable lut = lutViewer.createLut();
 
-		ColorModel colormodel = lut.getColorModel();
+		final ColorModel colormodel = lut.getColorModel();
 
-		String src = "..//datas2tests//grid//mntzee_500.asc";
+		final String fileName = "..//datas2tests//grid//mntzee_500.asc";
 
-		GeoRaster geoRaster = new GeoRaster(src);
+		final GeoRaster geoRaster = GeoRasterFactory.read(fileName);
 
-		geoRaster.open();
+		final ImagePlus imp = geoRaster.getImagePlus();
 
-		ImagePlus imp = geoRaster.getImagePlus();
-
-		ImageProcessor ip = imp.getProcessor();
+		final ImageProcessor ip = imp.getProcessor();
 
 		System.out.println("min " + ip.getMin() + " max " + ip.getMax());
 
-		float rang[] = new float[] { (float) ip.getMin(), 400, 1000,
+		final float rang[] = new float[] { (float) ip.getMin(), 400, 1000,
 				(float) ip.getMax() };
-		byte[] red = new byte[] { (byte) 255, (byte) 128, (byte) 0xff };
-		byte[] green = new byte[] { 0, 0, 0 };
-		byte[] blue = new byte[] { 0, 0, 0 };
+		final byte[] red = new byte[] { (byte) 255, (byte) 128, (byte) 0xff };
+		final byte[] green = new byte[] { 0, 0, 0 };
+		final byte[] blue = new byte[] { 0, 0, 0 };
 
-		ColorModel cm = new IndexColorModel(8, rang.length - 1, red, green,
-				blue);
+		final ColorModel cm = new IndexColorModel(8, rang.length - 1, red,
+				green, blue);
 
 		// ColorModel cm = new IndexColorModel(8, 2, new byte[] { 0,
 		// (byte) 255 }, new byte[] { 0, 0 }, new byte[] { (byte) 255,

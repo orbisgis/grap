@@ -55,8 +55,8 @@ public class CropTest extends TestCase {
 	private boolean testCropPolygonAux(final Polygon polygon) {
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(polygon));
 		int i = 0;
-		for (int r = 0; r < geoRasterDst.getMetadata().getNRows(); r++) {
-			for (int c = 0; c < geoRasterDst.getMetadata().getNCols(); c++) {
+		for (int r = 0; r < geoRasterDst.getRasterMetadata().getNRows(); r++) {
+			for (int c = 0; c < geoRasterDst.getRasterMetadata().getNCols(); c++) {
 				// System.out.printf("%d %d %d %f\n", r, c, i, geoRasterDst
 				// .getImagePlus().getProcessor().getPixelValue(c, r));
 				if (i != geoRasterDst.getImagePlus().getProcessor()
@@ -68,8 +68,8 @@ public class CropTest extends TestCase {
 			}
 		}
 		System.err.printf("geoRasterDst : %d x %d\n", geoRasterDst
-				.getMetadata().getNRows(), geoRasterDst.getMetadata()
-				.getNCols());
+				.getRasterMetadata().getNRows(), geoRasterDst
+				.getRasterMetadata().getNCols());
 		return true;
 	}
 

@@ -8,14 +8,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 
-public class WorldImageReader {
+public class WorldImageReader implements FileReader {
 	private String fileName;
 
 	private RasterMetadata rasterMetadata;
 
-	private ImagePlus imp;
+	private ImagePlus imagePlus;
 
 	private static Map<String, String[]> worldFileExtensions;
 
@@ -34,21 +35,41 @@ public class WorldImageReader {
 		worldFileExtensions.put("png", new String[] { "pgw", "pngw" });
 	}
 
+	// constructor
 	public WorldImageReader(final String fileName) {
 		this.fileName = fileName;
-		rasterMetadata = new RasterMetadata();
-		readFile(fileName);
 	}
 
-	public RasterMetadata readFile(final String fileName) {
-		final int dotIndex = fileName.lastIndexOf('.');
-		final String fileNamePrefix = fileName.substring(0, dotIndex);
-		final String fileNameExtension = fileName.substring(dotIndex + 1);
+	// private methods
+	private boolean isThereAnyWorldFile(final String fileNamePrefix,
+			final String fileNameExtension) throws IOException {
+		worldFile = null;
+		for (String extension : worldFileExtensions.get(fileNameExtension
+				.toLowerCase())) {
+			if (new File(fileNamePrefix + "." + extension).exists()) {
+				worldFile = new File(fileNamePrefix + "." + extension);
+				return true;
+			} else if (new File(fileNamePrefix + "." + extension.toUpperCase())
+					.exists()) {
+				worldFile = new File(fileNamePrefix + "."
+						+ extension.toUpperCase());
+				return true;
+			}
+		}
+		return false;
+	}
 
-		try {
+	// public methods
+	public RasterMetadata getRasterMetadata() throws IOException {
+		if (null == rasterMetadata) {
+			final int dotIndex = fileName.lastIndexOf('.');
+			final String fileNamePrefix = fileName.substring(0, dotIndex);
+			final String fileNameExtension = fileName.substring(dotIndex + 1);
+
 			if (isThereAnyWorldFile(fileNamePrefix, fileNameExtension) == true) {
 				final WorldFile wf = WorldFile.read(worldFile);
 
+				rasterMetadata = new RasterMetadata();
 				rasterMetadata.setXOrigin(wf.getXUpperLeft());
 				rasterMetadata.setYOrigin(wf.getYUpperLeft());
 				rasterMetadata.setPixelSize_X(wf.getXSize());
@@ -56,47 +77,18 @@ public class WorldImageReader {
 				rasterMetadata.setXRotation(wf.getColRotation());
 				rasterMetadata.setYRotation(wf.getRowRotation());
 
-				final Opener opener = new Opener();
-				imp = opener.openImage(fileName);
+				imagePlus = new Opener().openImage(fileName);
 
-				rasterMetadata.setNCols(imp.getWidth());
-				rasterMetadata.setNRows(imp.getHeight());
+				rasterMetadata.setNCols(imagePlus.getWidth());
+				rasterMetadata.setNRows(imagePlus.getHeight());
 				rasterMetadata.computeEnvelope();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return rasterMetadata;
 	}
 
-	public boolean isThereAnyWorldFile(final String fileNamePrefix,
-			final String fileNameExtension) throws IOException {
-		boolean worldfileExist = false;
-		worldFile = null;
-
-		for (String extension : worldFileExtensions.get(fileNameExtension
-				.toLowerCase())) {
-			if (new File(fileNamePrefix + "." + extension).exists()) {
-				worldFile = new File(fileNamePrefix + "." + extension);
-				worldfileExist = true;
-			} else if (new File(fileNamePrefix + "." + extension.toUpperCase())
-					.exists()) {
-				worldFile = new File(fileNamePrefix + "."
-						+ extension.toUpperCase());
-				worldfileExist = true;
-			}
-		}
-		return worldfileExist;
-	}
-
-	public ImagePlus getImagePlus() {
-		if (imp == null) {
-			readFile(fileName);
-		}
-		return imp;
-	}
-
-	public RasterMetadata getRasterMetadata() {
-		return rasterMetadata;
+	public GeoRaster read() throws IOException {
+		getRasterMetadata();
+		return new GeoRaster(imagePlus, rasterMetadata);
 	}
 }
