@@ -30,6 +30,8 @@ public class GeoRaster {
 			final RasterMetadata rasterMetadata) {
 		this.imagePlus = imagePlus;
 		this.rasterMetadata = rasterMetadata;
+		// what follows seems to be mandatory...
+		this.imagePlus.killRoi();
 	}
 
 	public GeoRaster(final Image image, final RasterMetadata rasterMetadata) {
