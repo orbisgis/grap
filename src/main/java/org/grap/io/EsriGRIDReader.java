@@ -1,22 +1,19 @@
 package org.grap.io;
 
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
-import org.grap.model.GeoProcessorType;
-import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 
 /**
@@ -45,56 +42,52 @@ import org.grap.model.RasterMetadata;
  * 38 44 89 3 2 7 etc etc
  * 
  */
-public class EsriGRIDReader implements FileReader {
-	private InputStream src;
+public class EsriGRIDReader {
+	private InputStream in = null;
 
-	private InputStream in;
+	private float[] fValues = null;
 
-	private float[] fValues;
+	private short[] iValues = null;
 
-	private short[] sValues;
+	private int ncols = 0;
 
-	private byte[] bValues;;
+	private int nrows = 0;
+
+	private double xllcorner = Double.MAX_VALUE;
+
+	private double yllcorner = Double.MAX_VALUE;
+
+	private float cellsize = Float.MIN_VALUE;
 
 	private float noDataValue = Float.MIN_VALUE;
 
-	private RasterMetadata rasterMetadata;
+	private RasterMetadata rasterMetadata = null;
 
-	private GeoProcessorType geoProcessorType;
-
-	private ImageProcessor imageProcessor;
-
-	// constructors
-	public EsriGRIDReader(final String fileName,
-			final GeoProcessorType geoProcessorType)
-			throws FileNotFoundException, IOException {
-		this(new FileInputStream(fileName), fileName, geoProcessorType);
+	/**
+	 * 
+	 * @param fileName
+	 * @throws IOException
+	 */
+	public EsriGRIDReader(final String fileName) throws IOException {
+		this(new FileInputStream(fileName), fileName);
 	}
 
-	public EsriGRIDReader(final URL src, final GeoProcessorType geoProcessorType)
+	public EsriGRIDReader(final URL src) throws IOException {
+		this(src.openStream(), src.getFile());
+	}
+
+	public EsriGRIDReader(InputStream src, final String srcName)
 			throws IOException {
-		this(src.openStream(), src.getFile(), geoProcessorType);
-	}
-
-	public EsriGRIDReader(final InputStream src, final String srcName,
-			final GeoProcessorType geoProcessorType) throws IOException {
+		rasterMetadata = new RasterMetadata();
 		if (srcName.toLowerCase().endsWith(".gz")) {
-			this.src = new GZIPInputStream(src);
+			src = new GZIPInputStream(src);
 		} else if (srcName.toLowerCase().endsWith(".zip")) {
-			this.src = new ZipInputStream(src); // pose pb
-		} else {
-			this.src = src;
+			src = new ZipInputStream(src); // pose pb
 		}
-		this.geoProcessorType = geoProcessorType;
+		in = new BufferedInputStream(src);
 	}
 
 	// private methods
-	private void open() {
-		if (null == in) {
-			in = new BufferedInputStream(src);
-		}
-	}
-
 	private final char readWhiteSpaces() throws IOException {
 		int c = in.read();
 		// ((' ' == c) || ('\t' == c) || ('\n' == c) || ('\r' == c));
@@ -146,86 +139,111 @@ public class EsriGRIDReader implements FileReader {
 		}
 	}
 
-	private final void readShortBody(final int n) throws IOException {
-		sValues = new short[n];
+	private final void readIntegerBody(final int n) throws IOException {
+		iValues = new short[n];
 		for (int i = 0; i < n; i++) {
-			sValues[i] = (short) readInteger();
-		}
-	}
-
-	private final void readByteBody(final int n) throws IOException {
-		sValues = new short[n];
-		for (int i = 0; i < n; i++) {
-			bValues[i] = (byte) readInteger();
-		}
-	}
-
-	private void close() throws IOException {
-		if (null != in) {
-			in.close();
+			iValues[i] = (short) readInteger();
 		}
 	}
 
 	// public methods
-	public final RasterMetadata getRasterMetadata() throws IOException {
-		if (null == rasterMetadata) {
-			open();
-			rasterMetadata = new RasterMetadata();
-			readString();
-			rasterMetadata.setNCols(readInteger());
-			readString();
-			rasterMetadata.setNRows(readInteger());
-			readString();
-			rasterMetadata.setXOrigin(readDouble());
-			readString();
-			rasterMetadata.setYOrigin(readDouble());
-			readString();
-			final float cellsize = readFloat();
-			rasterMetadata.setPixelSize_X(cellsize);
-			rasterMetadata.setPixelSize_Y(cellsize);
-			readString();
-			noDataValue = readFloat();
-			rasterMetadata.setNoData(noDataValue);
-			rasterMetadata.computeEnvelope();
-		}
+	public final RasterMetadata readHead() throws IOException {
+		readString();
+		ncols = readInteger();
+		rasterMetadata.setNCols(ncols);
+		readString();
+		nrows = readInteger();
+		rasterMetadata.setNRows(nrows);
+		readString();
+		xllcorner = readDouble();
+		rasterMetadata.setXOrigin(xllcorner);
+		readString();
+		yllcorner = readDouble();
+		rasterMetadata.setYOrigin(yllcorner);
+		readString();
+		cellsize = readFloat();
+		rasterMetadata.setPixelSize_X(cellsize);
+		rasterMetadata.setPixelSize_Y(cellsize);
+		readString();
+		noDataValue = readFloat();
+		rasterMetadata.setNoData(noDataValue);
+		rasterMetadata.computeEnvelope();
+
 		return rasterMetadata;
 	}
 
-	public GeoRaster read() throws IOException {
-		open();
-		getRasterMetadata();
-
-		switch (geoProcessorType) {
-		case BYTE:
-			if (null == bValues) {
-				readByteBody(rasterMetadata.getNCols()
-						* rasterMetadata.getNRows());
-				imageProcessor = new ByteProcessor(rasterMetadata.getNCols(),
-						rasterMetadata.getNRows(), bValues, null);
-			}
-			break;
-		case SHORT:
-			if (null == sValues) {
-				readShortBody(rasterMetadata.getNCols()
-						* rasterMetadata.getNRows());
-				imageProcessor = new ShortProcessor(rasterMetadata.getNCols(),
-						rasterMetadata.getNRows(), sValues, null);
-			}
-			break;
-		case FLOAT:
-			if (null == fValues) {
-				readFloatBody(rasterMetadata.getNCols()
-						* rasterMetadata.getNRows());
-				imageProcessor = new FloatProcessor(rasterMetadata.getNCols(),
-						rasterMetadata.getNRows(), fValues, null);
-			}
-			break;
-		default:
-			throw new RuntimeException("Unknown geoProcessorType : "
-					+ geoProcessorType);
-		}
-
+	public void fRead() throws IOException {
+		readHead();
+		readFloatBody(ncols * nrows);
 		close();
-		return new GeoRaster(new ImagePlus("", imageProcessor), rasterMetadata);
+	}
+
+	public void iRead() throws IOException {
+		readHead();
+		readIntegerBody(ncols * nrows);
+		close();
+	}
+
+	public void close() throws IOException {
+		in.close();
+	}
+
+	public void printHeaderValues() throws IllegalArgumentException,
+			IllegalAccessException {
+		for (Field x : getClass().getDeclaredFields()) {
+			if (x.getType().isPrimitive()) {
+				System.err.printf("%12s : %s\n", x.getName(), x.get(this));
+			}
+		}
+	}
+
+	public void printMinMax() {
+		if (null != fValues) {
+			float min = Float.MAX_VALUE;
+			float max = Float.MIN_VALUE;
+			for (float item : fValues) {
+				if (item > max) {
+					max = item;
+				} else if (item < min) {
+					min = item;
+				}
+			}
+			System.out.printf("min = %g\nmax = %g\n", min, max);
+		} else if (null != iValues) {
+			int min = Integer.MAX_VALUE;
+			int max = Integer.MIN_VALUE;
+			for (int item : iValues) {
+				if (item > max) {
+					max = item;
+				} else if (item < min) {
+					min = item;
+				}
+			}
+			System.out.printf("min = %d\nmax = %d\n", min, max);
+		} else {
+			System.out.printf("min = ?\nmax = ?\n");
+		}
+	}
+
+	public ImageProcessor getFloatProcessor() throws IOException {
+		fRead();
+		return new FloatProcessor(ncols, nrows, fValues, null);
+	}
+
+	public ImagePlus getFloatImagePlus() throws IOException {
+		return new ImagePlus("", getFloatProcessor());
+	}
+
+	public ImageProcessor getIntProcessor() throws IOException {
+		iRead();
+		return new ShortProcessor(ncols, nrows, iValues, null);
+	}
+
+	public ImagePlus getIntImagePlus() throws IOException {
+		return new ImagePlus("", getIntProcessor());
+	}
+
+	public RasterMetadata getRasterMetadata() {
+		return rasterMetadata;
 	}
 }

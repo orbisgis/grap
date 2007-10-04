@@ -3,19 +3,27 @@ package org.grap.archive;
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
 
 public class geoRasterTests {
+
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
 	public static void main(String[] args) throws IOException {
-		final String src = "..//datas2tests//grid//sample.asc";
-		final String dest = "..//datas2tests//geotif//sample.png";
 
-		final GeoRaster geoRaster = GeoRasterFactory.read(src);
+		String src = "..//datas2tests//grid//sample.asc";
+		String dest = "..//datas2tests//geotif//sample.png";
 
-		System.out.println(geoRaster.getRasterMetadata().getEnvelope()
-				.toString());
+		GeoRaster geoRaster = new GeoRaster(src);
+		geoRaster.open();
+
+		System.out.println(geoRaster.getMetadata().getEnvelope().toString());
 
 		geoRaster.setLUT("ice");
+
 		geoRaster.save(dest);
+
 	}
+
 }

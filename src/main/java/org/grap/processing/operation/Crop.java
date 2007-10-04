@@ -31,26 +31,25 @@ public class Crop implements Operation {
 
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 		ImagePlus impResult = null;
 		final RasterMetadata metadataResult = new RasterMetadata();
 
 		if (null != polygon) {
 			final Geometry geomEnvelope = EnvelopeUtil
 					.toGeometry(rasterMetadata.getEnvelope());
-
-			System.err.println("-- " + geomEnvelope);
-
+			
+			System.out.println(geomEnvelope);
+			
 			if (geomEnvelope.intersects(polygon)) {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(geoRaster,
 						(Polygon) polygon);
 
 				imp.setRoi(roi);
 				impResult = new ImagePlus("", imp.getProcessor().crop());
-				final Envelope newEnvelope = geomEnvelope.intersection(polygon)
-						.getEnvelopeInternal();
-				System.err
-						.println("++ " + EnvelopeUtil.toGeometry(newEnvelope));
+				final Envelope newEnvelope = geomEnvelope.intersection(polygon).getEnvelopeInternal();
+				System.out.println(EnvelopeUtil
+						.toGeometry(newEnvelope));
 				metadataResult.setXOrigin(newEnvelope.getMinX());
 				metadataResult.setYOrigin((newEnvelope.getMaxY()));
 			}
@@ -66,16 +65,13 @@ public class Crop implements Operation {
 			metadataResult.setYOrigin(coordinates.y);
 		}
 
-		if (null != impResult) {
-			metadataResult.setPixelSize_X(rasterMetadata.getPixelSize_X());
-			metadataResult.setPixelSize_Y(rasterMetadata.getPixelSize_Y());
-			metadataResult.setXRotation(rasterMetadata.getRotation_X());
-			metadataResult.setYRotation(rasterMetadata.getRotation_Y());
-			metadataResult.setNCols(impResult.getWidth());
-			metadataResult.setNRows(impResult.getHeight());
-			return new GeoRaster(impResult, metadataResult);
-		} else {
-			return null;
-		}
+		metadataResult.setPixelSize_X(rasterMetadata.getPixelSize_X());
+		metadataResult.setPixelSize_Y(rasterMetadata.getPixelSize_Y());
+		metadataResult.setXRotation(rasterMetadata.getRotation_X());
+		metadataResult.setYRotation(rasterMetadata.getRotation_Y());
+		metadataResult.setNCols(impResult.getWidth());
+		metadataResult.setNRows(impResult.getHeight());
+
+		return new GeoRaster(impResult, metadataResult);
 	}
 }

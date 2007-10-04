@@ -16,7 +16,7 @@ public class FocalMean implements Operation {
 
 	public GeoRaster execute(final GeoRaster geoRaster) {
 		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getRasterMetadata();
+		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 		final ImageProcessor ip = imp.getProcessor();
 
 		if ((3 == focalMeanSize) || (5 == focalMeanSize)

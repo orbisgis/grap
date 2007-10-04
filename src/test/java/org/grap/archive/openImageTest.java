@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import ij.plugin.TextReader;
 import ij.process.ImageProcessor;
 
-public class OpenImageTest {
+public class openImageTest {
 
 	/**
 	 * @param args
