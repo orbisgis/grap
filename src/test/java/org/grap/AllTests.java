@@ -1,11 +1,12 @@
 package org.grap;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.grap.processing.operation.CropTest;
 
-public class AllTests {
+public class AllTests extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(
 				"Test for org.grap.processing.operation");
