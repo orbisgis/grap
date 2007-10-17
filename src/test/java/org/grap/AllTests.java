@@ -11,7 +11,7 @@ public class AllTests extends TestCase {
 		TestSuite suite = new TestSuite(
 				"Test for org.grap.processing.operation");
 		// $JUnit-BEGIN$
-		suite.addTestSuite(CropTest.class);
+//		suite.addTestSuite(CropTest.class);
 		// $JUnit-END$
 		return suite;
 	}
