@@ -1,17 +1,17 @@
 package org.grap.processing.cellularAutomata.parallelImpl;
 
-import org.grap.processing.cellularAutomata.cam.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.ICAFloat;
 
-class CANFloat implements Runnable {
+class PCANFloat implements Runnable {
 	private int ncols;
 
-	private CAN can;
+	private PCAN can;
 
 	private float[] rac0;
 
 	private float[] rac1;
 
-	private IFloatCA ca;
+	private ICAFloat ca;
 
 	private int startIdx;
 
@@ -19,12 +19,12 @@ class CANFloat implements Runnable {
 
 	private int currentThreadIdx;
 
-	CANFloat(final CAN can, final int startIdx, final int endIdx,
+	PCANFloat(final PCAN can, final int startIdx, final int endIdx,
 			final int currentThreadIdx) {
 		this.can = can;
 		rac0 = (float[]) can.getRac0();
 		rac1 = (float[]) can.getRac1();
-		ca = (IFloatCA) can.getCa();
+		ca = (ICAFloat) can.getCa();
 		ncols = ca.getNCols();
 		this.startIdx = startIdx;
 		this.endIdx = endIdx;

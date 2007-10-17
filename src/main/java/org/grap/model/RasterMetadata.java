@@ -1,13 +1,16 @@
 package org.grap.model;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RasterMetadata implements Serializable {
-	private double xllcorner = 0;
+	private double xulcorner = 0;
 
-	private double yllcorner = 0;
+	private double yulcorner = 0;
 
 	/** Resolution for the pixel. */
 
@@ -30,77 +33,74 @@ public class RasterMetadata implements Serializable {
 	/** Rotation on the second dimension. */
 	private double rotationY = 0.0;
 
-	public RasterMetadata() {
+	private AffineTransform affineTransform;
+
+	private AffineTransform inverseTransform;
+
+	public RasterMetadata(final double upperLeftX, final double upperLeftY,
+			final float pixelSize_X, final float pixelSize_Y, int ncols,
+			int nrows) {
+		this(upperLeftX, upperLeftY, pixelSize_X, pixelSize_Y, ncols, nrows, 0,
+				0);
 	}
 
-	public RasterMetadata(final float x, final float y,
-			final float pixelSize_X, final float pixelSize_Y, final int nodata) {
-		this.xllcorner = x;
-		this.yllcorner = y;
+	public RasterMetadata(final double upperLeftX, final double upperLeftY,
+			final float pixelSize_X, final float pixelSize_Y, int ncols,
+			int nrows, final double colRotation, final double rowRotation) {
+		this.xulcorner = upperLeftX;
+		this.yulcorner = upperLeftY;
 		this.pixelSize_X = pixelSize_X;
 		this.pixelSize_Y = pixelSize_Y;
-		this.noDataValue = nodata;
+		this.rotationX = rowRotation;
+		this.rotationY = colRotation;
+		this.nrows = nrows;
+		this.ncols = ncols;
+		calculateAffineTransform();
 	}
 
 	/**
-	 * Retourne la position du point X en haut à gauche.
+	 * returns upper left corner X coordinate.
 	 * 
 	 * @return type double.
 	 */
 
 	public double getXOrigin() {
-		return xllcorner;
-	}
-
-	public void setXOrigin(final double xllcorner2) {
-		xllcorner = xllcorner2;
+		return xulcorner;
 	}
 
 	/**
-	 * Retourne la position du point Y en haut à gauche.
+	 * returns upper left corner Y coordinate.
 	 * 
 	 * @return type double.
 	 */
 
 	public double getYOrigin() {
-		return yllcorner;
-	}
-
-	public void setYOrigin(final double yllcorner2) {
-		yllcorner = yllcorner2;
+		return yulcorner;
 	}
 
 	/**
-	 * Renvoie la largeur d'un pixel.
+	 * returns pixel's width.
 	 * 
-	 * @return type int. La lareur.
+	 * @return type int.
 	 */
 
 	public float getPixelSize_X() {
 		return pixelSize_X;
 	}
 
-	public void setPixelSize_X(final float pixelSize_X) {
-		this.pixelSize_X = pixelSize_X;
-	}
-
 	/**
-	 * Renvoie la hauteur d'un pixel.
+	 * returns pixel's high.
 	 * 
-	 * @return type int. La hauteur.
+	 * @return type int.
 	 */
 
 	public float getPixelSize_Y() {
 		return pixelSize_Y;
 	}
 
-	public void setPixelSize_Y(final float pixelSize_Y) {
-		this.pixelSize_Y = pixelSize_Y;
-	}
-
 	public String toString() {
-		return new String("RasterMetadata with corners (" + xllcorner + ","
-				+ yllcorner + ") and envelope ( " + envelope + ")");
+		return new String("RasterMetadata with corners (" + xulcorner + ","
+				+ yulcorner + ") and envelope ( " + getEnvelope() + ")");
 	}
 
 	public void setNoData(final float noDataValue) {
@@ -111,25 +111,12 @@ public class RasterMetadata implements Serializable {
 		return noDataValue;
 	}
 
-	public void setNCols(final int ncols) {
-		this.ncols = ncols;
-	}
-
 	public int getNCols() {
 		return ncols;
 	}
 
-	public void setNRows(final int nrows) {
-		this.nrows = nrows;
-	}
-
 	public int getNRows() {
 		return nrows;
-	}
-
-	public void setEnveloppe(final double minx, final double maxx,
-			final double miny, final double maxy) {
-		envelope = new Envelope(minx, maxx, miny, maxy);
 	}
 
 	public Envelope getEnvelope() {
@@ -139,14 +126,13 @@ public class RasterMetadata implements Serializable {
 		return envelope;
 	}
 
-	public Envelope computeEnvelope() {
+	private Envelope computeEnvelope() {
 		double xm, xM, ym, yM;
+		xm = xulcorner - pixelSize_X / 2;
+		xM = xm + (ncols * pixelSize_X);
 
-		xm = xllcorner;
-		xM = xllcorner + (ncols * pixelSize_X);
-
-		ym = yllcorner - (nrows * pixelSize_Y);
-		yM = yllcorner;
+		yM = yulcorner - pixelSize_Y / 2;
+		ym = yM + (nrows * pixelSize_Y);
 
 		envelope = new Envelope(xm, xM, ym, yM);
 		return envelope;
@@ -156,23 +142,54 @@ public class RasterMetadata implements Serializable {
 		return rotationX;
 	}
 
-	public void setXRotation(final double rotationX) {
-		this.rotationX = rotationX;
-	}
-
 	public double getRotation_Y() {
 		return rotationY;
 	}
 
-	public void setYRotation(final double rotationY) {
-		this.rotationY = rotationY;
-	}
-
 	public double getXllcorner() {
-		return xllcorner;
+		return xulcorner;
 	}
 
 	public double getYllcorner() {
-		return yllcorner;
+		return yulcorner;
+	}
+
+	private void calculateAffineTransform() {
+		affineTransform = AffineTransform.getRotateInstance(rotationX,
+				rotationY);
+		affineTransform.translate(xulcorner, yulcorner);
+		affineTransform.scale(pixelSize_X, pixelSize_Y);
+	}
+
+	public Point2D toPixel(final double x, final double y) {
+		return getInverse().transform(new Point2D.Double(x, y), null);
+	}
+
+	private AffineTransform getInverse() {
+		if (null == inverseTransform) {
+			try {
+				inverseTransform = affineTransform.createInverse();
+			} catch (NoninvertibleTransformException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+
+		return inverseTransform;
+	}
+
+	public Point2D toWorld(final int x, final int y) {
+		return affineTransform.transform(new Point2D.Double(x, y), null);
+	}
+
+	public RasterMetadata duplicate() {
+		final RasterMetadata ret = new RasterMetadata(xulcorner, yulcorner,
+				pixelSize_X, pixelSize_Y, ncols, nrows, rotationX, rotationY);
+
+		ret.noDataValue = this.noDataValue;
+		ret.envelope = new Envelope(getEnvelope());
+		ret.calculateAffineTransform();
+
+		return ret;
 	}
 }

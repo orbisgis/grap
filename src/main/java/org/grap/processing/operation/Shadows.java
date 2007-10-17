@@ -1,11 +1,8 @@
 package org.grap.processing.operation;
 
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
-
 import org.grap.model.GeoRaster;
-import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
+import org.grap.processing.OperationException;
 import org.grap.processing.Orientations;
 
 public class Shadows implements Operation {
@@ -15,37 +12,36 @@ public class Shadows implements Operation {
 		this.orientation = orientation;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster) {
-		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
-		final ImageProcessor ip = imp.getProcessor();
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException {
 
 		switch (orientation) {
 		case NORTH:
-			ip.convolve3x3(new int[] { 1, 2, 1, 0, 1, 0, -1, -2, -1 });
-			break;
+			return geoRaster.convolve3x3(new int[] { 1, 2, 1, 0, 1, 0, -1, -2,
+					-1 });
 		case SOUTH:
-			ip.convolve3x3(new int[] { -1, -2, -1, 0, 1, 0, 1, 2, 1 });
-			break;
+			return geoRaster.convolve3x3(new int[] { -1, -2, -1, 0, 1, 0, 1, 2,
+					1 });
 		case EAST:
-			ip.convolve3x3(new int[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 });
-			break;
+			return geoRaster.convolve3x3(new int[] { -1, 0, 1, -2, 1, 2, -1, 0,
+					1 });
 		case WEST:
-			ip.convolve3x3(new int[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 });
-			break;
+			return geoRaster.convolve3x3(new int[] { 1, 0, -1, 2, 1, -2, 1, 0,
+					-1 });
 		case NORTHWEST:
-			ip.convolve3x3(new int[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 });
-			break;
+			return geoRaster.convolve3x3(new int[] { 2, 1, 0, 1, 1, -1, 0, -1,
+					-2 });
 		case SOUTHEAST:
-			ip.convolve3x3(new int[] { -2, -1, 0, -1, 1, 1, 0, 1, 2 });
-			break;
+			return geoRaster.convolve3x3(new int[] { -2, -1, 0, -1, 1, 1, 0, 1,
+					2 });
 		case NORTHEAST:
-			ip.convolve3x3(new int[] { 0, 1, 2, -1, 1, 1, -2, -1, 0 });
-			break;
+			return geoRaster.convolve3x3(new int[] { 0, 1, 2, -1, 1, 1, -2, -1,
+					0 });
 		case SOUTHWEST:
-			ip.convolve3x3(new int[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 });
-			break;
+			return geoRaster.convolve3x3(new int[] { 0, -1, -2, 1, 1, -1, 2, 1,
+					0 });
+		default:
+			throw new OperationException("Unknown orientation: " + orientation);
 		}
-		return new GeoRaster(imp, rasterMetadata);
 	}
 }

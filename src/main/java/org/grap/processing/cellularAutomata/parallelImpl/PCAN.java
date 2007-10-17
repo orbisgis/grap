@@ -3,63 +3,32 @@ package org.grap.processing.cellularAutomata.parallelImpl;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
+import org.grap.processing.cellularAutomata.cam.ACAN;
 import org.grap.processing.cellularAutomata.cam.ICA;
-import org.grap.processing.cellularAutomata.cam.IFloatCA;
-import org.grap.processing.cellularAutomata.cam.IShortCA;
+import org.grap.processing.cellularAutomata.cam.ICAFloat;
+import org.grap.processing.cellularAutomata.cam.ICAShort;
 
-public class CAN {
+public class PCAN extends ACAN {
 	private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
 			.availableProcessors();
 
 	private CyclicBarrier barrier;
 
-	private ICA ca;
-
-	private Object rac0;
-
-	private Object rac1;
-
 	private int iterationsCount;
 
 	private BreakCondition breakCondition;
 
-	private int nbCells;
-
 	/* constructor */
-	public CAN(final ICA ca) {
-		this.ca = ca;
+	public PCAN(final ICA ca) {
+		super(ca);
+
 		breakCondition = new BreakCondition(NUMBER_OF_THREADS);
 		// This barrier action is useful for updating shared-state before
 		// any of the parties continue.
 		barrier = new CyclicBarrier(NUMBER_OF_THREADS + 1, breakCondition);
-		nbCells = ca.getNRows() * ca.getNCols();
-
-		if (ca instanceof IShortCA) {
-			rac0 = new short[nbCells];
-			rac1 = new short[nbCells];
-		} else if (ca instanceof IFloatCA) {
-			rac0 = new float[nbCells];
-			rac1 = new float[nbCells];
-		}
 	}
 
 	/* getters */
-	public ICA getCa() {
-		return ca;
-	}
-
-	public Object getRac0() {
-		return rac0;
-	}
-
-	public Object getRac1() {
-		return rac1;
-	}
-
-	public Object getCANValues() {
-		return rac0;
-	}
-
 	public int getIterationsCount() {
 		return iterationsCount;
 	}
@@ -71,22 +40,22 @@ public class CAN {
 	/* public methods */
 	public int getStableState() {
 		final long startTime = System.currentTimeMillis();
-		final int subDomainSize = nbCells / NUMBER_OF_THREADS;
+		final int subDomainSize = getNbCells() / NUMBER_OF_THREADS;
 
 		// initialize
-		if (ca instanceof IShortCA) {
+		if (getCa() instanceof ICAShort) {
 			for (int i = 0; i < NUMBER_OF_THREADS; i++) {
 				final int startIdx = i * subDomainSize;
-				final int endIdx = (NUMBER_OF_THREADS == i + 1) ? nbCells
+				final int endIdx = (NUMBER_OF_THREADS == i + 1) ? getNbCells()
 						: startIdx + subDomainSize;
-				new Thread(new CANShort(this, startIdx, endIdx, i)).start();
+				new Thread(new PCANShort(this, startIdx, endIdx, i)).start();
 			}
-		} else if (ca instanceof IFloatCA) {
+		} else if (getCa() instanceof ICAFloat) {
 			for (int i = 0; i < NUMBER_OF_THREADS; i++) {
 				final int startIdx = i * subDomainSize;
-				final int endIdx = (NUMBER_OF_THREADS == i + 1) ? nbCells
+				final int endIdx = (NUMBER_OF_THREADS == i + 1) ? getNbCells()
 						: startIdx + subDomainSize;
-				new Thread(new CANFloat(this, startIdx, endIdx, i)).start();
+				new Thread(new PCANFloat(this, startIdx, endIdx, i)).start();
 			}
 		}
 		// initialize
@@ -98,7 +67,7 @@ public class CAN {
 		do {
 			final long startT = System.currentTimeMillis();
 			synchronization();
-			System.err.printf("Step %d : %d ms\n", iterationsCount, System
+			System.err.printf("Par. Step %d : %d ms\n", iterationsCount, System
 					.currentTimeMillis()
 					- startT);
 			iterationsCount++;
@@ -117,27 +86,6 @@ public class CAN {
 			e.printStackTrace();
 		} catch (BrokenBarrierException e) {
 			e.printStackTrace();
-		}
-	}
-
-	public void print(final String title) {
-		System.out.println(title);
-		if (ca instanceof IShortCA) {
-			short[] _rac0 = (short[]) rac0;
-			for (int r = 0; r < ca.getNRows(); r++) {
-				for (int c = 0; c < ca.getNCols(); c++) {
-					System.out.printf("%3d\t", _rac0[r * ca.getNCols() + c]);
-				}
-				System.out.println();
-			}
-		} else if (ca instanceof IFloatCA) {
-			float[] _rac0 = (float[]) rac0;
-			for (int r = 0; r < ca.getNRows(); r++) {
-				for (int c = 0; c < ca.getNCols(); c++) {
-					System.out.printf("%.1f\t", _rac0[r * ca.getNCols() + c]);
-				}
-				System.out.println();
-			}
 		}
 	}
 }

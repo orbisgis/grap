@@ -1,17 +1,17 @@
 package org.grap.processing.cellularAutomata.parallelImpl;
 
-import org.grap.processing.cellularAutomata.cam.IShortCA;
+import org.grap.processing.cellularAutomata.cam.ICAShort;
 
-class CANShort implements Runnable {
+class PCANShort implements Runnable {
 	private int ncols;
 
-	private CAN can;
+	private PCAN can;
 
 	private short[] rac0;
 
 	private short[] rac1;
 
-	private IShortCA ca;
+	private ICAShort ca;
 
 	private int startIdx;
 
@@ -19,12 +19,12 @@ class CANShort implements Runnable {
 
 	private int currentThreadIdx;
 
-	CANShort(final CAN can, final int startIdx, final int endIdx,
+	PCANShort(final PCAN can, final int startIdx, final int endIdx,
 			final int currentThreadIdx) {
 		this.can = can;
 		rac0 = (short[]) can.getRac0();
 		rac1 = (short[]) can.getRac1();
-		ca = (IShortCA) can.getCa();
+		ca = (ICAShort) can.getCa();
 		ncols = ca.getNCols();
 		this.startIdx = startIdx;
 		this.endIdx = endIdx;

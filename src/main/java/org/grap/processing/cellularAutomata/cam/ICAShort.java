@@ -1,6 +1,6 @@
 package org.grap.processing.cellularAutomata.cam;
 
-public interface IShortCA extends ICA {
+public interface ICAShort extends ICA {
 	public short init(final int r, final int c, final int i);
 
 	public short localTransition(final short[] rac, final int r, final int c,

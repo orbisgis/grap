@@ -1,25 +1,32 @@
 package org.grap.io;
 
 import ij.ImagePlus;
+import ij.io.FileInfo;
 import ij.io.Opener;
+import ij.io.TiffDecoder;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.grap.model.RasterMetadata;
 
-public class WorldImageReader {
-	private String fileName;
-
-	private RasterMetadata rasterMetadata;
-
-	private ImagePlus imp;
-
+public class WorldImageReader implements FileReader {
 	private static Map<String, String[]> worldFileExtensions;
 
+	private String fileName;
+
 	private File worldFile;
+
+	private boolean isTiff = false;
+
+	private String fileNamePrefix;
+
+	private String fileNameExtension;
 
 	static {
 		worldFileExtensions = new HashMap<String, String[]>();
@@ -34,69 +41,90 @@ public class WorldImageReader {
 		worldFileExtensions.put("png", new String[] { "pgw", "pngw" });
 	}
 
+	// constructor
 	public WorldImageReader(final String fileName) {
 		this.fileName = fileName;
-		rasterMetadata = new RasterMetadata();
-		readFile(fileName);
-	}
 
-	public RasterMetadata readFile(final String fileName) {
 		final int dotIndex = fileName.lastIndexOf('.');
-		final String fileNamePrefix = fileName.substring(0, dotIndex);
-		final String fileNameExtension = fileName.substring(dotIndex + 1);
+		fileNamePrefix = fileName.substring(0, dotIndex);
+		fileNameExtension = fileName.substring(dotIndex + 1).toLowerCase();
 
-		try {
-			if (isThereAnyWorldFile(fileNamePrefix, fileNameExtension) == true) {
-				final WorldFile wf = WorldFile.read(worldFile);
-
-				rasterMetadata.setXOrigin(wf.getXUpperLeft());
-				rasterMetadata.setYOrigin(wf.getYUpperLeft());
-				rasterMetadata.setPixelSize_X(wf.getXSize());
-				rasterMetadata.setPixelSize_Y(Math.abs(wf.getYSize()));
-				rasterMetadata.setXRotation(wf.getColRotation());
-				rasterMetadata.setYRotation(wf.getRowRotation());
-
-				final Opener opener = new Opener();
-				imp = opener.openImage(fileName);
-
-				rasterMetadata.setNCols(imp.getWidth());
-				rasterMetadata.setNRows(imp.getHeight());
-				rasterMetadata.computeEnvelope();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (fileNameExtension.equals("tif") || fileNameExtension.equals("tiff")) {
+			isTiff = true;
 		}
-		return rasterMetadata;
 	}
 
-	public boolean isThereAnyWorldFile(final String fileNamePrefix,
-			final String fileNameExtension) throws IOException {
-		boolean worldfileExist = false;
+	// private method
+	private boolean isThereAnyWorldFile() throws IOException {
 		worldFile = null;
 
-		for (String extension : worldFileExtensions.get(fileNameExtension
-				.toLowerCase())) {
+		for (String extension : worldFileExtensions.get(fileNameExtension)) {
 			if (new File(fileNamePrefix + "." + extension).exists()) {
 				worldFile = new File(fileNamePrefix + "." + extension);
-				worldfileExist = true;
+				return true;
 			} else if (new File(fileNamePrefix + "." + extension.toUpperCase())
 					.exists()) {
 				worldFile = new File(fileNamePrefix + "."
 						+ extension.toUpperCase());
-				worldfileExist = true;
+				return true;
 			}
 		}
-		return worldfileExist;
+		return false;
 	}
 
-	public ImagePlus getImagePlus() {
-		if (imp == null) {
-			readFile(fileName);
+	// public methods
+	public RasterMetadata readRasterMetadata() throws IOException,
+			GeoreferencingException {
+		final File file = new File(fileName);
+		final InputStream inputStream = new BufferedInputStream(
+				new FileInputStream(file));
+
+		// read image's dimensions
+		int ncols;
+		int nrows;
+		if (isTiff) {
+			final TiffDecoder tiffDecoder = new TiffDecoder(inputStream,
+					fileName);
+			final FileInfo[] fileInfo = tiffDecoder.getTiffInfo();
+			ncols = fileInfo[0].width;
+			nrows = fileInfo[0].height;
+		} else {
+			final ImageInfo imageInfo = new ImageInfo();
+			imageInfo.setInput(inputStream);
+			if (imageInfo.check()) {
+				ncols = imageInfo.getWidth();
+				nrows = imageInfo.getHeight();
+			} else {
+				throw new RuntimeException("Unsupported image file format.");
+			}
 		}
-		return imp;
+
+		// read other image's metadata
+		double xOrigin = 0;
+		double yOrigin = 0;
+		float xSize = 1;
+		float ySize = 1;
+		double xRotation = 0;
+		double yRotation = 0;
+		if (isThereAnyWorldFile() == true) {
+			final WorldFile wf = WorldFile.read(worldFile);
+
+			xOrigin = wf.getXUpperLeft();
+			yOrigin = wf.getYUpperLeft();
+			xSize = wf.getXSize();
+			ySize = wf.getYSize();
+			xRotation = wf.getColRotation();
+			yRotation = wf.getRowRotation();
+		} else {
+			throw new GeoreferencingException("Could not find world file for "
+					+ fileName);
+		}
+		final RasterMetadata rasterMetadata = new RasterMetadata(xOrigin,
+				yOrigin, xSize, ySize, ncols, nrows, xRotation, yRotation);
+		return rasterMetadata;
 	}
 
-	public RasterMetadata getRasterMetadata() {
-		return rasterMetadata;
+	public ImagePlus readImagePlus() throws IOException {
+		return new Opener().openImage(fileName);
 	}
 }

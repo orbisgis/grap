@@ -1,8 +1,8 @@
 package org.grap.processing.cellularAutomata;
 
-import org.grap.processing.cellularAutomata.cam.IShortCA;
+import org.grap.processing.cellularAutomata.cam.ICAShort;
 
-public class CASlopesDirections implements IShortCA {
+public class CASlopesDirections implements ICAShort {
 	private int nrows;
 
 	private int ncols;

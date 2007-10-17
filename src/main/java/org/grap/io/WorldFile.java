@@ -105,6 +105,7 @@ public class WorldFile {
 				lineIn = in.readLine();
 			}
 		}
+		in.close();
 		return wf;
 	}
 
@@ -143,7 +144,7 @@ public class WorldFile {
 		file.println(rasterMetadata.getPixelSize_X());
 		file.println(rasterMetadata.getRotation_X());
 		file.println(rasterMetadata.getRotation_Y());
-		file.println(-rasterMetadata.getPixelSize_Y());
+		file.println(rasterMetadata.getPixelSize_Y());
 		file.println(rasterMetadata.getXllcorner());
 		file.println(rasterMetadata.getYllcorner());
 		file.close();

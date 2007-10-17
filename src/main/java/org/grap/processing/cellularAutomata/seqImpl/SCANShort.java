@@ -1,24 +1,21 @@
 package org.grap.processing.cellularAutomata.seqImpl;
 
-import org.grap.processing.cellularAutomata.cam.IShortCA;
+import org.grap.processing.cellularAutomata.cam.ACAN;
+import org.grap.processing.cellularAutomata.cam.ICAShort;
 
-public class ShortCAN extends ACAN {
+public class SCANShort implements ISCAN {
+	private short[] rac1;
+	private short[] rac0;
+	private ICAShort ca;
+	private int ncols;
 	private int nrows;
 
-	private int ncols;
-
-	private short[] rac0;
-
-	private short[] rac1;
-
-	private IShortCA ca;
-
-	public ShortCAN(final IShortCA ca) {
-		this.nrows = ca.getNRows();
-		this.ncols = ca.getNCols();
-		rac0 = new short[nrows * ncols];
-		rac1 = new short[nrows * ncols];
-		this.ca = ca;
+	public SCANShort(final ACAN can) {
+		rac0 = (short[]) can.getRac0();
+		rac1 = (short[]) can.getRac1();
+		ca = (ICAShort) can.getCa();
+		ncols = ca.getNCols();
+		nrows = ca.getNRows();
 
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
@@ -29,11 +26,11 @@ public class ShortCAN extends ACAN {
 		}
 	}
 
-	public boolean globalTransition(final int step) {
+	public boolean globalTransition(final int iterationsCount) {
 		boolean modified = false;
 		int i = 0;
 
-		if (0 == step % 2) {
+		if (0 == iterationsCount % 2) {
 			for (int r = 0; r < nrows; r++) {
 				for (int c = 0; c < ncols; c++) {
 					rac1[i] = ca.localTransition(rac0, r, c, i);
@@ -55,20 +52,5 @@ public class ShortCAN extends ACAN {
 			}
 		}
 		return modified;
-	}
-
-	@Override
-	public void print() {
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++) {
-				System.out.printf("%3d\t", rac0[r * ncols + c]);
-			}
-			System.out.println();
-		}
-	}
-
-	@Override
-	public Object getCANValues() {
-		return rac0;
 	}
 }

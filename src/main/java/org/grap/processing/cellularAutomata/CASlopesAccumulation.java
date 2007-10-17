@@ -1,8 +1,8 @@
 package org.grap.processing.cellularAutomata;
 
-import org.grap.processing.cellularAutomata.cam.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.ICAFloat;
 
-public class CASlopesAccumulation implements IFloatCA {
+public class CASlopesAccumulation implements ICAFloat {
 	private int nrows;
 
 	private int ncols;

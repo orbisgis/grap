@@ -1,24 +1,21 @@
 package org.grap.processing.cellularAutomata.seqImpl;
 
-import org.grap.processing.cellularAutomata.cam.IFloatCA;
+import org.grap.processing.cellularAutomata.cam.ACAN;
+import org.grap.processing.cellularAutomata.cam.ICAFloat;
 
-public class FloatCAN extends ACAN {
+public class SCANFloat implements ISCAN {
+	private float[] rac1;
+	private float[] rac0;
+	private ICAFloat ca;
+	private int ncols;
 	private int nrows;
 
-	private int ncols;
-
-	private float[] rac0;
-
-	private float[] rac1;
-
-	private IFloatCA ca;
-
-	public FloatCAN(final IFloatCA ca) {
-		this.nrows = ca.getNRows();
-		this.ncols = ca.getNCols();
-		rac0 = new float[nrows * ncols];
-		rac1 = new float[nrows * ncols];
-		this.ca = ca;
+	public SCANFloat(final ACAN can) {
+		rac0 = (float[]) can.getRac0();
+		rac1 = (float[]) can.getRac1();
+		ca = (ICAFloat) can.getCa();
+		ncols = ca.getNCols();
+		nrows = ca.getNRows();
 
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
@@ -29,11 +26,11 @@ public class FloatCAN extends ACAN {
 		}
 	}
 
-	public boolean globalTransition(final int step) {
+	public boolean globalTransition(final int iterationsCount) {
 		boolean modified = false;
 		int i = 0;
 
-		if (0 == step % 2) {
+		if (0 == iterationsCount % 2) {
 			for (int r = 0; r < nrows; r++) {
 				for (int c = 0; c < ncols; c++) {
 					rac1[i] = ca.localTransition(rac0, r, c, i);
@@ -59,20 +56,5 @@ public class FloatCAN extends ACAN {
 
 	private boolean equal(final float a, final float b) {
 		return ((Float.isNaN(a) && Float.isNaN(b)) || (a == b)) ? true : false;
-	}
-
-	@Override
-	public void print() {
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++) {
-				System.out.printf("%.1f\t", rac0[r * ncols + c]);
-			}
-			System.out.println();
-		}
-	}
-
-	@Override
-	public Object getCANValues() {
-		return rac0;
 	}
 }

@@ -1,11 +1,8 @@
 package org.grap.processing.operation;
 
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
-
 import org.grap.model.GeoRaster;
-import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
+import org.grap.processing.OperationException;
 
 public class FocalMean implements Operation {
 	private int focalMeanSize;
@@ -14,19 +11,15 @@ public class FocalMean implements Operation {
 		this.focalMeanSize = focalMeanSize;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster) {
-		final ImagePlus imp = geoRaster.getImagePlus();
-		final RasterMetadata rasterMetadata = geoRaster.getMetadata();
-		final ImageProcessor ip = imp.getProcessor();
-
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException {
 		if ((3 == focalMeanSize) || (5 == focalMeanSize)
 				|| (7 == focalMeanSize)) {
-			ip.convolve(buildKernel(focalMeanSize), focalMeanSize,
-					focalMeanSize);
+			return geoRaster.convolve(buildKernel(focalMeanSize),
+					focalMeanSize, focalMeanSize);
 		} else {
 			throw new RuntimeException("Bad focal mean size (only 3, 5 or 7) !");
 		}
-		return new GeoRaster(imp, rasterMetadata);
 	}
 
 	private float[] buildKernel(final int size) {

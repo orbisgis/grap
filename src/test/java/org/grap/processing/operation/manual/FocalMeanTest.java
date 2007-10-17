@@ -1,18 +1,22 @@
 package org.grap.processing.operation.manual;
 
+import org.grap.TestUtils;
+import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
+import org.grap.model.GeoRasterFactory;
 import org.grap.processing.operation.FocalMean;
 
 public class FocalMeanTest {
-	public static void main(String[] args) {
-		final String src = "../../datas2tests/grid/sample.asc";
+	public static void main(String[] args) throws Exception {
+		final String src = "../../datas2tests/geotif/440706.tif";
+		// final String src = "/tmp/mypng.png";
 
-		final GeoRaster geoRaster = new GeoRaster(src);
+		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		final Operation focalMean = new FocalMean(7);
-		final GeoRaster result = geoRaster.doOperation(focalMean);
-		result.setLUT("fire");
+		final GeoRaster result = geoRaster.doOperation(new FocalMean(3));
+		TestUtils.printFreeMemory();
+		result.setLUT(LutGenerator.colorModel("fire"));
+		TestUtils.printFreeMemory();
 		result.show();
 	}
 }
