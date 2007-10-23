@@ -60,7 +60,7 @@ public interface GeoRaster {
 			throws OperationException;
 
 	public abstract void setRangeColors(final double[] ranges,
-			final Color[] colors[]);
+			final Color[] colors) throws OperationException;
 
 	public abstract void setNodataValue(final float value);
 

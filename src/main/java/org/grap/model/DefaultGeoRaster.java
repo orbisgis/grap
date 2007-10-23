@@ -39,9 +39,7 @@
  */
 package org.grap.model;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import ij.gui.PolygonRoi;
 import ij.io.FileSaver;
 import ij.process.ImageProcessor;
@@ -51,6 +49,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -126,8 +125,52 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public void setRangeColors(final double[] ranges, final Color[] colors[]) {
+	public void setRangeColors(final double[] ranges, final Color[] colors)
+			throws OperationException {
+		checkRangeColors(ranges, colors);
 
+		// TODO : is it really necessary ?
+		setRangeValues(ranges[0], ranges[ranges.length - 1]);
+
+		final int nbOfColors = 256;
+		final byte[] reds = new byte[nbOfColors];
+		final byte[] greens = new byte[nbOfColors];
+		final byte[] blues = new byte[nbOfColors];
+		final double delta = (ranges[ranges.length - 1] - ranges[0]) / 256;
+		double x = ranges[0] + delta;
+
+		for (int i = 0, j = 0; i < 256; i++, x += delta) {
+			while (!((x >= ranges[j]) && (x < ranges[j + 1]))
+					&& (colors.length > j + 1)) {
+				j++;
+			}
+			reds[i] = (byte) colors[j].getRed();
+			greens[i] = (byte) colors[j].getGreen();
+			blues[i] = (byte) colors[j].getBlue();
+		}
+		try {
+			setLUT(new IndexColorModel(8, nbOfColors, reds, blues, greens));
+		} catch (IOException e) {
+			throw new OperationException(e);
+		}
+	}
+
+	private void checkRangeColors(final double[] ranges, final Color[] colors)
+			throws OperationException {
+		if (ranges.length != colors.length + 1) {
+			throw new OperationException(
+					"Ranges.length not equal to Colors.length + 1 !");
+		}
+		for (int i = 1; i < ranges.length; i++) {
+			if (ranges[i - 1] > ranges[i]) {
+				throw new OperationException(
+						"Ranges array needs to be sorted !");
+			}
+		}
+		if (colors.length > 256) {
+			throw new OperationException(
+					"Colors.length must be less than 256 !");
+		}
 	}
 
 	public void setNodataValue(final float value) {

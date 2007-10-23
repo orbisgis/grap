@@ -100,7 +100,7 @@ class NullGeoRaster implements GeoRaster {
 	public void setRangeValues(double min, double max) {
 	}
 
-	public void setRangeColors(final double[] ranges, final Color[] colors[]) {
+	public void setRangeColors(final double[] ranges, final Color[] colors) {
 	}
 
 	public void show() {
