@@ -46,17 +46,16 @@ import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 
 public class LutGenerator {
-
-	public static int fire(byte[] reds, byte[] greens, byte[] blues) {
-		int[] r = { 0, 0, 1, 25, 49, 73, 98, 122, 146, 162, 173, 184, 195, 207,
-				217, 229, 240, 252, 255, 255, 255, 255, 255, 255, 255, 255,
-				255, 255, 255, 255, 255, 255 };
-		int[] g = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 35, 57, 79, 101,
-				117, 133, 147, 161, 175, 190, 205, 219, 234, 248, 255, 255,
-				255, 255 };
-		int[] b = { 0, 61, 96, 130, 165, 192, 220, 227, 210, 181, 151, 122, 93,
-				64, 35, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 98, 160, 223,
-				255 };
+	private static int fire(byte[] reds, byte[] greens, byte[] blues) {
+		final int[] r = { 0, 0, 1, 25, 49, 73, 98, 122, 146, 162, 173, 184,
+				195, 207, 217, 229, 240, 252, 255, 255, 255, 255, 255, 255,
+				255, 255, 255, 255, 255, 255, 255, 255 };
+		final int[] g = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 35, 57,
+				79, 101, 117, 133, 147, 161, 175, 190, 205, 219, 234, 248, 255,
+				255, 255, 255 };
+		final int[] b = { 0, 61, 96, 130, 165, 192, 220, 227, 210, 181, 151,
+				122, 93, 64, 35, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 98,
+				160, 223, 255 };
 		for (int i = 0; i < r.length; i++) {
 			reds[i] = (byte) r[i];
 			greens[i] = (byte) g[i];
@@ -65,7 +64,7 @@ public class LutGenerator {
 		return r.length;
 	}
 
-	public static int grays(byte[] reds, byte[] greens, byte[] blues) {
+	private static int grays(byte[] reds, byte[] greens, byte[] blues) {
 		for (int i = 0; i < 256; i++) {
 			reds[i] = (byte) i;
 			greens[i] = (byte) i;
@@ -74,7 +73,7 @@ public class LutGenerator {
 		return 256;
 	}
 
-	public static int primaryColor(int color, byte[] reds, byte[] greens,
+	private static int primaryColor(int color, byte[] reds, byte[] greens,
 			byte[] blues) {
 		for (int i = 0; i < 256; i++) {
 			if ((color & 4) != 0)
@@ -87,16 +86,16 @@ public class LutGenerator {
 		return 256;
 	}
 
-	static int ice(byte[] reds, byte[] greens, byte[] blues) {
-		int[] r = { 0, 0, 0, 0, 0, 0, 19, 29, 50, 48, 79, 112, 134, 158, 186,
-				201, 217, 229, 242, 250, 250, 250, 250, 251, 250, 250, 250,
-				250, 251, 251, 243, 230 };
-		int[] g = { 156, 165, 176, 184, 190, 196, 193, 184, 171, 162, 146, 125,
-				107, 93, 81, 87, 92, 97, 95, 93, 93, 90, 85, 69, 64, 54, 47,
-				35, 19, 0, 4, 0 };
-		int[] b = { 140, 147, 158, 166, 170, 176, 209, 220, 234, 225, 236, 246,
-				250, 251, 250, 250, 245, 230, 230, 222, 202, 180, 163, 142,
-				123, 114, 106, 94, 84, 64, 26, 27 };
+	private static int ice(byte[] reds, byte[] greens, byte[] blues) {
+		final int[] r = { 0, 0, 0, 0, 0, 0, 19, 29, 50, 48, 79, 112, 134, 158,
+				186, 201, 217, 229, 242, 250, 250, 250, 250, 251, 250, 250,
+				250, 250, 251, 251, 243, 230 };
+		final int[] g = { 156, 165, 176, 184, 190, 196, 193, 184, 171, 162,
+				146, 125, 107, 93, 81, 87, 92, 97, 95, 93, 93, 90, 85, 69, 64,
+				54, 47, 35, 19, 0, 4, 0 };
+		final int[] b = { 140, 147, 158, 166, 170, 176, 209, 220, 234, 225,
+				236, 246, 250, 251, 250, 250, 245, 230, 230, 222, 202, 180,
+				163, 142, 123, 114, 106, 94, 84, 64, 26, 27 };
 		for (int i = 0; i < r.length; i++) {
 			reds[i] = (byte) r[i];
 			greens[i] = (byte) g[i];
@@ -105,7 +104,7 @@ public class LutGenerator {
 		return r.length;
 	}
 
-	public static int spectrum(byte[] reds, byte[] greens, byte[] blues) {
+	private static int spectrum(byte[] reds, byte[] greens, byte[] blues) {
 		Color c;
 		for (int i = 0; i < 256; i++) {
 			c = Color.getHSBColor(i / 255f, 1f, 1f);
@@ -116,7 +115,7 @@ public class LutGenerator {
 		return 256;
 	}
 
-	public static int rgb332(byte[] reds, byte[] greens, byte[] blues) {
+	private static int rgb332(byte[] reds, byte[] greens, byte[] blues) {
 		for (int i = 0; i < 256; i++) {
 			reds[i] = (byte) (i & 0xe0);
 			greens[i] = (byte) ((i << 3) & 0xe0);
@@ -125,7 +124,7 @@ public class LutGenerator {
 		return 256;
 	}
 
-	public static int redGreen(byte[] reds, byte[] greens, byte[] blues) {
+	private static int redGreen(byte[] reds, byte[] greens, byte[] blues) {
 		for (int i = 0; i < 128; i++) {
 			reds[i] = (byte) (i * 2);
 			greens[i] = (byte) 0;
@@ -139,15 +138,15 @@ public class LutGenerator {
 		return 256;
 	}
 
-	public static void interpolate(byte[] reds, byte[] greens, byte[] blues,
+	private static void interpolate(byte[] reds, byte[] greens, byte[] blues,
 			int nColors) {
-		byte[] r = new byte[nColors];
-		byte[] g = new byte[nColors];
-		byte[] b = new byte[nColors];
+		final byte[] r = new byte[nColors];
+		final byte[] g = new byte[nColors];
+		final byte[] b = new byte[nColors];
 		System.arraycopy(reds, 0, r, 0, nColors);
 		System.arraycopy(greens, 0, g, 0, nColors);
 		System.arraycopy(blues, 0, b, 0, nColors);
-		double scale = nColors / 256.0;
+		final double scale = nColors / 256.0;
 		int i1, i2;
 		double fraction;
 		for (int i = 0; i < 256; i++) {
@@ -167,8 +166,7 @@ public class LutGenerator {
 	}
 
 	public static ColorModel colorModel(String arg) {
-
-		FileInfo fi = new FileInfo();
+		final FileInfo fi = new FileInfo();
 		fi.reds = new byte[256];
 		fi.greens = new byte[256];
 		fi.blues = new byte[256];
@@ -203,13 +201,10 @@ public class LutGenerator {
 			if (nColors < 256)
 				interpolate(fi.reds, fi.greens, fi.blues, nColors);
 			fi.fileName = arg;
-			ColorModel cm = new IndexColorModel(8, 256, fi.reds, fi.greens,
-					fi.blues);
-
+			final ColorModel cm = new IndexColorModel(8, 256, fi.reds,
+					fi.greens, fi.blues);
 			return cm;
 		}
-
 		return null;
-
 	}
 }
