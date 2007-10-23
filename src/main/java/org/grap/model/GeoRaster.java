@@ -39,6 +39,7 @@
  */
 package org.grap.model;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
@@ -55,7 +56,11 @@ public interface GeoRaster {
 
 	public abstract RasterMetadata getMetadata();
 
-	public abstract void setRange(final double min, final double max);
+	public abstract void setRangeValues(final double min, final double max)
+			throws OperationException;
+
+	public abstract void setRangeColors(final double[] ranges,
+			final Color[] colors[]);
 
 	public abstract void setNodataValue(final float value);
 
@@ -111,7 +116,7 @@ public interface GeoRaster {
 	public abstract GeoRaster convolve3x3(int[] kernel)
 			throws OperationException;
 
-	public abstract GeoRaster smoth() throws OperationException;
+	public abstract GeoRaster smooth() throws OperationException;
 
 	public abstract double getMin() throws IOException;
 

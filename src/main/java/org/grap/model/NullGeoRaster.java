@@ -42,6 +42,7 @@ package org.grap.model;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
@@ -96,7 +97,10 @@ class NullGeoRaster implements GeoRaster {
 	public void setNodataValue(float value) {
 	}
 
-	public void setRange(double min, double max) {
+	public void setRangeValues(double min, double max) {
+	}
+
+	public void setRangeColors(final double[] ranges, final Color[] colors[]) {
 	}
 
 	public void show() {
@@ -131,7 +135,7 @@ class NullGeoRaster implements GeoRaster {
 		return instance;
 	}
 
-	public GeoRaster smoth() {
+	public GeoRaster smooth() {
 		return instance;
 	}
 

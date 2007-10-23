@@ -54,7 +54,7 @@ public class ShadowsTest {
 		geoRaster.open();
 		final Operation shadows = new Shadows(Orientations.NORTH);
 		final GeoRaster result = geoRaster.doOperation(shadows);
-		result.setRange(0, 1500);
+		result.setRangeValues(0, 500);
 		result.setLUT(LutGenerator.colorModel("fire"));
 		result.show();
 	}

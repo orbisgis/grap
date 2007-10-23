@@ -39,7 +39,9 @@
  */
 package org.grap.io;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.process.ImageProcessor;
 
 import java.awt.image.ColorModel;
@@ -61,16 +63,16 @@ public class DirectImagePlusProvider implements ImagePlusProvider {
 			if (ip == null) {
 				ip = getImagePlus();
 			}
-			ImageProcessor processor = ip.getProcessor();
+			final ImageProcessor processor = ip.getProcessor();
 			values.colorModel = processor.getColorModel();
 			values.min = processor.getMin();
 			values.max = processor.getMax();
 			values.height = ip.getHeight();
 			values.width = ip.getWidth();
 			values.type = ip.getType();
-
+			values.minThreshold = Double.NaN;
+			values.maxThreshold = Double.NaN;
 		}
-
 		return values;
 	}
 
@@ -81,9 +83,16 @@ public class DirectImagePlusProvider implements ImagePlusProvider {
 		} catch (GeoreferencingException e) {
 			throw new IOException(e.getMessage());
 		}
-		CachedValues cachedValues = getCachedValues(imagePlus);
+		final CachedValues cachedValues = getCachedValues(imagePlus);
 		if (cachedValues.colorModel != null) {
 			imagePlus.getProcessor().setColorModel(cachedValues.colorModel);
+		}
+		if (!(Double.isNaN(values.minThreshold) && Double
+				.isNaN(values.maxThreshold))) {
+			imagePlus.getProcessor().setThreshold(values.minThreshold,
+					values.maxThreshold, ImageProcessor.RED_LUT);
+			WindowManager.setTempCurrentImage(imagePlus);
+			IJ.run("NaN Background");
 		}
 		return imagePlus;
 	}
@@ -122,6 +131,10 @@ public class DirectImagePlusProvider implements ImagePlusProvider {
 
 	private class CachedValues {
 
+		private double maxThreshold;
+
+		private double minThreshold;
+
 		private ColorModel colorModel;
 
 		private int type;
@@ -134,5 +147,10 @@ public class DirectImagePlusProvider implements ImagePlusProvider {
 
 		private int height;
 
+	}
+
+	public void setRangeValues(double min, double max) throws IOException {
+		getCachedValues(null).minThreshold = min;
+		getCachedValues(null).maxThreshold = max;
 	}
 }

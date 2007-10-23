@@ -66,7 +66,7 @@ public class NodataValueRangeTest {
 
 		System.out.println(geoRaster.getMin());
 
-		geoRaster.setRange(0, 1000);
+		geoRaster.setRangeValues(0, 1000);
 
 		System.out.println(geoRaster.getMin());
 

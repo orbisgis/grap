@@ -46,6 +46,6 @@ import org.grap.processing.OperationException;
 public class Smooth implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException {
-		return geoRaster.smoth();
+		return geoRaster.smooth();
 	}
 }

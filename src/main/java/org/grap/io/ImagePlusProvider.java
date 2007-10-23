@@ -63,4 +63,7 @@ public interface ImagePlusProvider {
 	public abstract double getMax() throws IOException;
 
 	public abstract int getType() throws IOException;
+
+	public abstract void setRangeValues(final double min, final double max)
+			throws IOException;
 }

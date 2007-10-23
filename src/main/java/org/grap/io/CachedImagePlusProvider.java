@@ -39,7 +39,9 @@
  */
 package org.grap.io;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.io.Opener;
 import ij.process.ImageProcessor;
 
@@ -93,5 +95,11 @@ public class CachedImagePlusProvider implements ImagePlusProvider {
 
 	public int getType() {
 		return imagePlus.getType();
+	}
+
+	public void setRangeValues(double min, double max) {
+		imagePlus.getProcessor().setThreshold(min, max, ImageProcessor.RED_LUT);
+		WindowManager.setTempCurrentImage(imagePlus);
+		IJ.run("NaN Background");
 	}
 }

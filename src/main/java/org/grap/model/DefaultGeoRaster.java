@@ -39,11 +39,14 @@
  */
 package org.grap.model;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.gui.PolygonRoi;
 import ij.io.FileSaver;
 import ij.process.ImageProcessor;
 
+import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -114,11 +117,17 @@ class DefaultGeoRaster implements GeoRaster {
 		return rasterMetadata;
 	}
 
-	public void setRange(final double min, final double max) {
-		// imagePlus.getProcessor().setThreshold(min, max,
-		// ImageProcessor.RED_LUT);
-		// WindowManager.setTempCurrentImage(imagePlus);
-		// IJ.run("NaN Background");
+	public void setRangeValues(final double min, final double max)
+			throws OperationException {
+		try {
+			imagePlusProvider.setRangeValues(min, max);
+		} catch (IOException e) {
+			throw new OperationException(e);
+		}
+	}
+
+	public void setRangeColors(final double[] ranges, final Color[] colors[]) {
+
 	}
 
 	public void setNodataValue(final float value) {
@@ -241,7 +250,7 @@ class DefaultGeoRaster implements GeoRaster {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(toPixel(ring));
 
 				final ImageProcessor processor = imagePlusProvider
-						.getProcessor().duplicate();
+						.getProcessor();
 				processor.setRoi(roi);
 				final ImageProcessor result = processor.crop();
 				final Envelope newEnvelope = geomEnvelope.intersection(ring)
@@ -283,7 +292,7 @@ class DefaultGeoRaster implements GeoRaster {
 
 				final Rectangle2D pixelRoi = getRectangleInPixels(roi);
 				final ImageProcessor processor = imagePlusProvider
-						.getProcessor().duplicate();
+						.getProcessor();
 				processor.setRoi((int) pixelRoi.getMinX(), (int) pixelRoi
 						.getMinY(), (int) pixelRoi.getWidth(), (int) pixelRoi
 						.getHeight());
@@ -338,7 +347,7 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public GeoRaster smoth() throws OperationException {
+	public GeoRaster smooth() throws OperationException {
 		try {
 			final ImageProcessor dup = imagePlusProvider.getImagePlus()
 					.getProcessor().duplicate();
