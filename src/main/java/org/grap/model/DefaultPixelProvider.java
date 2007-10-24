@@ -74,7 +74,7 @@ public class DefaultPixelProvider implements PixelProvider {
 		} else {
 			throw new IllegalStateException("Unsupported raster type: " + type);
 		}
-		if (noDataValue != Float.NaN) {
+		if (!Float.isNaN(noDataValue)) {
 			for (int i = 0; i < ret.length; i++) {
 				if (ret[i] == noDataValue) {
 					ret[i] = (short) Float.NaN;
@@ -99,7 +99,7 @@ public class DefaultPixelProvider implements PixelProvider {
 		} else {
 			throw new IllegalStateException("Unsupported raster type: " + type);
 		}
-		if (noDataValue != Float.NaN) {
+		if (!Float.isNaN(noDataValue)) {
 			for (int i = 0; i < ret.length; i++) {
 				if (ret[i] == noDataValue) {
 					ret[i] = (short) Float.NaN;
@@ -138,7 +138,7 @@ public class DefaultPixelProvider implements PixelProvider {
 		} else {
 			throw new IllegalStateException("Unsupported raster type: " + type);
 		}
-		if (noDataValue != Float.NaN) {
+		if (!Float.isNaN(noDataValue)) {
 			for (int i = 0; i < ret.length; i++) {
 				if (ret[i] == noDataValue) {
 					ret[i] = Float.NaN;
