@@ -11,8 +11,8 @@ public class RangeColorsTest {
 
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		geoRaster.setRangeColors(new double[] { 70, 200, 500, 1300 },
-				new Color[] { Color.LIGHT_GRAY, Color.GRAY, Color.DARK_GRAY});
+		geoRaster.setRangeColors(new double[] { 70, 200, 400, 600, 1300 },
+				new Color[] { Color.BLUE, Color.CYAN, Color.GREEN, Color.RED });
 		geoRaster.show();
 	}
 }
