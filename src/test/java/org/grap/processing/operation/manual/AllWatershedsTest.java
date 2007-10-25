@@ -60,21 +60,14 @@ public class AllWatershedsTest {
 		final Operation slopesDirections = new SlopesDirections();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
-
-		// grSlopesDirections.setLUT("fire");
-		// grSlopesDirections.show();
-		// try {
-		// grSlopesDirections.save("/tmp/dir.tif");
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
+		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// compute all the watersheds
 		final Operation allWatersheds = new AllWatersheds();
 		final GeoRaster grAllWatersheds = grSlopesDirections
 				.doOperation(allWatersheds);
-
 		grAllWatersheds.setLUT(LutGenerator.colorModel("fire"));
 		grAllWatersheds.show();
+		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
 	}
 }

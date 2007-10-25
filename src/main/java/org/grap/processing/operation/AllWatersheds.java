@@ -50,7 +50,7 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class SecondEfficientAllWatersheds implements Operation {
+public class AllWatersheds implements Operation {
 	private PixelProvider ppSlopesDirections;
 	private float[] watersheds;
 	private int ncols;

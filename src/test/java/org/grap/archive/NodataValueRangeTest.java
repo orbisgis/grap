@@ -39,41 +39,22 @@
  */
 package org.grap.archive;
 
-import java.awt.geom.NoninvertibleTransformException;
-import java.io.IOException;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 
-import com.vividsolutions.jts.io.ParseException;
-
 public class NodataValueRangeTest {
-
-	/**
-	 * @param args
-	 * @throws NoninvertibleTransformException
-	 * @throws ParseException
-	 * @throws IOException
-	 */
 	public static void main(String[] args) throws Exception {
+		// String fileName = "../../datas2tests/geotif/440607.tif";
+		String fileName = "../../datas2tests/grid/sample.asc";
 
-		// String fileName = "..//datas2tests//geotif//440607.tif";
-
-		String fileName = "..//datas2tests//grid//sample.asc";
-
-		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(fileName);
+		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(fileName);
 		geoRaster.open();
 
 		System.out.println(geoRaster.getMin());
-
 		geoRaster.setRangeValues(0, 1000);
-
 		System.out.println(geoRaster.getMin());
-
 		geoRaster.show();
 
-		geoRaster.save("..//datas2tests//geotif//sample.png");
-
+		geoRaster.save("../../datas2tests/tmp/1.png");
 	}
-
 }
