@@ -37,7 +37,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.cellularAutomata;
+package org.grap.processing.cellularAutomata.useless;
 
 import org.grap.processing.cellularAutomata.cam.ICAFloat;
 

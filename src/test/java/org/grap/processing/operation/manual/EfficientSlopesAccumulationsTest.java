@@ -39,41 +39,34 @@
  */
 package org.grap.processing.operation.manual;
 
-import org.grap.processing.cellularAutomata.CASlopesAccumulation;
-import org.grap.processing.cellularAutomata.CASlopesDirections;
-import org.grap.processing.cellularAutomata.CASlopesInPercent;
-import org.grap.processing.cellularAutomata.cam.ICA;
-import org.grap.processing.cellularAutomata.cam.ICAN;
-import org.grap.processing.cellularAutomata.seqImpl.SCAN;
-import org.grap.processing.cellularAutomata.useless.CAGetAllSubWatershed;
+import org.grap.lut.LutGenerator;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.processing.Operation;
+import org.grap.processing.operation.EfficientSlopesAccumulation;
+import org.grap.processing.operation.SlopesDirections;
 
-public class MainSeq {
-	public static void main(String[] args) {
-		final float[] DEM = new float[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-				0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, };
-		final int nrows = 5;
-		final int ncols = 5;
+public class EfficientSlopesAccumulationsTest {
+	public static void main(String[] args) throws Exception {
+		final String src = "../../datas2tests/grid/sample.asc";
+		// final String src = "../../datas2tests/grid/mntzee_500.asc";
+		// final String src = "../../datas2tests/grid/saipan-5.asc";
 
-		final ICA ca1 = new CASlopesDirections(DEM, nrows, ncols);
-		final ICAN ccan1 = new SCAN(ca1);
-		ccan1.getStableState();
-		ccan1.print(ca1.getClass().getSimpleName());
+		// load the DEM
+		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
+		grDEM.open();
 
-		final ICA ca2 = new CASlopesInPercent(DEM, nrows, ncols);
-		final ICAN ccan2 = new SCAN(ca2);
-		ccan2.getStableState();
-		ccan2.print(ca2.getClass().getSimpleName());
+		// compute the slopes directions
+		final Operation slopesDirections = new SlopesDirections();
+		final GeoRaster grSlopesDirections = grDEM
+				.doOperation(slopesDirections);
 
-		final short[] slopesDirections = (short[]) ccan1.getCANValues();
+		// compute the slopes accumulations
+		final Operation slopesAccumulations = new EfficientSlopesAccumulation();
+		final GeoRaster grSlopesAccumulations = grSlopesDirections
+				.doOperation(slopesAccumulations);
 
-		final ICA ca3 = new CASlopesAccumulation(slopesDirections, nrows, ncols);
-		final ICAN ccan3 = new SCAN(ca3);
-		ccan3.getStableState();
-		ccan3.print(ca3.getClass().getSimpleName());
-
-		final ICA ca4 = new CAGetAllSubWatershed(slopesDirections, nrows, ncols);
-		final ICAN ccan4 = new SCAN(ca4);
-		ccan4.getStableState();
-		ccan4.print(ca4.getClass().getSimpleName());
+		grSlopesAccumulations.setLUT(LutGenerator.colorModel("fire"));
+		grSlopesAccumulations.show();
 	}
 }
