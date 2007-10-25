@@ -42,6 +42,10 @@ package org.grap.processing.cellularAutomata;
 import org.grap.processing.cellularAutomata.cam.ICAShort;
 
 public class CASlopesDirections implements ICAShort {
+	public final static short noDataValue = 0;
+
+	public final static short indecision = 255;
+
 	private int nrows;
 
 	private int ncols;
@@ -69,8 +73,7 @@ public class CASlopesDirections implements ICAShort {
 		final float currentElevation = DEM[i];
 
 		if (Float.isNaN(currentElevation)) {
-			// noDataValue
-			return Short.MIN_VALUE;
+			return noDataValue;
 		} else {
 			final float[] tmpSlopes = new float[] {
 					currentElevation - getDEMValue(r, c + 1, i + 1),
@@ -88,7 +91,7 @@ public class CASlopesDirections implements ICAShort {
 
 			final int idx = getIdxForMaxValue(tmpSlopes);
 			if (-1 == idx) {
-				return -1;
+				return indecision;
 			} else {
 				return (short) (1 << idx);
 			}

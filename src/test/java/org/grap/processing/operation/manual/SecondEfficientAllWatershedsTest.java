@@ -43,6 +43,7 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
+import org.grap.processing.cellularAutomata.CASlopesDirections;
 import org.grap.processing.operation.SecondEfficientAllWatersheds;
 import org.grap.processing.operation.SlopesDirections;
 
@@ -61,14 +62,15 @@ public class SecondEfficientAllWatershedsTest {
 		final Operation slopesDirections = new SlopesDirections();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
-		grSlopesDirections.save("D:\\temp\\1.tif");
-		
+		grSlopesDirections.setNodataValue(CASlopesDirections.noDataValue);
+		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
+
 		// compute all the watersheds
 		// final Operation allWatersheds = new SecondEfficientAllWatersheds();
-		final Operation allWatersheds = new SecondEfficientAllWatersheds(
-				grSlopesDirections);
-		final GeoRaster grAllWatersheds = grDEM.doOperation(allWatersheds);
-		// grAllWatersheds.save("D:\\temp\\1.tif");
+		final Operation allWatersheds = new SecondEfficientAllWatersheds();
+		final GeoRaster grAllWatersheds = grSlopesDirections
+				.doOperation(allWatersheds);
+		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
 		grAllWatersheds.setLUT(LutGenerator.colorModel("fire"));
 		grAllWatersheds.show();
 	}

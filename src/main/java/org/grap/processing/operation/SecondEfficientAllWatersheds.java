@@ -51,60 +51,26 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class SecondEfficientAllWatersheds implements Operation {
-	private GeoRaster grSlopesDirections;
 	private PixelProvider ppSlopesDirections;
-	private GeoRaster grDEM;
-	private PixelProvider ppDEM;
-
+	private float[] watersheds;
 	private int ncols;
 	private int nrows;
 
-	private float[] watersheds;
-
-	public SecondEfficientAllWatersheds() {
-	}
-
-	public SecondEfficientAllWatersheds(final GeoRaster grSlopesDirections)
+	public GeoRaster execute(final GeoRaster grSlopesDirections)
 			throws OperationException {
-		this.grSlopesDirections = grSlopesDirections;
-		final RasterMetadata rasterMetadata = grSlopesDirections.getMetadata();
-		nrows = rasterMetadata.getNRows();
-		ncols = rasterMetadata.getNCols();
-		try {
-			ppSlopesDirections = grSlopesDirections.getPixelProvider();
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-	}
-
-	public GeoRaster execute(final GeoRaster grDEM) throws OperationException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			this.grDEM = grDEM;
-			ppDEM = grDEM.getPixelProvider();
-
-			if (null == grSlopesDirections) {
-				final Operation slopesDirections = new SlopesDirections();
-				grSlopesDirections = grDEM.doOperation(slopesDirections);
-				final RasterMetadata rasterMetadata = grSlopesDirections
-						.getMetadata();
-				nrows = rasterMetadata.getNRows();
-				ncols = rasterMetadata.getNCols();
-				ppSlopesDirections = grSlopesDirections.getPixelProvider();
-			}
-
-			// TODO I think that I need this test...
-			// if (!grDEM.getMetadata().equal(grSlopesDirections.getMetadata()))
-			// {
-			// throw new OperationException(
-			// "DEM and slopesDirections do not share same RasterMetadata !");
-			// }
-
+			ppSlopesDirections = grSlopesDirections.getPixelProvider();
+			final RasterMetadata rasterMetadata = grSlopesDirections
+					.getMetadata();
+			nrows = rasterMetadata.getNRows();
+			ncols = rasterMetadata.getNCols();
 			int nbOfWatersheds = computeAllWatersheds();
 			System.out.printf("%d watersheds in %d ms\n", nbOfWatersheds,
 					System.currentTimeMillis() - startTime);
+
 			return GeoRasterFactory.createGeoRaster(watersheds, ncols, nrows,
-					grDEM.getMetadata());
+					grSlopesDirections.getMetadata());
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
@@ -117,7 +83,7 @@ public class SecondEfficientAllWatersheds implements Operation {
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(ppDEM.getPixel(c, r))) {
+				if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
 					watersheds[i] = Float.NaN;
 				} else if (0 == watersheds[i]) {
 					// current cell value has not been yet modified...
@@ -142,7 +108,7 @@ public class SecondEfficientAllWatersheds implements Operation {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
-			if (Float.isNaN(ppDEM.getPixel(c, r))) {
+			if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
 				return null;
 			} else {
 				if (0 == watersheds[curCellIdx]) {

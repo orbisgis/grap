@@ -76,8 +76,11 @@ public class SlopesDirections implements Operation {
 			final ICAN ccan = CANFactory.createCAN(ca);
 			ccan.getStableState();
 
-			return GeoRasterFactory.createGeoRaster((short[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
+			final GeoRaster grSlopesDirection = GeoRasterFactory
+					.createGeoRaster((short[]) ccan.getCANValues(), ncols,
+							nrows, rasterMetadata);
+			grSlopesDirection.setNodataValue(CASlopesDirections.noDataValue);
+			return grSlopesDirection;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
