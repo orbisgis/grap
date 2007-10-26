@@ -96,6 +96,12 @@ public class GeoRasterFactory {
 		return new DefaultGeoRaster(imagePlus, rasterMetadata);
 	}
 
+	public static GeoRaster createGeoRaster(
+			final ImagePlus imagePlus,
+			final RasterMetadata rasterMetadata) {
+		return new DefaultGeoRaster(imagePlus, rasterMetadata);
+	}
+
 	public static GeoRaster createGeoRaster(final byte[] pixels,
 			final int ncols, final int nrows,
 			final RasterMetadata rasterMetadata) {
