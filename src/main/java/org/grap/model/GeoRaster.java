@@ -129,5 +129,6 @@ public interface GeoRaster {
 	public abstract int getHeight() throws IOException;
 
 	public abstract ColorModel getColorModel() throws IOException;
+
 	public ImagePlus getImagePlus() throws IOException;
-	}
+}
