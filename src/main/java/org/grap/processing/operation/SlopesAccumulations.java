@@ -50,7 +50,7 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class EfficientSlopesAccumulation implements Operation {
+public class SlopesAccumulations implements Operation {
 	private PixelProvider ppSlopesDirections;
 	private float[] slopesAccumulation;
 	private int ncols;

@@ -43,10 +43,10 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.EfficientSlopesAccumulation;
+import org.grap.processing.operation.SlopesAccumulations;
 import org.grap.processing.operation.SlopesDirections;
 
-public class EfficientSlopesAccumulationsTest {
+public class SlopesAccumulationsTest {
 	public static void main(String[] args) throws Exception {
 		final String src = "../../datas2tests/grid/sample.asc";
 		// final String src = "../../datas2tests/grid/mntzee_500.asc";
@@ -62,7 +62,7 @@ public class EfficientSlopesAccumulationsTest {
 				.doOperation(slopesDirections);
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new EfficientSlopesAccumulation();
+		final Operation slopesAccumulations = new SlopesAccumulations();
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 
