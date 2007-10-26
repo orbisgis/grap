@@ -65,6 +65,14 @@ public class SlopesAccumulationsTest extends GrapTest {
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 
+		for (int r = 0; r < grSlopesAccumulations.getMetadata().getNRows(); r++) {
+			for (int c = 0; c < grSlopesAccumulations.getMetadata().getNCols(); c++) {
+				System.out.printf("%3.0f ", grSlopesAccumulations
+						.getPixelProvider().getPixel(c, r));
+			}
+			System.out.println();
+		}
+
 		// compare the computed accumulations with previous ones
 		compareGeoRasterAndArray(grSlopesAccumulations,
 				slopesAccumulationForDEM);

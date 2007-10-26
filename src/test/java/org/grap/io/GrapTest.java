@@ -93,7 +93,7 @@ public class GrapTest extends TestCase {
 				LutGenerator.colorModel("fire"), rmd);
 
 		slopesAccumulationForDEM = new short[] {//
-		1, 1, 1, 1, 1, 1, 1, 50, 1, 1,//
+				1, 1, 1, 1, 1, 1, 1, 50, 1, 1,//
 				1, 3, 2, 3, 1, 1, 3, 41, 3, 1,//
 				1, 6, 3, 6, 1, 1, 2, 40, 2, 1,//
 				1, 2, 20, 2, 1, 1, 2, 35, 2, 1,//
