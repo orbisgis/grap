@@ -43,8 +43,8 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.SlopesAccumulations;
 import org.grap.processing.operation.SlopesDirections;
+import org.grap.processing.operation.SlopesAccumulations;
 
 public class SlopesAccumulationsTest {
 	public static void main(String[] args) throws Exception {
@@ -60,6 +60,7 @@ public class SlopesAccumulationsTest {
 		final Operation slopesDirections = new SlopesDirections();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
+		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// compute the slopes accumulations
 		final Operation slopesAccumulations = new SlopesAccumulations();
@@ -68,5 +69,6 @@ public class SlopesAccumulationsTest {
 
 		grSlopesAccumulations.setLUT(LutGenerator.colorModel("fire"));
 		grSlopesAccumulations.show();
+		grSlopesAccumulations.save("../../datas2tests/tmp/2.tif");
 	}
 }

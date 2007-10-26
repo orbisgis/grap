@@ -61,7 +61,7 @@ public class GrapTests {
 		suite.addTestSuite(CANImplementationsTest.class);
 		suite.addTestSuite(IdentityTest.class);
 		suite.addTestSuite(CropTest.class);
-		suite.addTestSuite(SlopesAccumulationsTest.class);
+//		suite.addTestSuite(SlopesAccumulationsTest.class);
 		// $JUnit-END$
 		return suite;
 	}

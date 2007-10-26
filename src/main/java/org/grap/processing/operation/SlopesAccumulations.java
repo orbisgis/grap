@@ -40,8 +40,6 @@
 package org.grap.processing.operation;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -90,6 +88,15 @@ public class SlopesAccumulations implements Operation {
 					// current cell value has not been yet modified...
 					nbOfOutlets += findOutletAndAccumulateSlopes(i);
 				}
+
+				// for (int rr = 0; rr < nrows; rr++) {
+				// for (int cc = 0; cc < ncols; cc++) {
+				// System.out.printf("%3.0f ", slopesAccumulation[r
+				// * ncols + c]);
+				// }
+				// System.out.println();
+				// }
+				// System.out.println("STEP " + i);
 			}
 		}
 		return nbOfOutlets;

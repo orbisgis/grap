@@ -77,7 +77,7 @@ public class GrapTest extends TestCase {
 				LutGenerator.colorModel("fire"), rmd);
 
 		final short[] DEM = new short[] { //
-				100, 100, 100, 100, 100, 100, 100, 0, 100, 100,//
+		100, 100, 100, 100, 100, 100, 100, 0, 100, 100,//
 				100, 50, 50, 50, 100, 100, 25, 10, 25, 100,//
 				100, 25, 25, 25, 100, 100, 25, 11, 25, 100,//
 				100, 25, 15, 25, 100, 100, 25, 12, 25, 100,//
@@ -93,7 +93,7 @@ public class GrapTest extends TestCase {
 				LutGenerator.colorModel("fire"), rmd);
 
 		slopesAccumulationForDEM = new short[] {//
-				1, 1, 1, 1, 1, 1, 1, 50, 1, 1,//
+		1, 1, 1, 1, 1, 1, 1, 50, 1, 1,//
 				1, 3, 2, 3, 1, 1, 3, 41, 3, 1,//
 				1, 6, 3, 6, 1, 1, 2, 40, 2, 1,//
 				1, 2, 20, 2, 1, 1, 2, 35, 2, 1,//
@@ -106,7 +106,7 @@ public class GrapTest extends TestCase {
 		};
 
 		allWatershedsForDEM = new short[] { //
-				1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
+		1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
 				1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
 				1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
 				1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
@@ -125,9 +125,11 @@ public class GrapTest extends TestCase {
 		final PixelProvider pixelProvider = geoRaster.getPixelProvider();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%d %d\t%.0f == %d\n", c, r, pixelProvider
-						.getPixel(c, r), sArray[r * 10 + c]);
-//				assertTrue(pixelProvider.getPixel(c, r) == sArray[r * 10 + c]);
+				if (pixelProvider.getPixel(c, r) != sArray[r * 10 + c]) {
+					System.out.printf("%d %d\t%.0f == %d\n", c, r,
+							pixelProvider.getPixel(c, r), sArray[r * 10 + c]);
+				}
+				assertTrue(pixelProvider.getPixel(c, r) == sArray[r * 10 + c]);
 			}
 		}
 	}
