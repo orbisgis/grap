@@ -41,7 +41,6 @@ package org.grap.processing.operation;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
-import org.grap.processing.cellularAutomata.CASlopesAccumulation;
 import org.grap.processing.cellularAutomata.CASlopesDirections;
 import org.grap.processing.cellularAutomata.CASlopesInPercent;
 import org.grap.processing.cellularAutomata.cam.ICA;
@@ -51,6 +50,7 @@ import org.grap.processing.cellularAutomata.cam.ICAShort;
 import org.grap.processing.cellularAutomata.parallelImpl.PCAN;
 import org.grap.processing.cellularAutomata.seqImpl.SCAN;
 import org.grap.processing.cellularAutomata.useless.CAGetAllSubWatershed;
+import org.grap.processing.cellularAutomata.useless.CASlopesAccumulation;
 
 public class CANImplementationsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
