@@ -39,6 +39,8 @@
  */
 package org.grap.model;
 
+import ij.ImagePlus;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -127,4 +129,5 @@ public interface GeoRaster {
 	public abstract int getHeight() throws IOException;
 
 	public abstract ColorModel getColorModel() throws IOException;
-}
+	public ImagePlus getImagePlus() throws IOException;
+	}
