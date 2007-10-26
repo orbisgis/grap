@@ -432,4 +432,9 @@ class DefaultGeoRaster implements GeoRaster {
 				.getImage(), imagePlusProvider.getProcessor(), getType(),
 				noDataValue);
 	}
+	
+	public ImagePlus getImagePlus() throws IOException{
+		return imagePlusProvider.getImagePlus();
+		
+	}
 }
