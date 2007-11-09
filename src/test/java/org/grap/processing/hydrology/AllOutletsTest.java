@@ -37,38 +37,39 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual;
+package org.grap.processing.hydrology;
 
-import org.grap.lut.LutGenerator;
+import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.SlopesDirections;
-import org.grap.processing.operation.SlopesAccumulations;
+import org.grap.processing.hydrology.AllOutlets;
+import org.grap.processing.hydrology.SlopesDirections;
 
-public class SlopesAccumulationsTest {
-	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/sample.asc";
-		// final String src = "../../datas2tests/grid/mntzee_500.asc";
-		// final String src = "../../datas2tests/grid/saipan-5.asc";
+public class AllOutletsTest extends GrapTest {
+	private GeoRaster geoRasterSrc;
 
+	protected void setUp() throws Exception {
+		super.setUp();
+		geoRasterSrc = sampleDEM;
+	}
+
+	public void testAllOutlets() throws Exception {
 		// load the DEM
-		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
-		grDEM.open();
+		geoRasterSrc.open();
 
 		// compute the slopes directions
 		final Operation slopesDirections = new SlopesDirections();
-		final GeoRaster grSlopesDirections = grDEM
+		final GeoRaster grSlopesDirections = geoRasterSrc
 				.doOperation(slopesDirections);
-		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
-		// compute the slopes accumulations
-		final Operation slopesAccumulations = new SlopesAccumulations();
-		final GeoRaster grSlopesAccumulations = grSlopesDirections
-				.doOperation(slopesAccumulations);
+		// find all outlets
+		final Operation allOutlets = new AllOutlets();
+		final GeoRaster grAllOutlets = grSlopesDirections
+				.doOperation(allOutlets);
 
-		grSlopesAccumulations.setLUT(LutGenerator.colorModel("fire"));
-		grSlopesAccumulations.show();
-		grSlopesAccumulations.save("../../datas2tests/tmp/2.tif");
+		// compare the computed watersheds with previous ones
+		grAllOutlets.setNodataValue(1.234f);
+		// printGeoRasterAndArray(grAllOutlets, allOutletsForDEM);
+		compareGeoRasterAndArray(grAllOutlets, allOutletsForDEM);
 	}
 }

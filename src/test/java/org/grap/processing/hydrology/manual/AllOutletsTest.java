@@ -37,41 +37,39 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap;
+package org.grap.processing.hydrology.manual;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.awt.Color;
 
-import org.grap.io.BasicTest;
-import org.grap.io.GeoreferencingTest;
-import org.grap.processing.hydrology.AllOutletsTest;
-import org.grap.processing.hydrology.AllWatershedsTest;
-import org.grap.processing.hydrology.SlopesAccumulationsTest;
-import org.grap.processing.hydrology.StrahlerStreamOrderTest;
-import org.grap.processing.hydrology.WatershedFromOutletIndexTest;
-import org.grap.processing.operation.CANImplementationsTest;
-import org.grap.processing.operation.CropTest;
-import org.grap.processing.operation.IdentityTest;
-import org.grap.processing.operation.WatershedWithThresholdTest;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.processing.Operation;
+import org.grap.processing.hydrology.AllOutlets;
+import org.grap.processing.hydrology.SlopesDirections;
 
-public class GrapTests {
+public class AllOutletsTest {
+	public static void main(String[] args) throws Exception {
+		final String src = "../../datas2tests/grid/sample.asc";
+		// final String src = "../../datas2tests/grid/mntzee_500.asc";
+		// final String src = "../../datas2tests/grid/saipan-5.asc";
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for grap");
-		// $JUnit-BEGIN$
-		suite.addTestSuite(BasicTest.class);
-		suite.addTestSuite(GeoreferencingTest.class);
+		// load the DEM
+		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
+		grDEM.open();
 
-		suite.addTestSuite(AllOutletsTest.class);
-		suite.addTestSuite(AllWatershedsTest.class);
-		suite.addTestSuite(CANImplementationsTest.class);
-		suite.addTestSuite(CropTest.class);
-		suite.addTestSuite(IdentityTest.class);
-		suite.addTestSuite(SlopesAccumulationsTest.class);
-		suite.addTestSuite(WatershedFromOutletIndexTest.class);
-		suite.addTestSuite(WatershedWithThresholdTest.class);
-		suite.addTestSuite(StrahlerStreamOrderTest.class);
-		// $JUnit-END$
-		return suite;
+		// compute the slopes directions
+		final Operation slopesDirections = new SlopesDirections();
+		final GeoRaster grSlopesDirections = grDEM
+				.doOperation(slopesDirections);
+		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
+
+		// find all the outlets
+		final Operation allOutlets = new AllOutlets();
+		final GeoRaster grAllOutlets = grSlopesDirections
+				.doOperation(allOutlets);
+		grAllOutlets.setRangeColors(new double[] { -0.5, 1.5 },
+				new Color[] { Color.blue });
+		grAllOutlets.show();
+		grAllOutlets.save("../../datas2tests/tmp/2.tif");
 	}
 }

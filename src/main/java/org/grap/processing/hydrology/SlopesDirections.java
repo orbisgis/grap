@@ -37,7 +37,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation;
+package org.grap.processing.hydrology;
 
 import ij.ImagePlus;
 
@@ -75,8 +75,8 @@ public class SlopesDirections implements Operation {
 			ncols = rasterMetadata.getNCols();
 			computeSlopesDirections();
 			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections, ncols, nrows, grDEM
-							.getMetadata());
+					.createGeoRaster(slopesDirections, ncols, nrows,
+							rasterMetadata);
 			grSlopesDirections.setNodataValue(noDataValue);
 			System.out.printf("Slopes directions in %d ms\n", System
 					.currentTimeMillis()

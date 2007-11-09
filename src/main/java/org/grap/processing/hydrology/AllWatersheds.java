@@ -37,9 +37,11 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation;
+package org.grap.processing.hydrology;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -48,9 +50,9 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class SlopesAccumulations implements Operation {
+public class AllWatersheds implements Operation {
 	private PixelProvider ppSlopesDirections;
-	private float[] slopesAccumulation;
+	private float[] watersheds;
 	private int ncols;
 	private int nrows;
 
@@ -63,106 +65,72 @@ public class SlopesAccumulations implements Operation {
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfOutlets = accumulateSlopes();
-			System.out.printf("%d outlets in %d ms\n", nbOfOutlets, System
-					.currentTimeMillis()
-					- startTime);
-
-			return GeoRasterFactory.createGeoRaster(slopesAccumulation, ncols,
-					nrows, grSlopesDirections.getMetadata());
+			int nbOfWatersheds = computeAllWatersheds();
+			final GeoRaster grAllWatersheds = GeoRasterFactory.createGeoRaster(
+					watersheds, ncols, nrows, rasterMetadata);
+			grAllWatersheds.setNodataValue(Float.NaN);
+			System.out.printf("%d watersheds in %d ms\n", nbOfWatersheds,
+					System.currentTimeMillis() - startTime);
+			return grAllWatersheds;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	private int accumulateSlopes() throws IOException {
-		slopesAccumulation = new float[nrows * ncols];
-		int nbOfOutlets = 0;
-		int i = 0;
+	private int computeAllWatersheds() throws IOException {
+		watersheds = new float[nrows * ncols];
+		float newDefaultColor = 1;
 
+		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
 				if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
-					slopesAccumulation[i] = Float.NaN;
-				} else if (0 == slopesAccumulation[i]) {
+					watersheds[i] = Float.NaN;
+				} else if (0 == watersheds[i]) {
 					// current cell value has not been yet modified...
-					nbOfOutlets += findOutletAndAccumulateSlopes(i);
+					Float color = null;
+					final List<Integer> pathStack = new LinkedList<Integer>();
+					color = findOutlet(i, pathStack);
+					if (null == color) {
+						color = newDefaultColor;
+						newDefaultColor++;
+					}
+					colourize(pathStack, color);
 				}
-
-				// for (int rr = 0; rr < nrows; rr++) {
-				// for (int cc = 0; cc < ncols; cc++) {
-				// System.out.printf("%3.0f ", slopesAccumulation[r
-				// * ncols + c]);
-				// }
-				// System.out.println();
-				// }
-				// System.out.println("STEP " + i);
 			}
 		}
-		return nbOfOutlets;
+		return (int) (newDefaultColor - 1);
 	}
 
-	private int findOutletAndAccumulateSlopes(final int i) throws IOException {
-		boolean isProbablyANewOutlet = true;
+	private Float findOutlet(final int i, final List<Integer> pathStack)
+			throws IOException {
 		Integer curCellIdx = i;
-		float acc = 0;
-
 		do {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
 			if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
-				return isProbablyANewOutlet ? 1 : 0;
+				return null;
 			} else {
-				if (0 == slopesAccumulation[curCellIdx]) {
-					slopesAccumulation[curCellIdx] = acc + 1;
-					acc = slopesAccumulation[curCellIdx];
+				if (0 == watersheds[curCellIdx]) {
+					pathStack.add(curCellIdx);
+					curCellIdx = SlopesComputations
+							.fromCellSlopeDirectionToNextCellIndex(
+									ppSlopesDirections, ncols, nrows,
+									curCellIdx, c, r);
 				} else {
-					// join an already identified river...
-					if (isProbablyANewOutlet) {
-						// junction point
-						isProbablyANewOutlet = false;
-						slopesAccumulation[curCellIdx] += acc;
-						acc = slopesAccumulation[curCellIdx];
-					} else {
-						slopesAccumulation[curCellIdx] = acc + 1;
-						acc = slopesAccumulation[curCellIdx];
-					}
+					// current watershed's cell as already been modified : it is
+					// a break condition !
+					return watersheds[curCellIdx];
 				}
-				curCellIdx = fromCellSlopeDirectionToNextCellIndex(curCellIdx);
 			}
 		} while (null != curCellIdx);
-		return isProbablyANewOutlet ? 1 : 0;
-	}
-
-	private Integer fromCellSlopeDirectionToNextCellIndex(final int i)
-			throws IOException {
-		final int r = i / ncols;
-		final int c = i % ncols;
-		switch ((short) ppSlopesDirections.getPixel(c, r)) {
-		case 1:
-			return getCellIndex(i + 1);
-		case 2:
-			return getCellIndex(i + ncols + 1);
-		case 4:
-			return getCellIndex(i + ncols);
-		case 8:
-			return getCellIndex(i + ncols - 1);
-		case 16:
-			return getCellIndex(i - 1);
-		case 32:
-			return getCellIndex(i - ncols - 1);
-		case 64:
-			return getCellIndex(i - ncols);
-		case 128:
-			return getCellIndex(i - ncols + 1);
-		}
 		return null;
 	}
 
-	private Integer getCellIndex(final int i) {
-		final int r = i / ncols;
-		final int c = i % ncols;
-		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? null : i;
+	private void colourize(final List<Integer> pathStack, final float color) {
+		for (Integer cellItem : pathStack) {
+			watersheds[cellItem] = color;
+		}
 	}
 }

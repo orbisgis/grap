@@ -37,44 +37,37 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation;
+package org.grap.processing.hydrology.manual;
 
-import org.grap.io.GrapTest;
+import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
+import org.grap.processing.hydrology.AllWatersheds;
+import org.grap.processing.hydrology.SlopesDirections;
 
-public class SlopesAccumulationsTest extends GrapTest {
-	private GeoRaster geoRasterSrc;
+public class AllWatershedsTest {
+	public static void main(String[] args) throws Exception {
+		final String src = "../../datas2tests/grid/sample.asc";
+		// final String src = "../../datas2tests/grid/mntzee_500.asc";
+		// final String src = "../../datas2tests/grid/saipan-5.asc";
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		geoRasterSrc = sampleDEM;
-	}
-
-	public void testSlopesAccumulations() throws Exception {
 		// load the DEM
-		geoRasterSrc.open();
+		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
+		grDEM.open();
 
 		// compute the slopes directions
 		final Operation slopesDirections = new SlopesDirections();
-		final GeoRaster grSlopesDirections = geoRasterSrc
+		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
+		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
-		// compute the slopes accumulations
-		final Operation slopesAccumulations = new SlopesAccumulations();
-		final GeoRaster grSlopesAccumulations = grSlopesDirections
-				.doOperation(slopesAccumulations);
-
-		for (int r = 0; r < grSlopesAccumulations.getMetadata().getNRows(); r++) {
-			for (int c = 0; c < grSlopesAccumulations.getMetadata().getNCols(); c++) {
-				System.out.printf("%3.0f ", grSlopesAccumulations
-						.getPixelProvider().getPixel(c, r));
-			}
-			System.out.println();
-		}
-
-		// compare the computed accumulations with previous ones
-		compareGeoRasterAndArray(grSlopesAccumulations,
-				slopesAccumulationForDEM);
+		// compute all the watersheds
+		final Operation allWatersheds = new AllWatersheds();
+		final GeoRaster grAllWatersheds = grSlopesDirections
+				.doOperation(allWatersheds);
+		grAllWatersheds.setLUT(LutGenerator.colorModel("fire"));
+		grAllWatersheds.show();
+		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
 	}
 }

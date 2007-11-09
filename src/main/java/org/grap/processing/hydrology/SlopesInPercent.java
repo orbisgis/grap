@@ -37,37 +37,49 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual;
+package org.grap.processing.hydrology;
 
-import org.grap.lut.LutGenerator;
+import ij.ImagePlus;
+
+import java.io.IOException;
+
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.AllWatersheds;
-import org.grap.processing.operation.SlopesDirections;
+import org.grap.processing.OperationException;
+import org.grap.processing.cellularAutomata.CASlopesInPercent;
+import org.grap.processing.cellularAutomata.cam.CANFactory;
+import org.grap.processing.cellularAutomata.cam.ICA;
+import org.grap.processing.cellularAutomata.cam.ICAN;
 
-public class AllWatershedsTest {
-	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/sample.asc";
-		// final String src = "../../datas2tests/grid/mntzee_500.asc";
-		// final String src = "../../datas2tests/grid/saipan-5.asc";
+public class SlopesInPercent implements Operation {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException {
+		try {
+			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			final float[] pixels;
+			final int nrows = rasterMetadata.getNRows();
+			final int ncols = rasterMetadata.getNCols();
 
-		// load the DEM
-		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
-		grDEM.open();
+			if (ImagePlus.GRAY16 == geoRaster.getType()) {
+				pixels = (float[]) geoRaster.getPixelProvider()
+						.getFloatPixels();
+			} else if (ImagePlus.GRAY32 == geoRaster.getType()) {
+				pixels = (float[]) geoRaster.getPixelProvider().getPixels();
+			} else {
+				throw new RuntimeException(
+						"The DEM must be a GRAY16 or a GRAY32 image !");
+			}
 
-		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
-		final GeoRaster grSlopesDirections = grDEM
-				.doOperation(slopesDirections);
-		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
+			final ICA ca = new CASlopesInPercent(pixels, nrows, ncols);
+			final ICAN ccan = CANFactory.createCAN(ca);
+			ccan.getStableState();
 
-		// compute all the watersheds
-		final Operation allWatersheds = new AllWatersheds();
-		final GeoRaster grAllWatersheds = grSlopesDirections
-				.doOperation(allWatersheds);
-		grAllWatersheds.setLUT(LutGenerator.colorModel("fire"));
-		grAllWatersheds.show();
-		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
+			return GeoRasterFactory.createGeoRaster((float[]) ccan
+					.getCANValues(), ncols, nrows, rasterMetadata);
+		} catch (IOException e) {
+			throw new OperationException(e);
+		}
 	}
 }

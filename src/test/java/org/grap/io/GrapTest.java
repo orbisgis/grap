@@ -50,22 +50,21 @@ import org.grap.model.PixelProvider;
 import org.grap.model.RasterMetadata;
 
 public class GrapTest extends TestCase {
-
 	public final static String externalData = "../../datas2tests/";
-
 	public final static String internalData = "src/test/resources/";
-
+	public final static String tmpData = "../../datas2tests/tmp/";
+	private static int nrows = 10;
+	private static int ncols = 10;
 	public static GeoRaster sampleRaster;
-
 	public static GeoRaster sampleDEM;
-
 	public static short[] slopesAccumulationForDEM;
-
 	public static short[] allWatershedsForDEM;
+	public static short[] otherAllWatershedsForDEM;
+	public static short[] slopesDirectionForDEM;
+	public static short[] allOutletsForDEM;
+	public static short[] watershedFromOutletIndexForDEM;
 
 	static {
-		final int nrows = 10;
-		final int ncols = 10;
 		final byte[] values = new byte[nrows * ncols];
 		for (int i = 0; i < nrows * ncols; i++) {
 			values[i] = (byte) i;
@@ -76,7 +75,7 @@ public class GrapTest extends TestCase {
 		sampleRaster = GeoRasterFactory.createGeoRaster(values, ncols, nrows,
 				LutGenerator.colorModel("fire"), rmd);
 
-		final short[] DEM = new short[] { //
+		final short[] DEM = new short[] {//
 		100, 100, 100, 100, 100, 100, 100, 0, 100, 100,//
 				100, 50, 50, 50, 100, 100, 25, 10, 25, 100,//
 				100, 25, 25, 25, 100, 100, 25, 11, 25, 100,//
@@ -92,17 +91,30 @@ public class GrapTest extends TestCase {
 		sampleDEM = GeoRasterFactory.createGeoRaster(DEM, ncols, nrows,
 				LutGenerator.colorModel("fire"), rmd);
 
+		slopesDirectionForDEM = new short[] {//
+		2, 4, 4, 4, 8, 2, 1, 255, 16, 8,// 
+				2, 4, 4, 4, 8, 1, 128, 64, 32, 16,// 
+				1, 2, 4, 8, 16, 1, 1, 64, 16, 16,// 
+				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
+				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
+				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
+				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
+				1, 1, 4, 16, 16, 1, 128, 64, 32, 16,// 
+				1, 2, 4, 8, 16, 128, 64, 64, 64, 32,// 
+				128, 1, 255, 16, 32, 128, 64, 64, 64, 32,// 
+		};
+
 		slopesAccumulationForDEM = new short[] {//
-				1, 1, 1, 1, 1, 1, 1, 50, 1, 1,//
-				1, 3, 2, 3, 1, 1, 3, 41, 3, 1,//
-				1, 6, 3, 6, 1, 1, 2, 40, 2, 1,//
-				1, 2, 20, 2, 1, 1, 2, 35, 2, 1,//
-				1, 2, 25, 2, 1, 1, 2, 30, 2, 1,//
-				1, 2, 30, 2, 1, 1, 2, 25, 2, 1,//
-				1, 2, 35, 2, 1, 1, 2, 20, 2, 1,//
-				1, 2, 40, 2, 1, 1, 6, 3, 6, 1,//
-				1, 3, 41, 3, 1, 1, 3, 2, 3, 1,//
-				1, 1, 50, 1, 1, 1, 1, 1, 1, 1,//
+		0, 0, 0, 0, 0, 0, 0, 49, 0, 0,// 
+				0, 2, 1, 2, 0, 0, 2, 40, 2, 0,//
+				0, 5, 2, 5, 0, 0, 1, 39, 1, 0,//
+				0, 1, 19, 1, 0, 0, 1, 34, 1, 0,//
+				0, 1, 24, 1, 0, 0, 1, 29, 1, 0,//
+				0, 1, 29, 1, 0, 0, 1, 24, 1, 0,//
+				0, 1, 34, 1, 0, 0, 1, 19, 1, 0,//
+				0, 1, 39, 1, 0, 0, 5, 2, 5, 0,//
+				0, 2, 40, 2, 0, 0, 2, 1, 2, 0,//
+				0, 0, 49, 0, 0, 0, 0, 0, 0, 0,//
 		};
 
 		allWatershedsForDEM = new short[] { //
@@ -117,6 +129,45 @@ public class GrapTest extends TestCase {
 				1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
 				1, 1, 1, 1, 1, 2, 2, 2, 2, 2,//
 		};
+
+		otherAllWatershedsForDEM = new short[] { //
+		2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
+		};
+
+		allOutletsForDEM = new short[] { //
+		0, 0, 0, 0, 0, 0, 0, 1, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 1, 0, 0, 0, 0, 0, 0, 0,//
+		};
+
+		watershedFromOutletIndexForDEM = new short[] { //
+		1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
+		};
 	}
 
 	public static void compareGeoRasterAndArray(final GeoRaster geoRaster,
@@ -125,12 +176,25 @@ public class GrapTest extends TestCase {
 		final PixelProvider pixelProvider = geoRaster.getPixelProvider();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				if (pixelProvider.getPixel(c, r) != sArray[r * 10 + c]) {
-					System.out.printf("%d %d\t%.0f == %d\n", c, r,
-							pixelProvider.getPixel(c, r), sArray[r * 10 + c]);
-				}
-				assertTrue(pixelProvider.getPixel(c, r) == sArray[r * 10 + c]);
+				assertTrue((short) pixelProvider.getPixel(c, r) == sArray[r
+						* ncols + c]);
 			}
+		}
+	}
+
+	public static void printGeoRasterAndArray(final GeoRaster geoRaster,
+			final short[] sArray) throws IOException {
+		final PixelProvider pixelProvider = geoRaster.getPixelProvider();
+		for (int r = 0; r < geoRaster.getHeight(); r++) {
+			System.out.printf("raw %d\t", r);
+			for (int c = 0; c < geoRaster.getWidth(); c++) {
+				System.out.printf("%4.0f", pixelProvider.getPixel(c, r));
+			}
+			System.out.printf("\t");
+			for (int c = 0; c < geoRaster.getWidth(); c++) {
+				System.out.printf("%4d", sArray[r * ncols + c]);
+			}
+			System.out.println();
 		}
 	}
 

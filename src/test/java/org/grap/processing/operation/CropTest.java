@@ -75,9 +75,9 @@ public class CropTest extends GrapTest {
 						rasterEnvelope.getMaxY() - bufferSize));
 		LinearRing polygon = (LinearRing) EnvelopeUtil
 				.toGeometry(rasterEnvelope);
-		geoRasterSrc.save("/tmp/1.tif");
+		geoRasterSrc.save(tmpData + "1.tif");
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(polygon));
-		geoRasterDst.save("/tmp/2.png");
+		geoRasterDst.save(tmpData + "2.png");
 
 		assertTrue(geoRasterDst.getWidth() > 0);
 		assertTrue(geoRasterDst.getHeight() > 0);
@@ -93,7 +93,7 @@ public class CropTest extends GrapTest {
 				.createLinearRing(new Coordinate[] { new Coordinate(100, 100),
 						new Coordinate(100, 101), new Coordinate(101, 101),
 						new Coordinate(101, 100), new Coordinate(100, 100) });
-		geoRasterSrc.save("/tmp/1.tif");
+		geoRasterSrc.save(tmpData + "1.tif");
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(polygon));
 
 		assertTrue(geoRasterDst.isEmpty());
@@ -101,14 +101,14 @@ public class CropTest extends GrapTest {
 
 	public void testCropRectangle() throws Exception {
 		Envelope rasterEnvelope = geoRasterSrc.getMetadata().getEnvelope();
-		geoRasterSrc.save("/tmp/1.tif");
+		geoRasterSrc.save(tmpData + "1.tif");
 		int buffer = (int) (rasterEnvelope.getWidth() / 2.3);
 		Rectangle cropRectangle = new Rectangle((int) rasterEnvelope.getMinX()
 				+ buffer, (int) rasterEnvelope.getMinY() + buffer,
 				(int) rasterEnvelope.getWidth() - 2 * buffer,
 				(int) rasterEnvelope.getHeight() - 2 * buffer);
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(cropRectangle));
-		geoRasterDst.save("/tmp/2.tif");
+		geoRasterDst.save(tmpData + "2.tif");
 
 		assertTrue(geoRasterDst.getWidth() > 0);
 		assertTrue(geoRasterDst.getHeight() > 0);

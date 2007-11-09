@@ -185,7 +185,7 @@ public class BasicTest extends GrapTest {
 		gr.open();
 		RasterMetadata originalMetadata = gr.getMetadata();
 		float[] pixels = gr.getPixelProvider().getFloatPixels();
-		File file = new File("/tmp/1.tif");
+		File file = new File(tmpData + "1.tif");
 		gr.save(file.getAbsolutePath());
 		gr = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
 		gr.open();
@@ -211,9 +211,9 @@ public class BasicTest extends GrapTest {
 				+ "grid/3x3.asc");
 		gr.open();
 		check3x3(gr);
-		gr.save("/tmp/1.png");
+		gr.save(tmpData + "1.png");
 
-		gr = GeoRasterFactory.createGeoRaster("/tmp/1.png");
+		gr = GeoRasterFactory.createGeoRaster(tmpData + "1.png");
 		gr.open();
 		check3x3(gr);
 	}

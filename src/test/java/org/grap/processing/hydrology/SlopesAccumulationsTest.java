@@ -37,49 +37,40 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation;
+package org.grap.processing.hydrology;
 
-import ij.ImagePlus;
-
-import java.io.IOException;
-
+import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
-import org.grap.processing.OperationException;
-import org.grap.processing.cellularAutomata.CASlopesInPercent;
-import org.grap.processing.cellularAutomata.cam.CANFactory;
-import org.grap.processing.cellularAutomata.cam.ICA;
-import org.grap.processing.cellularAutomata.cam.ICAN;
+import org.grap.processing.hydrology.SlopesAccumulations;
+import org.grap.processing.hydrology.SlopesDirections;
 
-public class SlopesInPercent implements Operation {
-	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException {
-		try {
-			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
-			final float[] pixels;
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
+public class SlopesAccumulationsTest extends GrapTest {
+	private GeoRaster geoRasterSrc;
 
-			if (ImagePlus.GRAY16 == geoRaster.getType()) {
-				pixels = (float[]) geoRaster.getPixelProvider()
-						.getFloatPixels();
-			} else if (ImagePlus.GRAY32 == geoRaster.getType()) {
-				pixels = (float[]) geoRaster.getPixelProvider().getPixels();
-			} else {
-				throw new RuntimeException(
-						"The DEM must be a GRAY16 or a GRAY32 image !");
-			}
+	protected void setUp() throws Exception {
+		super.setUp();
+		geoRasterSrc = sampleDEM;
+	}
 
-			final ICA ca = new CASlopesInPercent(pixels, nrows, ncols);
-			final ICAN ccan = CANFactory.createCAN(ca);
-			ccan.getStableState();
+	public void testSlopesAccumulations() throws Exception {
+		// load the DEM
+		geoRasterSrc.open();
 
-			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
+		// compute the slopes directions
+		final Operation slopesDirections = new SlopesDirections();
+		final GeoRaster grSlopesDirections = geoRasterSrc
+				.doOperation(slopesDirections);
+		// compare the computed directions with predefined ones
+		compareGeoRasterAndArray(grSlopesDirections, slopesDirectionForDEM);
+
+		// compute the slopes accumulations
+		final Operation slopesAccumulations = new SlopesAccumulations();
+		final GeoRaster grSlopesAccumulations = grSlopesDirections
+				.doOperation(slopesAccumulations);
+
+		// compare the computed accumulations with predefined ones
+		compareGeoRasterAndArray(grSlopesAccumulations,
+				slopesAccumulationForDEM);
 	}
 }

@@ -37,41 +37,38 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap;
+package org.grap.processing.hydrology.manual;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.grap.lut.LutGenerator;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.processing.Operation;
+import org.grap.processing.hydrology.SlopesAccumulations;
+import org.grap.processing.hydrology.SlopesDirections;
 
-import org.grap.io.BasicTest;
-import org.grap.io.GeoreferencingTest;
-import org.grap.processing.hydrology.AllOutletsTest;
-import org.grap.processing.hydrology.AllWatershedsTest;
-import org.grap.processing.hydrology.SlopesAccumulationsTest;
-import org.grap.processing.hydrology.StrahlerStreamOrderTest;
-import org.grap.processing.hydrology.WatershedFromOutletIndexTest;
-import org.grap.processing.operation.CANImplementationsTest;
-import org.grap.processing.operation.CropTest;
-import org.grap.processing.operation.IdentityTest;
-import org.grap.processing.operation.WatershedWithThresholdTest;
+public class SlopesAccumulationsTest {
+	public static void main(String[] args) throws Exception {
+		final String src = "../../datas2tests/grid/sample.asc";
+		// final String src = "../../datas2tests/grid/mntzee_500.asc";
+		// final String src = "../../datas2tests/grid/saipan-5.asc";
 
-public class GrapTests {
+		// load the DEM
+		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
+		grDEM.open();
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for grap");
-		// $JUnit-BEGIN$
-		suite.addTestSuite(BasicTest.class);
-		suite.addTestSuite(GeoreferencingTest.class);
+		// compute the slopes directions
+		final Operation slopesDirections = new SlopesDirections();
+		final GeoRaster grSlopesDirections = grDEM
+				.doOperation(slopesDirections);
+		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
-		suite.addTestSuite(AllOutletsTest.class);
-		suite.addTestSuite(AllWatershedsTest.class);
-		suite.addTestSuite(CANImplementationsTest.class);
-		suite.addTestSuite(CropTest.class);
-		suite.addTestSuite(IdentityTest.class);
-		suite.addTestSuite(SlopesAccumulationsTest.class);
-		suite.addTestSuite(WatershedFromOutletIndexTest.class);
-		suite.addTestSuite(WatershedWithThresholdTest.class);
-		suite.addTestSuite(StrahlerStreamOrderTest.class);
-		// $JUnit-END$
-		return suite;
+		// compute the slopes accumulations
+		final Operation slopesAccumulations = new SlopesAccumulations();
+		final GeoRaster grSlopesAccumulations = grSlopesDirections
+				.doOperation(slopesAccumulations);
+
+		grSlopesAccumulations.setLUT(LutGenerator.colorModel("fire"));
+		grSlopesAccumulations.show();
+		grSlopesAccumulations.save("../../datas2tests/tmp/2.tif");
 	}
 }
