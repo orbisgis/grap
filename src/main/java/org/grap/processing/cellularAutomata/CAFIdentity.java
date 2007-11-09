@@ -39,14 +39,13 @@
  */
 package org.grap.processing.cellularAutomata;
 
-import org.grap.model.PixelProvider;
 import org.grap.processing.cellularAutomata.cam.ICAFloat;
 
 public class CAFIdentity implements ICAFloat {
 	private int nrows;
 	private int ncols;
 	private float[] pixels;
-	private PixelProvider pixelProvider;
+	// private PixelProvider pixelProvider;
 
 	public CAFIdentity(float[] pixels, final int nrows, final int ncols) {
 		this.nrows = nrows;
