@@ -43,9 +43,10 @@ import ij.ImagePlus;
 
 import java.io.IOException;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -54,12 +55,13 @@ public class SlopesDirections implements Operation {
 	public final static short noDataValue = 0;
 	public final static short indecision = 255;
 	private final static float SQRT2 = (float) Math.sqrt(2d);
-	private PixelProvider ppDEM;
+	private GrapImagePlus ppDEM;
 	private short[] slopesDirections;
 	private int ncols;
 	private int nrows;
 
-	public GeoRaster execute(final GeoRaster grDEM) throws OperationException {
+	public GeoRaster execute(final GeoRaster grDEM) throws OperationException,
+			GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
 
@@ -69,7 +71,7 @@ public class SlopesDirections implements Operation {
 						"The DEM must be a GRAY16 or a GRAY32 image !");
 			}
 
-			ppDEM = grDEM.getPixelProvider();
+			ppDEM = grDEM.getGrapImagePlus();
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
@@ -93,7 +95,7 @@ public class SlopesDirections implements Operation {
 
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				final float currentElevation = ppDEM.getPixel(c, r);
+				final float currentElevation = ppDEM.getPixelValue(c, r);
 
 				if (Float.isNaN(currentElevation)) {
 					slopesDirections[i] = noDataValue;
@@ -133,6 +135,6 @@ public class SlopesDirections implements Operation {
 
 	private float getDEMValue(final int r, final int c) throws IOException {
 		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? Float.NaN
-				: ppDEM.getPixel(c, r);
+				: ppDEM.getPixelValue(c, r);
 	}
 }

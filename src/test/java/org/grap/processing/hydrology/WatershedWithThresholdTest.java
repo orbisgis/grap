@@ -37,16 +37,11 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation;
+package org.grap.processing.hydrology;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.hydrology.AllOutlets;
-import org.grap.processing.hydrology.AllWatersheds;
-import org.grap.processing.hydrology.SlopesAccumulations;
-import org.grap.processing.hydrology.SlopesDirections;
-import org.grap.processing.hydrology.WatershedsWithThreshold;
 
 public class WatershedWithThresholdTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
@@ -103,7 +98,7 @@ public class WatershedWithThresholdTest extends GrapTest {
 		for (int r = 0; r < grWatershedsWithThreshold.getHeight(); r++) {
 			for (int c = 0; c < grWatershedsWithThreshold.getWidth(); c++) {
 				assertTrue(Float.isNaN(grWatershedsWithThreshold
-						.getPixelProvider().getPixel(c, r)));
+						.getGrapImagePlus().getPixelValue(c, r)));
 			}
 		}
 	}

@@ -41,24 +41,25 @@ package org.grap.processing.hydrology;
 
 import java.io.IOException;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class SlopesAccumulations implements Operation {
-	private PixelProvider ppSlopesDirections;
+	private GrapImagePlus gipSlopesDirections;
 	private float[] slopesAccumulations;
 	private int ncols;
 	private int nrows;
 
 	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			ppSlopesDirections = grSlopesDirections.getPixelProvider();
+			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesDirections
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
@@ -88,7 +89,7 @@ public class SlopesAccumulations implements Operation {
 
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
+				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
 					slopesAccumulations[i] = Float.NaN;
 				} else if (-1 == slopesAccumulations[i]) {
 					// current cell value has not been yet modified...
@@ -108,7 +109,7 @@ public class SlopesAccumulations implements Operation {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
-			if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
+			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
 				return isProbablyANewOutlet ? 1 : 0;
 			} else {
 				if (-1 == slopesAccumulations[curCellIdx]) {
@@ -125,7 +126,7 @@ public class SlopesAccumulations implements Operation {
 				}
 				curCellIdx = SlopesComputations
 						.fromCellSlopeDirectionToNextCellIndex(
-								ppSlopesDirections, ncols, nrows, curCellIdx,
+								gipSlopesDirections, ncols, nrows, curCellIdx,
 								c, r);
 			}
 		} while (null != curCellIdx);

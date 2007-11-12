@@ -39,7 +39,6 @@
  */
 package org.grap.io;
 
-import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.Opener;
 import ij.io.TiffDecoder;
@@ -52,6 +51,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public class WorldImageReader implements FileReader {
@@ -163,7 +163,9 @@ public class WorldImageReader implements FileReader {
 		return rasterMetadata;
 	}
 
-	public ImagePlus readImagePlus() throws IOException {
-		return new Opener().openImage(fileName);
+	public GrapImagePlus readGrapImagePlus() throws IOException {
+		// return new Opener().openImage(fileName);
+		return new GrapImagePlus("", new Opener().openImage(fileName)
+				.getProcessor());
 	}
 }

@@ -57,7 +57,7 @@ public class RasterMetadata implements Serializable {
 
 	private float pixelSize_Y = 1;
 
-	private float noDataValue = 0;
+	private float noDataValue = Float.NaN;
 
 	private int ncols = 0;
 

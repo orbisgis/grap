@@ -39,8 +39,6 @@
  */
 package org.grap.model;
 
-import ij.ImagePlus;
-
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -59,10 +57,11 @@ public interface GeoRaster {
 	public abstract RasterMetadata getMetadata();
 
 	public abstract void setRangeValues(final double min, final double max)
-			throws OperationException;
+			throws IOException, GeoreferencingException;
 
 	public abstract void setRangeColors(final double[] ranges,
-			final Color[] colors) throws OperationException;
+			final Color[] colors) throws OperationException, IOException,
+			GeoreferencingException;
 
 	public abstract void setNodataValue(final float value);
 
@@ -71,26 +70,38 @@ public interface GeoRaster {
 	public abstract Point2D getPixelCoords(final double mouseX,
 			final double mouseY);
 
-	public abstract void save(final String dest) throws IOException;
+	public abstract void save(final String dest) throws IOException,
+			GeoreferencingException;
 
-	public abstract void show() throws IOException;
+	public abstract void show() throws IOException, GeoreferencingException;
 
-	public abstract void setLUT(final ColorModel colorModel) throws IOException;
+	public abstract void setLUT(final ColorModel colorModel)
+			throws IOException, GeoreferencingException;
 
 	public abstract GeoRaster doOperation(final Operation operation)
-			throws OperationException;
+			throws OperationException, GeoreferencingException;
 
 	/**
 	 * @return ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, ImagePlus.GRAY8,
 	 *         ImagePlus.GRAY16, ImagePlus.GRAY32
 	 * 
 	 * @throws IOException
+	 * @throws GeoreferencingException
 	 */
-	public abstract int getType() throws IOException;
+	public abstract int getType() throws IOException, GeoreferencingException;
 
 	public abstract boolean isEmpty();
 
-	public abstract PixelProvider getPixelProvider() throws IOException;
+	/**
+	 * 
+	 * @param roi
+	 *            expressed in real world coordinates.
+	 * @return
+	 * @throws OperationException
+	 * @throws GeoreferencingException
+	 */
+	public abstract GeoRaster crop(LinearRing roi) throws OperationException,
+			GeoreferencingException;
 
 	/**
 	 * 
@@ -98,37 +109,35 @@ public interface GeoRaster {
 	 *            expressed in real world coordinates.
 	 * @return
 	 * @throws OperationException
+	 * @throws GeoreferencingException
 	 */
-	public abstract GeoRaster crop(LinearRing roi) throws OperationException;
+	public abstract GeoRaster crop(Rectangle2D roi) throws OperationException,
+			GeoreferencingException;
 
-	/**
-	 * 
-	 * @param roi
-	 *            expressed in real world coordinates.
-	 * @return
-	 * @throws OperationException
-	 */
-	public abstract GeoRaster crop(Rectangle2D roi) throws OperationException;
-
-	public abstract GeoRaster erode() throws OperationException;
+	public abstract GeoRaster erode() throws OperationException,
+			GeoreferencingException;
 
 	public abstract GeoRaster convolve(float[] kernel, int focalMeanSizeX,
-			int focalMeanSizeY) throws OperationException;
+			int focalMeanSizeY) throws OperationException,
+			GeoreferencingException;
 
 	public abstract GeoRaster convolve3x3(int[] kernel)
-			throws OperationException;
+			throws OperationException, GeoreferencingException;
 
-	public abstract GeoRaster smooth() throws OperationException;
+	public abstract GeoRaster smooth() throws OperationException,
+			GeoreferencingException;
 
-	public abstract double getMin() throws IOException;
+	public abstract double getMin() throws IOException, GeoreferencingException;
 
-	public abstract double getMax() throws IOException;
+	public abstract double getMax() throws IOException, GeoreferencingException;
 
-	public abstract int getWidth() throws IOException;
+	public abstract int getWidth() throws IOException, GeoreferencingException;
 
-	public abstract int getHeight() throws IOException;
+	public abstract int getHeight() throws IOException, GeoreferencingException;
 
-	public abstract ColorModel getColorModel() throws IOException;
+	public abstract ColorModel getColorModel() throws IOException,
+			GeoreferencingException;
 
-	public ImagePlus getImagePlus() throws IOException;
+	public GrapImagePlus getGrapImagePlus() throws IOException,
+			GeoreferencingException;
 }

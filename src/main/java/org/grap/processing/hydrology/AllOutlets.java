@@ -41,9 +41,10 @@ package org.grap.processing.hydrology;
 
 import java.io.IOException;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -53,16 +54,16 @@ public class AllOutlets implements Operation {
 	public final static byte noDataValue = 0;
 	public final static byte isAnOutletValue = 1;
 
-	private PixelProvider ppSlopesDirections;
+	private GrapImagePlus gipSlopesDirections;
 	private byte[] outlets;
 	private int ncols;
 	private int nrows;
 
 	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			ppSlopesDirections = grSlopesDirections.getPixelProvider();
+			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesDirections
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
@@ -87,7 +88,7 @@ public class AllOutlets implements Operation {
 
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
+				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
 					outlets[i] = tmpNoDataValue;
 				} else if (0 == outlets[i]) {
 					// current cell value has not been yet modified...
@@ -114,7 +115,7 @@ public class AllOutlets implements Operation {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
-			if (Float.isNaN(ppSlopesDirections.getPixel(c, r))) {
+			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
 				// previous cell is a new outlet...
 				outlets[prevCellIdx] = isAnOutletValue;
 				outlets[curCellIdx] = tmpNoDataValue;
@@ -127,7 +128,7 @@ public class AllOutlets implements Operation {
 					prevCellIdx = curCellIdx;
 					curCellIdx = SlopesComputations
 							.fromCellSlopeDirectionToNextCellIndex(
-									ppSlopesDirections, ncols, nrows,
+									gipSlopesDirections, ncols, nrows,
 									curCellIdx, c, r);
 					if (null == curCellIdx) {
 						// previous cell is a new outlet...

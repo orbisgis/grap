@@ -43,6 +43,7 @@ import ij.ImagePlus;
 
 import java.io.IOException;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -55,7 +56,7 @@ import org.grap.processing.cellularAutomata.cam.ICAN;
 
 public class SlopesInPercent implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			final float[] pixels;
@@ -63,10 +64,10 @@ public class SlopesInPercent implements Operation {
 			final int ncols = rasterMetadata.getNCols();
 
 			if (ImagePlus.GRAY16 == geoRaster.getType()) {
-				pixels = (float[]) geoRaster.getPixelProvider()
+				pixels = (float[]) geoRaster.getGrapImagePlus()
 						.getFloatPixels();
 			} else if (ImagePlus.GRAY32 == geoRaster.getType()) {
-				pixels = (float[]) geoRaster.getPixelProvider().getPixels();
+				pixels = (float[]) geoRaster.getGrapImagePlus().getPixels();
 			} else {
 				throw new RuntimeException(
 						"The DEM must be a GRAY16 or a GRAY32 image !");

@@ -43,9 +43,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -54,7 +55,7 @@ public class WatershedFromOutletIndex implements Operation {
 	public final static byte noDataValue = 0;
 	public final static byte belongsToTheWatershed = 1;
 
-	private PixelProvider ppSlopesDirections;
+	private GrapImagePlus ppSlopesDirections;
 	private byte[] sameWatershed;
 	private int ncols;
 	private int nrows;
@@ -66,10 +67,10 @@ public class WatershedFromOutletIndex implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			ppSlopesDirections = grSlopesDirections.getPixelProvider();
+			ppSlopesDirections = grSlopesDirections.getGrapImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesDirections
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();

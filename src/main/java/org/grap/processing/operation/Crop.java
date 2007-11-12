@@ -41,6 +41,7 @@ package org.grap.processing.operation;
 
 import java.awt.Rectangle;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -61,13 +62,13 @@ public class Crop implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		if (null != ring) {
 			return geoRaster.crop(ring);
 		} else if (null != rectangle) {
 			return geoRaster.crop(rectangle);
 		} else {
-			throw new RuntimeException("No polygon or rectangle specified");
+			throw new OperationException("No polygon or rectangle specified");
 		}
 	}
 }

@@ -49,10 +49,10 @@ import org.grap.processing.hydrology.AllWatershedsTest;
 import org.grap.processing.hydrology.SlopesAccumulationsTest;
 import org.grap.processing.hydrology.StrahlerStreamOrderTest;
 import org.grap.processing.hydrology.WatershedFromOutletIndexTest;
+import org.grap.processing.hydrology.WatershedWithThresholdTest;
 import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
-import org.grap.processing.operation.WatershedWithThresholdTest;
 
 public class GrapTests {
 

@@ -45,9 +45,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -56,17 +57,18 @@ public class StrahlerStreamOrder implements Operation {
 	public final static short noDataValue = (short) Float.NaN;
 	public final static short riversStartValue = Short.MAX_VALUE;
 
-	private PixelProvider ppSlopesDirections;
-	private PixelProvider ppSlopesAccumulations;
+	private GrapImagePlus gipSlopesDirections;
+	private GrapImagePlus gipSlopesAccumulations;
 	private short[] strahlerStreamOrder;
 	private int riverThreshold;
 	private int ncols;
 	private int nrows;
 
 	public StrahlerStreamOrder(final GeoRaster grSlopesAccumulations,
-			final int riverThreshold) throws OperationException {
+			final int riverThreshold) throws OperationException,
+			GeoreferencingException {
 		try {
-			ppSlopesAccumulations = grSlopesAccumulations.getPixelProvider();
+			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
@@ -74,10 +76,10 @@ public class StrahlerStreamOrder implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			ppSlopesDirections = grSlopesDirections.getPixelProvider();
+			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesDirections
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
@@ -108,8 +110,8 @@ public class StrahlerStreamOrder implements Operation {
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (SlopesComputations.isARiverStart(ppSlopesAccumulations,
-						ppSlopesDirections, riverThreshold, ncols, nrows, i)) {
+				if (SlopesComputations.isARiverStart(gipSlopesAccumulations,
+						gipSlopesDirections, riverThreshold, ncols, nrows, i)) {
 					strahlerStreamOrder[i] = riversStartValue;
 					junctionsStack.add(i);
 				} else {
@@ -171,17 +173,17 @@ public class StrahlerStreamOrder implements Operation {
 			final int rIdx, final Set<Integer> nextJunctionsStack)
 			throws IOException {
 		final Integer next = SlopesComputations
-				.fromCellSlopeDirectionToNextCellIndex(ppSlopesDirections,
+				.fromCellSlopeDirectionToNextCellIndex(gipSlopesDirections,
 						ncols, nrows, idx, cIdx, rIdx);
 		if (null != next) {
 			final Set<Integer> contributiveArea = SlopesComputations
 					.fromCellSlopeDirectionIdxToContributiveArea(
-							ppSlopesDirections, ncols, nrows, next);
+							gipSlopesDirections, ncols, nrows, next);
 			contributiveArea.remove(idx);
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
 				final int cContributor = contributor % ncols;
-				if (riverThreshold <= ppSlopesAccumulations.getPixel(
+				if (riverThreshold <= gipSlopesAccumulations.getPixelValue(
 						cContributor, rContributor)) {
 					// next cell is a junction cell
 					nextJunctionsStack.add(next);
@@ -198,12 +200,12 @@ public class StrahlerStreamOrder implements Operation {
 		} else {
 			final Set<Integer> contributiveArea = SlopesComputations
 					.fromCellSlopeDirectionIdxToContributiveArea(
-							ppSlopesDirections, ncols, nrows, idx);
+							gipSlopesDirections, ncols, nrows, idx);
 			final SortedMap<Short, Short> tm = new TreeMap<Short, Short>();
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
 				final int cContributor = contributor % ncols;
-				if (riverThreshold <= ppSlopesAccumulations.getPixel(
+				if (riverThreshold <= gipSlopesAccumulations.getPixelValue(
 						cContributor, rContributor)) {
 					final short sso = strahlerStreamOrder[contributor];
 					if (tm.containsKey(sso)) {

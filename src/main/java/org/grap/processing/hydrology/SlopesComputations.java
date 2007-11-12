@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 
 public class SlopesComputations {
 	private final static short[] neighboursDirection = new short[] { 16, 32,
 			64, 128, 1, 2, 4, 8 };
 
 	public static Set<Integer> fromCellSlopeDirectionIdxToContributiveArea(
-			final PixelProvider ppSlopesDirections, final int ncols,
+			final GrapImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int cellIdx) throws IOException {
 		final Set<Integer> contributiveArea = new HashSet<Integer>();
 		final int[] neighboursIndices = new int[] { 1, ncols + 1, ncols,
@@ -23,8 +23,8 @@ public class SlopesComputations {
 			if (null != tmp) {
 				final int rTmp = tmp / ncols;
 				final int cTmp = tmp % ncols;
-				if ((neighboursDirection[i] == ppSlopesDirections.getPixel(
-						cTmp, rTmp))) {
+				if ((neighboursDirection[i] == gipSlopesDirections
+						.getPixelValue(cTmp, rTmp))) {
 					contributiveArea.add(tmp);
 				}
 			}
@@ -33,19 +33,19 @@ public class SlopesComputations {
 	}
 
 	public static Integer fromCellSlopeDirectionToNextCellIndex(
-			final PixelProvider ppSlopesDirections, final int ncols,
+			final GrapImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int i) throws IOException {
 		final int r = i / ncols;
 		final int c = i % ncols;
-		return fromCellSlopeDirectionToNextCellIndex(ppSlopesDirections, ncols,
-				nrows, i, c, r);
+		return fromCellSlopeDirectionToNextCellIndex(gipSlopesDirections,
+				ncols, nrows, i, c, r);
 	}
 
 	public static Integer fromCellSlopeDirectionToNextCellIndex(
-			final PixelProvider ppSlopesDirections, final int ncols,
+			final GrapImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int i, final int c, final int r)
 			throws IOException {
-		switch ((short) ppSlopesDirections.getPixel(c, r)) {
+		switch ((short) gipSlopesDirections.getPixelValue(c, r)) {
 		case 1:
 			return getCellIndex(ncols, nrows, i + 1, c + 1, r);
 		case 2:
@@ -79,22 +79,22 @@ public class SlopesComputations {
 	}
 
 	public static boolean isARiverStart(
-			final PixelProvider ppSlopesAccumulations,
-			final PixelProvider ppSlopesDirections, final int riverThreshold,
+			final GrapImagePlus gipSlopesAccumulations,
+			final GrapImagePlus gipSlopesDirections, final int riverThreshold,
 			final int ncols, final int nrows, final int i) throws IOException {
 		final int r = i / ncols;
 		final int c = i % ncols;
-		final Float currAcc = ppSlopesAccumulations.getPixel(c, r);
+		final Float currAcc = gipSlopesAccumulations.getPixelValue(c, r);
 
 		if (riverThreshold == currAcc) {
 			return true;
 		} else if (riverThreshold < currAcc) {
 			final Set<Integer> contributiveArea = fromCellSlopeDirectionIdxToContributiveArea(
-					ppSlopesDirections, ncols, nrows, i);
+					gipSlopesDirections, ncols, nrows, i);
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
 				final int cContributor = contributor % ncols;
-				if (riverThreshold <= ppSlopesAccumulations.getPixel(
+				if (riverThreshold <= gipSlopesAccumulations.getPixelValue(
 						cContributor, rContributor)) {
 					return false;
 				}

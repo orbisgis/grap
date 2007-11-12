@@ -39,14 +39,12 @@
  */
 package org.grap.io;
 
-import java.io.IOException;
-
 import junit.framework.TestCase;
 
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public class GrapTest extends TestCase {
@@ -171,24 +169,24 @@ public class GrapTest extends TestCase {
 	}
 
 	public static void compareGeoRasterAndArray(final GeoRaster geoRaster,
-			final short[] sArray) throws IOException {
+			final short[] sArray) throws Exception {
 		assertTrue(geoRaster.getWidth() * geoRaster.getHeight() == sArray.length);
-		final PixelProvider pixelProvider = geoRaster.getPixelProvider();
+		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				assertTrue((short) pixelProvider.getPixel(c, r) == sArray[r
+				assertTrue((short) grapImagePlus.getPixelValue(c, r) == sArray[r
 						* ncols + c]);
 			}
 		}
 	}
 
 	public static void printGeoRasterAndArray(final GeoRaster geoRaster,
-			final short[] sArray) throws IOException {
-		final PixelProvider pixelProvider = geoRaster.getPixelProvider();
+			final short[] sArray) throws Exception {
+		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			System.out.printf("raw %d\t", r);
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%4.0f", pixelProvider.getPixel(c, r));
+				System.out.printf("%4.0f", grapImagePlus.getPixelValue(c, r));
 			}
 			System.out.printf("\t");
 			for (int c = 0; c < geoRaster.getWidth(); c++) {

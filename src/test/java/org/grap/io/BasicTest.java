@@ -41,20 +41,19 @@ package org.grap.io;
 
 import java.awt.image.ColorModel;
 import java.io.File;
-import java.io.IOException;
 
 import org.grap.TestUtils;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public class BasicTest extends GrapTest {
 
 	public void testGridWithoutHeader() throws Exception {
 		try {
-			GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 					+ "grid/ij3x3.asc");
 			gr.open();
 			assertTrue(false);
@@ -64,7 +63,7 @@ public class BasicTest extends GrapTest {
 
 	public void testPNGWithoutWorldFile() throws Exception {
 		try {
-			GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
+			final GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
 					+ "noWorldFile.png");
 			gr.open();
 			gr.getType();
@@ -74,19 +73,19 @@ public class BasicTest extends GrapTest {
 	}
 
 	public void testSetNoDataValue() throws Exception {
-		GeoRaster gr = sampleRaster;
+		final GeoRaster gr = sampleRaster;
 		gr.open();
 		gr.setNodataValue(0);
 		gr.setNodataValue(1);
 		boolean someZero = false;
 		boolean someOne = false;
-		PixelProvider pixelProvider = gr.getPixelProvider();
+		GrapImagePlus grapImagePlus = gr.getGrapImagePlus();
 		for (int i = 0; i < gr.getWidth(); i++) {
 			for (int j = 0; j < gr.getHeight(); j++) {
-				if (pixelProvider.getPixel(i, j) == 0) {
+				if (grapImagePlus.getPixelValue(i, j) == 0) {
 					someZero = true;
 				}
-				if (pixelProvider.getPixel(i, j) == 1) {
+				if (grapImagePlus.getPixelValue(i, j) == 1) {
 					someOne = true;
 				}
 			}
@@ -94,8 +93,8 @@ public class BasicTest extends GrapTest {
 
 		someZero = false;
 		someOne = false;
-		pixelProvider = gr.getPixelProvider();
-		byte[] pixel = pixelProvider.getBytePixels();
+		grapImagePlus = gr.getGrapImagePlus();
+		final byte[] pixel = grapImagePlus.getBytePixels();
 		for (int i = 0; i < pixel.length; i++) {
 			if (pixel[i] == 0) {
 				someZero = true;
@@ -107,8 +106,8 @@ public class BasicTest extends GrapTest {
 
 		someZero = false;
 		someOne = false;
-		pixelProvider = gr.getPixelProvider();
-		short[] shortPixel = pixelProvider.getShortPixels();
+		grapImagePlus = gr.getGrapImagePlus();
+		final short[] shortPixel = grapImagePlus.getShortPixels();
 		for (int i = 0; i < shortPixel.length; i++) {
 			if (shortPixel[i] == 0) {
 				someZero = true;
@@ -120,8 +119,8 @@ public class BasicTest extends GrapTest {
 
 		someZero = false;
 		someOne = false;
-		pixelProvider = gr.getPixelProvider();
-		float[] floatPixel = pixelProvider.getFloatPixels();
+		grapImagePlus = gr.getGrapImagePlus();
+		final float[] floatPixel = grapImagePlus.getFloatPixels();
 		for (int i = 0; i < floatPixel.length; i++) {
 			if (floatPixel[i] == 0) {
 				someZero = true;
@@ -136,10 +135,10 @@ public class BasicTest extends GrapTest {
 	}
 
 	public void testSetLUT(GeoRaster gr) throws Exception {
-		ColorModel originalCM = LutGenerator.colorModel("fire");
+		final ColorModel originalCM = LutGenerator.colorModel("fire");
 		gr.setLUT(originalCM);
-		ColorModel cm = gr.getColorModel();
-		int[] componentSize = cm.getComponentSize();
+		final ColorModel cm = gr.getColorModel();
+		final int[] componentSize = cm.getComponentSize();
 		for (int i = 0; i < componentSize.length; i++) {
 			assertTrue(cm.getAlpha(i) == originalCM.getAlpha(i));
 			assertTrue(cm.getRed(i) == originalCM.getRed(i));
@@ -168,7 +167,7 @@ public class BasicTest extends GrapTest {
 				externalData + "/geotif/440807.tif",
 				externalData + "/geotif/440808.tif", };
 
-		GeoRaster[] rasters = new GeoRaster[src.length];
+		final GeoRaster[] rasters = new GeoRaster[src.length];
 
 		for (int i = 0; i < src.length; i++) {
 			TestUtils.printFreeMemory();
@@ -183,16 +182,16 @@ public class BasicTest extends GrapTest {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
 		gr.open();
-		RasterMetadata originalMetadata = gr.getMetadata();
-		float[] pixels = gr.getPixelProvider().getFloatPixels();
-		File file = new File(tmpData + "1.tif");
+		final RasterMetadata originalMetadata = gr.getMetadata();
+		final float[] pixels = gr.getGrapImagePlus().getFloatPixels();
+		final File file = new File(tmpData + "1.tif");
 		gr.save(file.getAbsolutePath());
 		gr = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
 		gr.open();
-		float[] tifPixels = gr.getPixelProvider().getFloatPixels();
+		final float[] tifPixels = gr.getGrapImagePlus().getFloatPixels();
 		assertTrue(tifPixels.length == pixels.length);
 		equals(pixels, tifPixels);
-		RasterMetadata newM = gr.getMetadata();
+		final RasterMetadata newM = gr.getMetadata();
 		assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
 		assertTrue(newM.getNCols() == originalMetadata.getNCols());
 		assertTrue(newM.getNRows() == originalMetadata.getNRows());
@@ -218,13 +217,13 @@ public class BasicTest extends GrapTest {
 		check3x3(gr);
 	}
 
-	private void check3x3(GeoRaster gr) throws IOException {
-		PixelProvider pp = gr.getPixelProvider();
+	private void check3x3(GeoRaster gr) throws Exception {
+		final GrapImagePlus grapImagePlus = gr.getGrapImagePlus();
 		float previous = -1;
 		for (int y = 0; y < gr.getHeight(); y++) {
 			for (int x = 0; x < gr.getWidth(); x++) {
-				assertTrue(pp.getPixel(x, y) > previous);
-				previous = pp.getPixel(x, y);
+				assertTrue(grapImagePlus.getPixelValue(x, y) > previous);
+				previous = grapImagePlus.getPixelValue(x, y);
 			}
 		}
 	}

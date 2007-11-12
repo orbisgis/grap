@@ -39,9 +39,10 @@
  */
 package org.grap.processing;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 
 public interface Operation {
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException;
+			throws OperationException, GeoreferencingException;
 }

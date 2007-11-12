@@ -39,7 +39,9 @@
  */
 package org.grap.model;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.WindowManager;
 import ij.gui.PolygonRoi;
 import ij.io.FileSaver;
 import ij.process.ImageProcessor;
@@ -53,12 +55,9 @@ import java.awt.image.IndexColorModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.grap.io.CachedImagePlusProvider;
-import org.grap.io.DirectImagePlusProvider;
 import org.grap.io.FileReader;
 import org.grap.io.FileReaderFactory;
 import org.grap.io.GeoreferencingException;
-import org.grap.io.ImagePlusProvider;
 import org.grap.io.WorldFile;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -75,15 +74,23 @@ import com.vividsolutions.jts.geom.LinearRing;
  * A GeoRaster object is composed of an ImageJ ImagePlus object and some spatial
  * fields such as : a projection system, an envelop, a pixel size...
  */
-class DefaultGeoRaster implements GeoRaster {
-
+public class DefaultGeoRaster implements GeoRaster {
 	private RasterMetadata rasterMetadata;
-
 	private FileReader fileReader;
+	private CachedValues cachedValues;
+	private GrapImagePlus cachedGrapImagePlus;
 
-	private ImagePlusProvider imagePlusProvider;
-
-	private float noDataValue = Float.NaN;
+	// internal class
+	private class CachedValues {
+		private Double maxThreshold;
+		private Double minThreshold;
+		private ColorModel colorModel;
+		private int type;
+		private double min;
+		private double max;
+		private int width;
+		private int height;
+	}
 
 	// constructors
 	DefaultGeoRaster(final String fileName) throws FileNotFoundException,
@@ -95,11 +102,10 @@ class DefaultGeoRaster implements GeoRaster {
 			final GeoProcessorType geoProcessorType)
 			throws FileNotFoundException, IOException {
 		fileReader = FileReaderFactory.create(fileName, geoProcessorType);
-		imagePlusProvider = new DirectImagePlusProvider(fileReader);
 	}
 
-	DefaultGeoRaster(final ImagePlus impResult, final RasterMetadata metadata) {
-		this.imagePlusProvider = new CachedImagePlusProvider(impResult);
+	DefaultGeoRaster(final ImagePlus imagePlus, final RasterMetadata metadata) {
+		cachedGrapImagePlus = new GrapImagePlus("", imagePlus.getProcessor());
 		this.rasterMetadata = metadata;
 	}
 
@@ -117,16 +123,13 @@ class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public void setRangeValues(final double min, final double max)
-			throws OperationException {
-		try {
-			imagePlusProvider.setRangeValues(min, max);
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
+			throws IOException, GeoreferencingException {
+		getCachedValues(null).minThreshold = min;
+		getCachedValues(null).maxThreshold = max;
 	}
 
 	public void setRangeColors(final double[] ranges, final Color[] colors)
-			throws OperationException {
+			throws OperationException, IOException, GeoreferencingException {
 		checkRangeColors(ranges, colors);
 
 		// TODO : is it really necessary ?
@@ -161,26 +164,8 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	private void checkRangeColors(final double[] ranges, final Color[] colors)
-			throws OperationException {
-		if (ranges.length != colors.length + 1) {
-			throw new OperationException(
-					"Ranges.length not equal to Colors.length + 1 !");
-		}
-		for (int i = 1; i < ranges.length; i++) {
-			if (ranges[i - 1] > ranges[i]) {
-				throw new OperationException(
-						"Ranges array needs to be sorted !");
-			}
-		}
-		if (colors.length > 256) {
-			throw new OperationException(
-					"Colors.length must be less than 256 !");
-		}
-	}
-
 	public void setNodataValue(final float value) {
-		this.noDataValue = value;
+		rasterMetadata.setNoData(value);
 	}
 
 	public Point2D pixelToWorldCoord(final int xpixel, final int ypixel) {
@@ -191,12 +176,12 @@ class DefaultGeoRaster implements GeoRaster {
 		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
 
-	public void save(final String dest) throws IOException {
+	public void save(final String dest) throws IOException,
+			GeoreferencingException {
 		final int dotIndex = dest.lastIndexOf('.');
 		final String localFileNamePrefix = dest.substring(0, dotIndex);
 		final String localFileNameExtension = dest.substring(dotIndex + 1);
-		final FileSaver fileSaver = new FileSaver(imagePlusProvider
-				.getImagePlus());
+		final FileSaver fileSaver = new FileSaver(getGrapImagePlus());
 
 		final String tmp = localFileNameExtension.toLowerCase();
 		if (tmp.endsWith("tif") || (tmp.endsWith("tiff"))) {
@@ -220,32 +205,34 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public void show() throws IOException {
-		imagePlusProvider.getImagePlus().show();
+	public void show() throws IOException, GeoreferencingException {
+		getGrapImagePlus().show();
 	}
 
-	public void setLUT(final ColorModel colorModel) throws IOException {
-		imagePlusProvider.setLUT(colorModel);
+	public void setLUT(final ColorModel colorModel) throws IOException,
+			GeoreferencingException {
+		getCachedValues(null).colorModel = colorModel;
 	}
 
 	public GeoRaster doOperation(final Operation operation)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		return operation.execute(this);
 	}
 
-	public int getType() throws IOException {
-		return imagePlusProvider.getType();
+	public int getType() throws IOException, GeoreferencingException {
+		return getCachedValues(null).type;
 	}
 
 	public boolean isEmpty() {
 		return false;
 	}
 
-	public GeoRaster convolve(float[] kernel, int kernelWidth, int kernelHeight)
-			throws OperationException {
+	public GeoRaster convolve(final float[] kernel, final int kernelWidth,
+			final int kernelHeight) throws OperationException,
+			GeoreferencingException {
 		try {
-			final ImageProcessor dup = imagePlusProvider.getImagePlus()
-					.getProcessor().duplicate();
+			final ImageProcessor dup = getGrapImagePlus().getProcessor()
+					.duplicate();
 			dup.convolve(kernel, kernelWidth, kernelHeight);
 			return createGeoRaster(dup, rasterMetadata.duplicate());
 		} catch (IOException e) {
@@ -253,10 +240,11 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public GeoRaster convolve3x3(int[] kernel) throws OperationException {
+	public GeoRaster convolve3x3(final int[] kernel) throws OperationException,
+			GeoreferencingException {
 		try {
-			final ImageProcessor dup = imagePlusProvider.getImagePlus()
-					.getProcessor().duplicate();
+			final ImageProcessor dup = getGrapImagePlus().getProcessor()
+					.duplicate();
 			dup.convolve3x3(kernel);
 			return createGeoRaster(dup, rasterMetadata.duplicate());
 		} catch (IOException e) {
@@ -264,12 +252,14 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	private GeoRaster createGeoRaster(ImageProcessor dup,
-			RasterMetadata rasterMetadata) throws IOException {
+	private GeoRaster createGeoRaster(final ImageProcessor dup,
+			final RasterMetadata rasterMetadata) throws IOException,
+			GeoreferencingException {
 		final int width = dup.getWidth();
 		final int height = dup.getHeight();
 		final ColorModel cm = dup.getColorModel();
-		switch (getType()) {
+		final int type = getType();
+		switch (type) {
 		case ImagePlus.GRAY8:
 		case ImagePlus.COLOR_256:
 			final byte[] bytePixels = (byte[]) dup.getPixels();
@@ -285,11 +275,12 @@ class DefaultGeoRaster implements GeoRaster {
 			return GeoRasterFactory.createGeoRaster(floatPixels, width, height,
 					cm, rasterMetadata);
 		default:
-			throw new IllegalStateException("Unknown type: " + getType());
+			throw new IllegalStateException("Unknown type: " + type);
 		}
 	}
 
-	public GeoRaster crop(final LinearRing ring) throws OperationException {
+	public GeoRaster crop(final LinearRing ring) throws OperationException,
+			GeoreferencingException {
 		try {
 			final Geometry geomEnvelope = new GeometryFactory().createPolygon(
 					(LinearRing) EnvelopeUtil.toGeometry(rasterMetadata
@@ -298,7 +289,7 @@ class DefaultGeoRaster implements GeoRaster {
 			if (geomEnvelope.intersects(ring)) {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(toPixel(ring));
 
-				final ImageProcessor processor = imagePlusProvider
+				final ImageProcessor processor = getGrapImagePlus()
 						.getProcessor();
 				processor.setRoi(roi);
 				final ImageProcessor result = processor.crop();
@@ -321,18 +312,8 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	private LinearRing toPixel(LinearRing ring) {
-		final Coordinate[] coords = ring.getCoordinates();
-		final Coordinate[] transformedCoords = new Coordinate[coords.length];
-		for (int i = 0; i < transformedCoords.length; i++) {
-			final Point2D p = rasterMetadata.toPixel(coords[i].x, coords[i].y);
-			transformedCoords[i] = new Coordinate(p.getX(), p.getY());
-		}
-
-		return new GeometryFactory().createLinearRing(transformedCoords);
-	}
-
-	public GeoRaster crop(final Rectangle2D roi) throws OperationException {
+	public GeoRaster crop(final Rectangle2D roi) throws OperationException,
+			GeoreferencingException {
 		try {
 			final Envelope roiEnv = new Envelope(new Coordinate(roi.getMinX(),
 					roi.getMinY()),
@@ -340,7 +321,7 @@ class DefaultGeoRaster implements GeoRaster {
 			if (roiEnv.intersects(rasterMetadata.getEnvelope())) {
 
 				final Rectangle2D pixelRoi = getRectangleInPixels(roi);
-				final ImageProcessor processor = imagePlusProvider
+				final ImageProcessor processor = getGrapImagePlus()
 						.getProcessor();
 				processor.setRoi((int) pixelRoi.getMinX(), (int) pixelRoi
 						.getMinY(), (int) pixelRoi.getWidth(), (int) pixelRoi
@@ -370,25 +351,10 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	private Rectangle2D getRectangleInPixels(Rectangle2D rectangle) {
-		final Point2D min = getPixelCoords(rectangle.getMinX(), rectangle
-				.getMinY());
-		final Point2D max = getPixelCoords(rectangle.getMaxX(), rectangle
-				.getMaxY());
-
-		final double minx = Math.min(min.getX(), max.getX());
-		final double maxx = Math.max(min.getX(), max.getX());
-		final double miny = Math.min(min.getY(), max.getY());
-		final double maxy = Math.max(min.getY(), max.getY());
-
-		return new Rectangle((int) minx, (int) miny, (int) (maxx - minx),
-				(int) (maxy - miny));
-	}
-
-	public GeoRaster erode() throws OperationException {
+	public GeoRaster erode() throws OperationException, GeoreferencingException {
 		try {
-			final ImageProcessor dup = imagePlusProvider.getImagePlus()
-					.getProcessor().duplicate();
+			final ImageProcessor dup = getGrapImagePlus().getProcessor()
+					.duplicate();
 			dup.erode();
 			return createGeoRaster(dup, rasterMetadata.duplicate());
 		} catch (IOException e) {
@@ -396,10 +362,11 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public GeoRaster smooth() throws OperationException {
+	public GeoRaster smooth() throws OperationException,
+			GeoreferencingException {
 		try {
-			final ImageProcessor dup = imagePlusProvider.getImagePlus()
-					.getProcessor().duplicate();
+			final ImageProcessor dup = getGrapImagePlus().getProcessor()
+					.duplicate();
 			dup.smooth();
 			return createGeoRaster(dup, rasterMetadata.duplicate());
 		} catch (IOException e) {
@@ -407,34 +374,116 @@ class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public double getMax() throws IOException {
-		return imagePlusProvider.getMax();
+	public double getMax() throws IOException, GeoreferencingException {
+		return getCachedValues(null).max;
 	}
 
-	public double getMin() throws IOException {
-		return imagePlusProvider.getMin();
+	public double getMin() throws IOException, GeoreferencingException {
+		return getCachedValues(null).min;
 	}
 
-	public int getHeight() throws IOException {
-		return imagePlusProvider.getWidth();
+	public int getHeight() throws IOException, GeoreferencingException {
+		return getCachedValues(null).height;
 	}
 
-	public int getWidth() throws IOException {
-		return imagePlusProvider.getHeight();
+	public int getWidth() throws IOException, GeoreferencingException {
+		return getCachedValues(null).width;
 	}
 
-	public ColorModel getColorModel() throws IOException {
-		return imagePlusProvider.getColorModel();
+	public ColorModel getColorModel() throws IOException,
+			GeoreferencingException {
+		return getCachedValues(null).colorModel;
 	}
 
-	public PixelProvider getPixelProvider() throws IOException {
-		return new DefaultPixelProvider(imagePlusProvider.getImagePlus()
-				.getImage(), imagePlusProvider.getProcessor(), getType(),
-				noDataValue);
+	public GrapImagePlus getGrapImagePlus() throws IOException,
+			GeoreferencingException {
+		final GrapImagePlus grapImagePlus = (null == cachedGrapImagePlus) ? fileReader
+				.readGrapImagePlus()
+				: cachedGrapImagePlus;
+		getCachedValues(grapImagePlus);
+		if (null != rasterMetadata) {
+			grapImagePlus.setNoDataValue(rasterMetadata.getNoDataValue());
+		}
+		if (null != getCachedValues(null).colorModel) {
+			grapImagePlus.getProcessor().setColorModel(
+					getCachedValues(null).colorModel);
+		}
+		grapImagePlus.setGrapType(getCachedValues(null).type);
+
+		if ((ImagePlus.COLOR_RGB != getType())
+				&& (null != getCachedValues(null).minThreshold)
+				&& (null != getCachedValues(null).maxThreshold)) {
+			grapImagePlus.getProcessor().setThreshold(
+					getCachedValues(null).minThreshold,
+					getCachedValues(null).maxThreshold,
+					ImageProcessor.NO_LUT_UPDATE);
+			WindowManager.setTempCurrentImage(grapImagePlus);
+			IJ.run("NaN Background");
+		}
+		return grapImagePlus;
 	}
-	
-	public ImagePlus getImagePlus() throws IOException{
-		return imagePlusProvider.getImagePlus();
-		
+
+	// private method
+	private CachedValues getCachedValues(ImagePlus img) throws IOException,
+			GeoreferencingException {
+		if (null == cachedValues) {
+			cachedValues = new CachedValues();
+			ImagePlus ip = img;
+			if (ip == null) {
+				ip = getGrapImagePlus();
+			}
+			final ImageProcessor processor = ip.getProcessor();
+			cachedValues.colorModel = processor.getColorModel();
+			cachedValues.min = processor.getMin();
+			cachedValues.max = processor.getMax();
+			cachedValues.height = ip.getHeight();
+			cachedValues.width = ip.getWidth();
+			cachedValues.type = ip.getType();
+			cachedValues.minThreshold = null;
+			cachedValues.maxThreshold = null;
+		}
+		return cachedValues;
+	}
+
+	private LinearRing toPixel(final LinearRing ring) {
+		final Coordinate[] coords = ring.getCoordinates();
+		final Coordinate[] transformedCoords = new Coordinate[coords.length];
+		for (int i = 0; i < transformedCoords.length; i++) {
+			final Point2D p = rasterMetadata.toPixel(coords[i].x, coords[i].y);
+			transformedCoords[i] = new Coordinate(p.getX(), p.getY());
+		}
+
+		return new GeometryFactory().createLinearRing(transformedCoords);
+	}
+
+	private void checkRangeColors(final double[] ranges, final Color[] colors)
+			throws OperationException {
+		if (ranges.length != colors.length + 1) {
+			throw new OperationException(
+					"Ranges.length not equal to Colors.length + 1 !");
+		}
+		for (int i = 1; i < ranges.length; i++) {
+			if (ranges[i - 1] > ranges[i]) {
+				throw new OperationException(
+						"Ranges array needs to be sorted !");
+			}
+		}
+		if (colors.length > 256) {
+			throw new OperationException(
+					"Colors.length must be less than 256 !");
+		}
+	}
+
+	private Rectangle2D getRectangleInPixels(final Rectangle2D rectangle) {
+		final Point2D min = getPixelCoords(rectangle.getMinX(), rectangle
+				.getMinY());
+		final Point2D max = getPixelCoords(rectangle.getMaxX(), rectangle
+				.getMaxY());
+		final double minx = Math.min(min.getX(), max.getX());
+		final double maxx = Math.max(min.getX(), max.getX());
+		final double miny = Math.min(min.getY(), max.getY());
+		final double maxy = Math.max(min.getY(), max.getY());
+		return new Rectangle((int) minx, (int) miny, (int) (maxx - minx),
+				(int) (maxy - miny));
 	}
 }

@@ -39,9 +39,6 @@
  */
 package org.grap.model;
 
-import ij.ImagePlus;
-import ij.process.ImageProcessor;
-
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -65,7 +62,7 @@ class NullGeoRaster implements GeoRaster {
 		return instance;
 	}
 
-	public ImagePlus getImagePlus() {
+	public GrapImagePlus getGrapImagePlus() {
 		return null;
 	}
 
@@ -81,7 +78,7 @@ class NullGeoRaster implements GeoRaster {
 		return 0;
 	}
 
-	public void open() throws IOException {
+	public void open() {
 	}
 
 	public Point2D pixelToWorldCoord(int xpixel, int ypixel) {
@@ -114,10 +111,6 @@ class NullGeoRaster implements GeoRaster {
 		return 0;
 	}
 
-	public ImageProcessor convertToShort(boolean b) {
-		return null;
-	}
-
 	public GeoRaster convolve(float[] kernel, int focalMeanSizeX,
 			int focalMeanSizeY) {
 		return instance;
@@ -147,23 +140,19 @@ class NullGeoRaster implements GeoRaster {
 		return null;
 	}
 
-	public int getHeight() throws IOException {
+	public int getHeight() {
 		return 0;
 	}
 
-	public double getMax() throws IOException {
+	public double getMax() {
 		return 0;
 	}
 
-	public double getMin() throws IOException {
+	public double getMin() {
 		return 0;
 	}
 
-	public int getWidth() throws IOException {
+	public int getWidth() {
 		return 0;
-	}
-
-	public PixelProvider getPixelProvider() throws IOException {
-		return null;
 	}
 }

@@ -43,9 +43,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.PixelProvider;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -53,9 +54,9 @@ import org.grap.processing.OperationException;
 public class WatershedsWithThreshold implements Operation {
 	public final static short noDataValue = (short) Float.NaN;
 
-	private PixelProvider ppAllWatersheds;
-	private PixelProvider ppAllOutlets;
-	private PixelProvider ppSlopesAccumulations;
+	private GrapImagePlus gipAllWatersheds;
+	private GrapImagePlus gipAllOutlets;
+	private GrapImagePlus gipSlopesAccumulations;
 	private short[] watershedsWithThreshold;
 	private int threshold;
 	private int ncols;
@@ -63,10 +64,10 @@ public class WatershedsWithThreshold implements Operation {
 
 	public WatershedsWithThreshold(final GeoRaster grAllWatersheds,
 			final GeoRaster grAllOutlets, final int threshold)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
-			ppAllWatersheds = grAllWatersheds.getPixelProvider();
-			ppAllOutlets = grAllOutlets.getPixelProvider();
+			gipAllWatersheds = grAllWatersheds.getGrapImagePlus();
+			gipAllOutlets = grAllOutlets.getGrapImagePlus();
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
@@ -74,10 +75,10 @@ public class WatershedsWithThreshold implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster grSlopesAccumulations)
-			throws OperationException {
+			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			ppSlopesAccumulations = grSlopesAccumulations.getPixelProvider();
+			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesAccumulations
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
@@ -106,14 +107,14 @@ public class WatershedsWithThreshold implements Operation {
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if ((!Float.isNaN(ppAllOutlets.getPixel(c, r)))
-						&& (ppSlopesAccumulations.getPixel(c, r) >= threshold)) {
+				if ((!Float.isNaN(gipAllOutlets.getPixelValue(c, r)))
+						&& (gipSlopesAccumulations.getPixelValue(c, r) >= threshold)) {
 					// current cell is an outlet. It's slopes accumulation value
 					// is greater or equal to the threshold value.
 					System.out.printf("(%d, %d) : %.0f\n", c, r,
-							ppSlopesAccumulations.getPixel(c, r));
+							gipSlopesAccumulations.getPixelValue(c, r));
 					nbOfWatershedsWithThreshold++;
-					mapOfBigOutlets.put(ppAllWatersheds.getPixel(c, r),
+					mapOfBigOutlets.put(gipAllWatersheds.getPixelValue(c, r),
 							nbOfWatershedsWithThreshold);
 				}
 			}
@@ -123,7 +124,7 @@ public class WatershedsWithThreshold implements Operation {
 		i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				final float tmp = ppAllWatersheds.getPixel(c, r);
+				final float tmp = gipAllWatersheds.getPixelValue(c, r);
 				watershedsWithThreshold[i] = mapOfBigOutlets.containsKey(tmp) ? mapOfBigOutlets
 						.get(tmp)
 						: noDataValue;
