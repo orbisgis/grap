@@ -61,6 +61,19 @@ public class BasicTest extends GrapTest {
 		}
 	}
 
+	
+	public void testXYZDEMReader() throws Exception {
+		try {
+			final GeoRaster gr = GeoRasterFactory.createGeoRaster("../../datas2tests/xyzdem/nantesdem.xyz");
+			gr.open();
+			gr.show();
+			//gr.save(tmpData + "xyzdem.tif");
+			
+			
+		} catch (GeoreferencingException e) {
+		}
+	}
+	
 	public void testPNGWithoutWorldFile() throws Exception {
 		try {
 			final GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
