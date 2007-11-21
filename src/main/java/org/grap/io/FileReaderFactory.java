@@ -73,8 +73,8 @@ public class FileReaderFactory {
 			return new EsriGRIDReader(fileName, geoProcessorType);
 		} else if (worldFileExtensions.contains(fileNameExtension)) {
 			return new WorldImageReader(fileName);
-		} else if (fileNameExtension.endsWith("xyz")) {
-			throw new RuntimeException("need to be implemented");
+		} else if (fileNameExtension.endsWith("xyz")) {			
+			return new XYZ2DEMReader(fileName);
 		} else {
 			throw new RuntimeException("Unknown filename extension !");
 		}
