@@ -47,51 +47,31 @@ import org.grap.model.GeoProcessorType;
 import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
-
-/**
- * 
- * @author bocher
- *
- */
-public class XYZ2DEMReader implements FileReader{
-
-	
-	private GeoProcessorType geoProcessorType = GeoProcessorType.FLOAT;
-
-	private String fileName;
-
+public class XYZ2DEMReader implements FileReader {
 	private XYZ2DEM_Importer xyzImporter;
-	
-	//	 constructors
+
+	// constructors
 	public XYZ2DEMReader(final String fileName) {
 		this(fileName, GeoProcessorType.FLOAT);
 	}
-	
-	
+
 	public XYZ2DEMReader(final String fileName,
 			final GeoProcessorType geoProcessorType) {
-		this.fileName = fileName;
-		this.geoProcessorType = geoProcessorType;
+		// this.geoProcessorType = geoProcessorType;
 		xyzImporter = new XYZ2DEM_Importer(fileName);
 	}
 
 	public XYZ2DEMReader(final URL src) {
 		this(src.getFile());
-		
-		
 	}
-	
-	
-	public GrapImagePlus readGrapImagePlus() throws IOException, GeoreferencingException {
-		
-					
-		
+
+	public GrapImagePlus readGrapImagePlus() throws IOException,
+			GeoreferencingException {
 		return new GrapImagePlus("", xyzImporter.ip);
 	}
 
-	public RasterMetadata readRasterMetadata() throws IOException, GeoreferencingException {
-		
+	public RasterMetadata readRasterMetadata() throws IOException,
+			GeoreferencingException {
 		return xyzImporter.rastermetadata;
 	}
-
 }
