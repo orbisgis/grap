@@ -72,6 +72,12 @@ import ij.process.*;
 import ij.gui.*;
 import ij.plugin.*;
 
+
+/**
+ * Adapted for GRAP
+ * @author bocher
+ *
+ */
 public class XYZ2DEM_Importer  {
 
         String directory, filename, path;
@@ -94,7 +100,7 @@ public class XYZ2DEM_Importer  {
 		FloatProcessor ip;
 		
 	
-		RasterMetadata rastermetadata  = null;
+		RasterMetadata rastermetadata ;
 		
         public XYZ2DEM_Importer(String path) {
 			this.path = path;
@@ -152,8 +158,9 @@ public class XYZ2DEM_Importer  {
                    return;
                 }
                 
+                
                
-                	userinput();
+                userinput();
                         
              
 
@@ -187,11 +194,12 @@ public class XYZ2DEM_Importer  {
                 int sa = boundaryOfImageCoordSysImage[1]+1;
                 
                 
-                rastermetadata = new RasterMetadata(boundaryOfImageCoordSysXYZ[0], boundaryOfImageCoordSysXYZ[3], (float) myPixelSize, (float)myPixelSize,boundaryOfImageCoordSysImage[0], boundaryOfImageCoordSysImage[2]);
+                rastermetadata = new RasterMetadata(boundaryOfXYZCoordSysXYZ[0], boundaryOfXYZCoordSysXYZ[3], (float) myPixelSize, (float)-myPixelSize,boundaryOfImageCoordSysImage[1], boundaryOfImageCoordSysImage[2]);
+                
                 
                 rastermetadata.setNoData((float) myBackground);
-                
-                System.out.println("It seems the envelope is wrong " + rastermetadata.toString());
+                 
+                System.out.println(rastermetadata.getEnvelope());
                 
                 ip = new FloatProcessor(sa, za);
                 float[] myPixelValues = (float[])ip.getPixels();

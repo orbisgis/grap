@@ -84,7 +84,7 @@ public class WatershedWithThresholdTest {
 		grAllWatersheds.save("../../datas2tests/tmp/1111.tif");
 
 		// extract some "big" watersheds
-		final int threshold = 3500;
+		final int threshold = 100;
 		final Operation watershedsWithThreshold = new WatershedsWithThreshold(
 				grAllWatersheds, grAllOutlets, threshold);
 		final GeoRaster grWatershedsWithThreshold = grSlopesAccumulations

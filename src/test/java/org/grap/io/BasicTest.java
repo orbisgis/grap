@@ -64,10 +64,10 @@ public class BasicTest extends GrapTest {
 	
 	public void testXYZDEMReader() throws Exception {
 		try {
-			final GeoRaster gr = GeoRasterFactory.createGeoRaster("../../datas2tests/xyzdem/nantesdem.xyz");
+			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData + "/xyzdem/nantesdem.xyz");
 			gr.open();
 			gr.show();
-			//gr.save(tmpData + "xyzdem.tif");
+			gr.save(tmpData + "xyzdem.tif");
 			
 			
 		} catch (GeoreferencingException e) {
@@ -205,6 +205,7 @@ public class BasicTest extends GrapTest {
 		assertTrue(tifPixels.length == pixels.length);
 		equals(pixels, tifPixels);
 		final RasterMetadata newM = gr.getMetadata();
+		
 		assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
 		assertTrue(newM.getNCols() == originalMetadata.getNCols());
 		assertTrue(newM.getNRows() == originalMetadata.getNRows());

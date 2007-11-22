@@ -37,61 +37,30 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
+package org.grap.io.manual;
 
-package org.grap.io;
 
-import java.io.IOException;
-import java.net.URL;
 
-import org.grap.model.GeoProcessorType;
-import org.grap.model.GrapImagePlus;
-import org.grap.model.RasterMetadata;
-
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 
 /**
  * 
  * @author bocher
  *
  */
-public class XYZ2DEMReader implements FileReader{
 
+public class XYZDEMTest {
 	
-	private GeoProcessorType geoProcessorType = GeoProcessorType.FLOAT;
+	public static void main(String[] args) throws Exception {
+		String src = "../../datas2tests/xyzdem/nantesdemLambert.xyz";
 
-	private String fileName;
-
-	private XYZ2DEM_Importer xyzImporter;
-	
-	//	 constructors
-	public XYZ2DEMReader(final String fileName) {
-		this(fileName, GeoProcessorType.FLOAT);
-	}
-	
-	
-	public XYZ2DEMReader(final String fileName,
-			final GeoProcessorType geoProcessorType) {
-		this.fileName = fileName;
-		this.geoProcessorType = geoProcessorType;
-		xyzImporter = new XYZ2DEM_Importer(fileName);
-	}
-
-	public XYZ2DEMReader(final URL src) {
-		this(src.getFile());
+		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		geoRaster.open();
 		
 		
-	}
-	
-	
-	public GrapImagePlus readGrapImagePlus() throws IOException, GeoreferencingException {
+		System.out.println(geoRaster.getMetadata().getEnvelope());
 		
-					
-		
-		return new GrapImagePlus("", xyzImporter.ip);
+		geoRaster.save("../../datas2tests/tmp/1.tif");
 	}
-
-	public RasterMetadata readRasterMetadata() throws IOException, GeoreferencingException {
-		
-		return xyzImporter.rastermetadata;
-	}
-
 }

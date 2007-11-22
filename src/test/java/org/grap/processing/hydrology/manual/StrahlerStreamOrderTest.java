@@ -56,6 +56,8 @@ public class StrahlerStreamOrderTest {
 		// load the DEM
 		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
 		grDEM.open();
+		
+		grDEM.show();
 
 		// compute the slopes directions
 		final Operation slopesDirections = new SlopesDirections();
@@ -70,7 +72,7 @@ public class StrahlerStreamOrderTest {
 		grSlopesAccumulations.save("../../datas2tests/tmp/11.tif");
 
 		// compute the Strahler stream orders
-		final int riverThreshold = 1500;
+		final int riverThreshold = 100;
 		final Operation strahlerStreamOrder = new StrahlerStreamOrder(
 				grSlopesAccumulations, riverThreshold);
 		final GeoRaster grStrahlerStreamOrder = grSlopesDirections
