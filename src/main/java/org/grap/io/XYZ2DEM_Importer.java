@@ -75,10 +75,11 @@ import java.util.Vector;
 import org.grap.model.RasterMetadata;
 
 /**
- * Adapted for GRAP
+ * description
  * 
  * @author bocher
  * 
+ * Adapted for GRAP
  */
 public class XYZ2DEM_Importer {
 
@@ -131,6 +132,13 @@ public class XYZ2DEM_Importer {
 	public XYZ2DEM_Importer(String path) {
 		this.path = path;
 		read(path);
+	}
+
+	public XYZ2DEM_Importer(String path, float myPixelSize, double myBackground, boolean myShowLimitsDecision) {
+		this.path = path;
+		this.myPixelSize = myPixelSize;
+		this.myBackground=myBackground;
+		this.myShowLimitsDecision=myShowLimitsDecision;
 	}
 
 	public void read(String path) {

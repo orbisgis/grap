@@ -49,6 +49,8 @@ import org.grap.model.RasterMetadata;
 
 public class XYZ2DEMReader implements FileReader {
 	private XYZ2DEM_Importer xyzImporter;
+	private double  nodataValue;
+	private float pixelsize;
 
 	// constructors
 	public XYZ2DEMReader(final String fileName) {
@@ -58,7 +60,7 @@ public class XYZ2DEMReader implements FileReader {
 	public XYZ2DEMReader(final String fileName,
 			final GeoProcessorType geoProcessorType) {
 		// this.geoProcessorType = geoProcessorType;
-		xyzImporter = new XYZ2DEM_Importer(fileName);
+		xyzImporter = new XYZ2DEM_Importer(fileName, pixelsize, nodataValue, false );
 	}
 
 	public XYZ2DEMReader(final URL src) {
