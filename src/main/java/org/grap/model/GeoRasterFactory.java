@@ -49,18 +49,16 @@ import java.awt.image.ColorModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
-
 public class GeoRasterFactory {
 
 	public static GeoRaster createGeoRaster(final String fileName)
-			throws FileNotFoundException, IOException, GeoreferencingException {
+			throws FileNotFoundException, IOException {
 		return createGeoRaster(fileName, GeoProcessorType.FLOAT);
 	}
 
 	public static GeoRaster createGeoRaster(final String fileName,
 			final GeoProcessorType geoProcessorType)
-			throws FileNotFoundException, IOException, GeoreferencingException {
+			throws FileNotFoundException, IOException {
 		return new DefaultGeoRaster(fileName, geoProcessorType);
 	}
 
@@ -96,8 +94,7 @@ public class GeoRasterFactory {
 		return new DefaultGeoRaster(imagePlus, rasterMetadata);
 	}
 
-	public static GeoRaster createGeoRaster(
-			final ImagePlus imagePlus,
+	public static GeoRaster createGeoRaster(final ImagePlus imagePlus,
 			final RasterMetadata rasterMetadata) {
 		return new DefaultGeoRaster(imagePlus, rasterMetadata);
 	}
