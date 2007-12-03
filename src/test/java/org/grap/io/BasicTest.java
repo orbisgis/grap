@@ -44,6 +44,7 @@ import java.io.File;
 
 import org.grap.TestUtils;
 import org.grap.lut.LutGenerator;
+import org.grap.model.GeoProcessorType;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
@@ -61,19 +62,19 @@ public class BasicTest extends GrapTest {
 		}
 	}
 
-	
 	public void testXYZDEMReader() throws Exception {
 		try {
-			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData + "/xyz/MNT_Nantes_Lambert.xyz");
+			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+					+ "/xyz/MNT_Nantes_Lambert.xyz", GeoProcessorType.FLOAT,
+					10, Float.NaN);
 			gr.open();
 			gr.show();
 			gr.save(tmpData + "xyzdem.tif");
-			
-			
+
 		} catch (GeoreferencingException e) {
 		}
 	}
-	
+
 	public void testPNGWithoutWorldFile() throws Exception {
 		try {
 			final GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
@@ -205,7 +206,7 @@ public class BasicTest extends GrapTest {
 		assertTrue(tifPixels.length == pixels.length);
 		equals(pixels, tifPixels);
 		final RasterMetadata newM = gr.getMetadata();
-		
+
 		assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
 		assertTrue(newM.getNCols() == originalMetadata.getNCols());
 		assertTrue(newM.getNRows() == originalMetadata.getNRows());

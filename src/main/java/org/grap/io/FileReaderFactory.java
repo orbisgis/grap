@@ -73,10 +73,22 @@ public class FileReaderFactory {
 			return new EsriGRIDReader(fileName, geoProcessorType);
 		} else if (worldFileExtensions.contains(fileNameExtension)) {
 			return new WorldImageReader(fileName);
-		} else if (fileNameExtension.endsWith("xyz")) {			
+		} else if (fileNameExtension.endsWith("xyz")) {
 			return new XYZ2DEMReader(fileName);
 		} else {
 			throw new RuntimeException("Unknown filename extension !");
+		}
+	}
+
+	public static FileReader create(final String fileName,
+			final GeoProcessorType geoProcessorType, double nodataValue,
+			float pixelsize) throws FileNotFoundException, IOException {
+		final String fileNameExtension = getFileNameExtension(fileName);
+
+		if (fileNameExtension.endsWith("xyz")) {
+			return new XYZ2DEMReader(fileName, nodataValue, pixelsize);
+		} else {
+			return create(fileName, geoProcessorType);
 		}
 	}
 

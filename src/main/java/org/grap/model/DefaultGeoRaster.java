@@ -104,6 +104,13 @@ public class DefaultGeoRaster implements GeoRaster {
 		fileReader = FileReaderFactory.create(fileName, geoProcessorType);
 	}
 
+	DefaultGeoRaster(final String fileName,
+			final GeoProcessorType geoProcessorType, double nodataValue,
+			float pixelsize) throws FileNotFoundException, IOException {
+		fileReader = FileReaderFactory.create(fileName, geoProcessorType,
+				nodataValue, pixelsize);
+	}
+
 	DefaultGeoRaster(final ImagePlus imagePlus, final RasterMetadata metadata) {
 		cachedGrapImagePlus = new GrapImagePlus("", imagePlus.getProcessor());
 		this.rasterMetadata = metadata;
@@ -200,7 +207,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			fileSaver.saveAsGif(dest);
 			WorldFile.save(localFileNamePrefix + ".bpw", rasterMetadata);
 		} else {
-			throw new RuntimeException("Unknown file name extension : "
+			throw new RuntimeException("Cannot write in format: "
 					+ localFileNameExtension);
 		}
 	}
