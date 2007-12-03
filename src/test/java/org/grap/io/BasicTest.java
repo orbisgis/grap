@@ -64,7 +64,7 @@ public class BasicTest extends GrapTest {
 	
 	public void testXYZDEMReader() throws Exception {
 		try {
-			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData + "/xyzdem/nantesdem.xyz");
+			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData + "/xyz/MNT_Nantes_Lambert.xyz");
 			gr.open();
 			gr.show();
 			gr.save(tmpData + "xyzdem.tif");

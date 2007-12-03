@@ -54,7 +54,7 @@ import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
 
-public class GrapTests {
+public class AllTests {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for grap");
