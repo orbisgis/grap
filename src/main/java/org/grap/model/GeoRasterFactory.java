@@ -63,9 +63,8 @@ public class GeoRasterFactory {
 	}
 
 	public static GeoRaster createGeoRaster(final String fileName,
-			final GeoProcessorType geoProcessorType, float pixelsize,
-			double nodataValue) throws FileNotFoundException, IOException {
-		return new DefaultGeoRaster(fileName, geoProcessorType, nodataValue,
+			final GeoProcessorType geoProcessorType, float pixelsize) throws FileNotFoundException, IOException {
+		return new DefaultGeoRaster(fileName, geoProcessorType,
 				pixelsize);
 	}
 

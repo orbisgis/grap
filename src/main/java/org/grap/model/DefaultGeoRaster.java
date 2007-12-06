@@ -105,10 +105,9 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	DefaultGeoRaster(final String fileName,
-			final GeoProcessorType geoProcessorType, double nodataValue,
+			final GeoProcessorType geoProcessorType,
 			float pixelsize) throws FileNotFoundException, IOException {
-		fileReader = FileReaderFactory.create(fileName, geoProcessorType,
-				nodataValue, pixelsize);
+		fileReader = FileReaderFactory.create(fileName, geoProcessorType, pixelsize);
 	}
 
 	DefaultGeoRaster(final ImagePlus imagePlus, final RasterMetadata metadata) {

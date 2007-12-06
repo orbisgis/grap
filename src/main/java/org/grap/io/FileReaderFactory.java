@@ -81,12 +81,12 @@ public class FileReaderFactory {
 	}
 
 	public static FileReader create(final String fileName,
-			final GeoProcessorType geoProcessorType, double nodataValue,
+			final GeoProcessorType geoProcessorType,
 			float pixelsize) throws FileNotFoundException, IOException {
 		final String fileNameExtension = getFileNameExtension(fileName);
 
 		if (fileNameExtension.endsWith("xyz")) {
-			return new XYZ2DEMReader(fileName, nodataValue, pixelsize);
+			return new XYZ2DEMReader(fileName, pixelsize);
 		} else {
 			return create(fileName, geoProcessorType);
 		}

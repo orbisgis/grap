@@ -50,26 +50,33 @@ import org.grap.model.RasterMetadata;
 public class XYZ2DEMReader implements FileReader {
 	private XYZ2DEM_Importer xyzImporter;
 
-	// constructors
-	public XYZ2DEMReader(final String fileName, double nodataValue,
-			float pixelsize) {
-		this(fileName, GeoProcessorType.FLOAT, nodataValue, pixelsize);
-	}
+	
+	
+	
+	
 
 	public XYZ2DEMReader(final String fileName) {
-		this(fileName, GeoProcessorType.FLOAT, Float.NaN, 1);
+		this(fileName, GeoProcessorType.FLOAT, 1);
 	}
 
+	
+	
 	public XYZ2DEMReader(final String fileName,
-			final GeoProcessorType geoProcessorType, double nodataValue,
+			final GeoProcessorType geoProcessorType,
 			float pixelsize) {
-		xyzImporter = new XYZ2DEM_Importer(fileName, pixelsize, nodataValue,
+		xyzImporter = new XYZ2DEM_Importer(fileName, pixelsize,
 				false);
 	}
 
 	public XYZ2DEMReader(final URL src) {
 		this(src.getFile());
 	}
+
+	public XYZ2DEMReader(String fileName, float pixelsize) {
+		xyzImporter = new XYZ2DEM_Importer(fileName, pixelsize, false );
+	}
+
+
 
 	public GrapImagePlus readGrapImagePlus() throws IOException,
 			GeoreferencingException {

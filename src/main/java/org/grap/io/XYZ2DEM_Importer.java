@@ -135,10 +135,9 @@ public class XYZ2DEM_Importer {
 		read(path);
 	}
 
-	public XYZ2DEM_Importer(String path, float myPixelSize, double myBackground, boolean myShowLimitsDecision) {
+	public XYZ2DEM_Importer(String path, float myPixelSize, boolean myShowLimitsDecision) {
 		this.path = path;
 		this.myPixelSize = myPixelSize;
-		this.myBackground=myBackground;
 		this.myShowLimitsDecision=myShowLimitsDecision;
 	read(path);
 	}

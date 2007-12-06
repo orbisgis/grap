@@ -66,7 +66,7 @@ public class BasicTest extends GrapTest {
 		try {
 			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 					+ "/xyz/MNT_Nantes_Lambert.xyz", GeoProcessorType.FLOAT,
-					10, Float.NaN);
+					10);
 			gr.open();
 			gr.show();
 			gr.save(tmpData + "xyzdem.tif");
