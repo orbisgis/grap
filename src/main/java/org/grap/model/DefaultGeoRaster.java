@@ -286,6 +286,17 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
+	private LinearRing toPixel(final LinearRing ring) {
+		final Coordinate[] coords = ring.getCoordinates();
+		final Coordinate[] transformedCoords = new Coordinate[coords.length];
+		for (int i = 0; i < transformedCoords.length; i++) {
+			final Point2D p = rasterMetadata.toPixel(coords[i].x, coords[i].y);
+			transformedCoords[i] = new Coordinate(p.getX(), p.getY());
+		}
+
+		return new GeometryFactory().createLinearRing(transformedCoords);
+	}
+
 	public GeoRaster crop(final LinearRing ring) throws OperationException,
 			GeoreferencingException {
 		try {
@@ -301,8 +312,7 @@ public class DefaultGeoRaster implements GeoRaster {
 				processor.setRoi(roi);
 				final ImageProcessor result = processor.crop();
 
-				Envelope newEnvelope = toWorld(roi
-						.getBoundingRect());
+				Envelope newEnvelope = toWorld(roi.getBoundingRect());
 
 				final double originX = newEnvelope.getMinX();
 				final double originY = newEnvelope.getMaxY();
@@ -354,6 +364,20 @@ public class DefaultGeoRaster implements GeoRaster {
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
+	}
+
+	private Rectangle2D getRectangleInPixels(final Rectangle2D rectangle) {
+		final Point2D min = getPixelCoords(rectangle.getMinX(), rectangle
+				.getMinY());
+		final Point2D max = getPixelCoords(rectangle.getMaxX(), rectangle
+				.getMaxY());
+		final int minx = (int) Math.min(min.getX(), max.getX());
+		final int maxx = (int) Math
+				.ceil(Math.max(min.getX(), max.getX()) + 0.5);
+		final int miny = (int) Math.min(min.getY(), max.getY());
+		final int maxy = (int) Math
+				.ceil(Math.max(min.getY(), max.getY()) + 0.5);
+		return new Rectangle(minx, miny, maxx - minx, maxy - miny);
 	}
 
 	private Envelope toWorld(Rectangle2D rectangle) {
@@ -463,17 +487,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		return cachedValues;
 	}
 
-	private LinearRing toPixel(final LinearRing ring) {
-		final Coordinate[] coords = ring.getCoordinates();
-		final Coordinate[] transformedCoords = new Coordinate[coords.length];
-		for (int i = 0; i < transformedCoords.length; i++) {
-			final Point2D p = rasterMetadata.toPixel(coords[i].x, coords[i].y);
-			transformedCoords[i] = new Coordinate(p.getX(), p.getY());
-		}
-
-		return new GeometryFactory().createLinearRing(transformedCoords);
-	}
-
 	private void checkRangeColors(final double[] ranges, final Color[] colors)
 			throws OperationException {
 		if (ranges.length != colors.length + 1) {
@@ -490,17 +503,5 @@ public class DefaultGeoRaster implements GeoRaster {
 			throw new OperationException(
 					"Colors.length must be less than 256 !");
 		}
-	}
-
-	private Rectangle2D getRectangleInPixels(final Rectangle2D rectangle) {
-		final Point2D min = getPixelCoords(rectangle.getMinX(), rectangle
-				.getMinY());
-		final Point2D max = getPixelCoords(rectangle.getMaxX(), rectangle
-				.getMaxY());
-		final int minx = (int) Math.min(min.getX(), max.getX());
-		final int maxx = (int) Math.ceil(Math.max(min.getX(), max.getX()));
-		final int miny = (int) Math.min(min.getY(), max.getY());
-		final int maxy = (int) Math.ceil(Math.max(min.getY(), max.getY()));
-		return new Rectangle(minx, miny, maxx - minx, maxy - miny);
 	}
 }

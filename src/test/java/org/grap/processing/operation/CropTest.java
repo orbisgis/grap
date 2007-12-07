@@ -137,6 +137,18 @@ public class CropTest extends GrapTest {
 
 		final GrapImagePlus srcGrapImagePlus = geoRasterSrc.getGrapImagePlus();
 		final GrapImagePlus dstGrapImagePlus = geoRasterDst.getGrapImagePlus();
+		RasterMetadata dstMetadata = geoRasterDst.getMetadata();
+		RasterMetadata srcMetadata = geoRasterSrc.getMetadata();
+		assertTrue(dstMetadata.getEnvelope().getMinX() < cropRectangle
+				.getMinX());
+		assertTrue(dstMetadata.getEnvelope().getMinY() < cropRectangle
+				.getMinY());
+		assertTrue(dstMetadata.getEnvelope().getMaxX() > cropRectangle
+				.getMaxX());
+		assertTrue(dstMetadata.getEnvelope().getMaxY() > cropRectangle
+				.getMaxY());
+		assertTrue(dstMetadata.getEnvelope().getWidth() < srcMetadata
+				.getEnvelope().getWidth());
 		checkCrop(geoRasterDst.getMetadata().getEnvelope(), srcGrapImagePlus,
 				dstGrapImagePlus);
 	}
