@@ -76,6 +76,20 @@ public class RasterMetadata implements Serializable {
 
 	private AffineTransform inverseTransform;
 
+	/**
+	 * Builds a raster metadata object
+	 *
+	 * @param upperLeftX
+	 *            center of the upper left pixel
+	 * @param upperLeftY
+	 *            center of the upper left pixel
+	 * @param pixelSize_X
+	 * @param pixelSize_Y
+	 *            Size of the pixel in the y-axis. Negative value if it grows
+	 *            upwards (world files)
+	 * @param ncols
+	 * @param nrows
+	 */
 	public RasterMetadata(final double upperLeftX, final double upperLeftY,
 			final float pixelSize_X, final float pixelSize_Y, int ncols,
 			int nrows) {
@@ -83,6 +97,20 @@ public class RasterMetadata implements Serializable {
 				0);
 	}
 
+	/**
+	 * Builds a raster metadata object
+	 *
+	 * @param upperLeftX
+	 *            center of the upper left pixel
+	 * @param upperLeftY
+	 *            center of the upper left pixel
+	 * @param pixelSize_X
+	 * @param pixelSize_Y
+	 *            Size of the pixel in the y-axis. Negative value if it grows
+	 *            upwards (world files)
+	 * @param ncols
+	 * @param nrows
+	 */
 	public RasterMetadata(final double upperLeftX, final double upperLeftY,
 			final float pixelSize_X, final float pixelSize_Y, int ncols,
 			int nrows, final double colRotation, final double rowRotation) {
@@ -99,7 +127,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns upper left corner X coordinate.
-	 * 
+	 *
 	 * @return type double.
 	 */
 
@@ -109,7 +137,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns upper left corner Y coordinate.
-	 * 
+	 *
 	 * @return type double.
 	 */
 
@@ -119,7 +147,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns pixel's width.
-	 * 
+	 *
 	 * @return type int.
 	 */
 
@@ -129,7 +157,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns pixel's high.
-	 * 
+	 *
 	 * @return type int.
 	 */
 
@@ -173,8 +201,7 @@ public class RasterMetadata implements Serializable {
 		yM = yulcorner - pixelSize_Y / 2;
 		ym = yM + (nrows * pixelSize_Y);
 
-		envelope = new Envelope(xm, xM, ym, yM);
-		return envelope;
+		return new Envelope(xm, xM, ym, yM);
 	}
 
 	public double getRotation_X() {
@@ -230,5 +257,15 @@ public class RasterMetadata implements Serializable {
 		ret.calculateAffineTransform();
 
 		return ret;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof RasterMetadata) {
+			RasterMetadata rm = (RasterMetadata) obj;
+			return affineTransform.equals(rm.affineTransform);
+		} else {
+			return false;
+		}
 	}
 }

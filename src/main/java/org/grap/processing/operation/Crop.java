@@ -39,7 +39,7 @@
  */
 package org.grap.processing.operation;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
@@ -51,13 +51,13 @@ import com.vividsolutions.jts.geom.LinearRing;
 public class Crop implements Operation {
 	private LinearRing ring;
 
-	private Rectangle rectangle;
+	private Rectangle2D rectangle;
 
 	public Crop(final LinearRing ring) {
 		this.ring = ring;
 	}
 
-	public Crop(final Rectangle rectangle) {
+	public Crop(final Rectangle2D rectangle) {
 		this.rectangle = rectangle;
 	}
 

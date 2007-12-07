@@ -105,9 +105,10 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	DefaultGeoRaster(final String fileName,
-			final GeoProcessorType geoProcessorType,
-			float pixelsize) throws FileNotFoundException, IOException {
-		fileReader = FileReaderFactory.create(fileName, geoProcessorType, pixelsize);
+			final GeoProcessorType geoProcessorType, float pixelsize)
+			throws FileNotFoundException, IOException {
+		fileReader = FileReaderFactory.create(fileName, geoProcessorType,
+				pixelsize);
 	}
 
 	DefaultGeoRaster(final ImagePlus imagePlus, final RasterMetadata metadata) {
@@ -288,19 +289,21 @@ public class DefaultGeoRaster implements GeoRaster {
 	public GeoRaster crop(final LinearRing ring) throws OperationException,
 			GeoreferencingException {
 		try {
-			final Geometry geomEnvelope = new GeometryFactory().createPolygon(
-					(LinearRing) EnvelopeUtil.toGeometry(rasterMetadata
-							.getEnvelope()), null);
+			final Geometry rasterEnvelope = new GeometryFactory()
+					.createPolygon((LinearRing) EnvelopeUtil
+							.toGeometry(rasterMetadata.getEnvelope()), null);
 
-			if (geomEnvelope.intersects(ring)) {
+			if (rasterEnvelope.intersects(ring)) {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(toPixel(ring));
 
 				final ImageProcessor processor = getGrapImagePlus()
 						.getProcessor();
 				processor.setRoi(roi);
 				final ImageProcessor result = processor.crop();
-				final Envelope newEnvelope = geomEnvelope.intersection(ring)
-						.getEnvelopeInternal();
+
+				Envelope newEnvelope = toWorld(roi
+						.getBoundingRect());
+
 				final double originX = newEnvelope.getMinX();
 				final double originY = newEnvelope.getMaxY();
 				final RasterMetadata metadataResult = new RasterMetadata(
@@ -332,16 +335,12 @@ public class DefaultGeoRaster implements GeoRaster {
 				processor.setRoi((int) pixelRoi.getMinX(), (int) pixelRoi
 						.getMinY(), (int) pixelRoi.getWidth(), (int) pixelRoi
 						.getHeight());
-
 				final ImageProcessor result = processor.crop();
-				final Envelope newEnvelope = new Envelope(new Coordinate(roi
-						.getMinX(), roi.getMinY()), new Coordinate(roi
-						.getMaxX(), roi.getMaxY()));
-				final Point2D coordinates = this.pixelToWorldCoord(
-						(int) newEnvelope.getMinX(), (int) newEnvelope
-								.getMaxY());
-				final double originX = coordinates.getX();
-				final double originY = coordinates.getY();
+
+				final Envelope newEnvelope = toWorld(pixelRoi);
+				final double originX = newEnvelope.getMinX();
+				final double originY = newEnvelope.getMaxY();
+
 				final RasterMetadata metadataResult = new RasterMetadata(
 						originX, originY, rasterMetadata.getPixelSize_X(),
 						rasterMetadata.getPixelSize_Y(), result.getWidth(),
@@ -355,6 +354,19 @@ public class DefaultGeoRaster implements GeoRaster {
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
+	}
+
+	private Envelope toWorld(Rectangle2D rectangle) {
+		final Point2D min = getMetadata().toWorld((int) rectangle.getMinX(),
+				(int) rectangle.getMinY());
+		final Point2D max = getMetadata().toWorld((int) rectangle.getMaxX(),
+				(int) rectangle.getMaxY());
+		final double minx = Math.min(min.getX(), max.getX());
+		final double maxx = Math.max(min.getX(), max.getX());
+		final double miny = Math.min(min.getY(), max.getY());
+		final double maxy = Math.max(min.getY(), max.getY());
+		return new Envelope(new Coordinate(minx, miny), new Coordinate(maxx,
+				maxy));
 	}
 
 	public GeoRaster erode() throws OperationException, GeoreferencingException {
@@ -485,11 +497,10 @@ public class DefaultGeoRaster implements GeoRaster {
 				.getMinY());
 		final Point2D max = getPixelCoords(rectangle.getMaxX(), rectangle
 				.getMaxY());
-		final double minx = Math.min(min.getX(), max.getX());
-		final double maxx = Math.max(min.getX(), max.getX());
-		final double miny = Math.min(min.getY(), max.getY());
-		final double maxy = Math.max(min.getY(), max.getY());
-		return new Rectangle((int) minx, (int) miny, (int) (maxx - minx),
-				(int) (maxy - miny));
+		final int minx = (int) Math.min(min.getX(), max.getX());
+		final int maxx = (int) Math.ceil(Math.max(min.getX(), max.getX()));
+		final int miny = (int) Math.min(min.getY(), max.getY());
+		final int maxy = (int) Math.ceil(Math.max(min.getY(), max.getY()));
+		return new Rectangle(minx, miny, maxx - minx, maxy - miny);
 	}
 }

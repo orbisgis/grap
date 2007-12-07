@@ -39,14 +39,15 @@
  */
 package org.grap.processing.operation;
 
-import java.awt.Rectangle;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
+import org.grap.model.RasterMetadata;
 import org.grap.utilities.EnvelopeUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -90,13 +91,32 @@ public class CropTest extends GrapTest {
 
 	public void testCropPolygonOutside() throws Exception {
 		final LinearRing polygon = new GeometryFactory()
-				.createLinearRing(new Coordinate[] { new Coordinate(100, 100),
-						new Coordinate(100, 101), new Coordinate(101, 101),
-						new Coordinate(101, 100), new Coordinate(100, 100) });
+				.createLinearRing(new Coordinate[] {
+						new Coordinate(100.5, 100.5),
+						new Coordinate(100.5, 101.5),
+						new Coordinate(101.5, 101.5),
+						new Coordinate(101.5, 100.5),
+						new Coordinate(100.5, 100.5) });
 		geoRasterSrc.save(tmpData + "1.tif");
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(polygon));
 
 		assertTrue(geoRasterDst.isEmpty());
+	}
+
+	public void testCropAll() throws Exception {
+		final Envelope rasterEnvelope = geoRasterSrc.getMetadata()
+				.getEnvelope();
+		final Rectangle2D cropRectangle = new Rectangle2D.Double(rasterEnvelope
+				.getMinX(), rasterEnvelope.getMinY(),
+				rasterEnvelope.getWidth(), rasterEnvelope.getHeight());
+		geoRasterDst = geoRasterSrc.doOperation(new Crop(cropRectangle));
+
+		assertTrue(geoRasterDst.getWidth() > 0);
+		assertTrue(geoRasterDst.getHeight() > 0);
+
+		RasterMetadata dstMetadata = geoRasterDst.getMetadata();
+		RasterMetadata srcMetadata = geoRasterSrc.getMetadata();
+		assertTrue(dstMetadata.equals(srcMetadata));
 	}
 
 	public void testCropRectangle() throws Exception {
@@ -104,11 +124,11 @@ public class CropTest extends GrapTest {
 				.getEnvelope();
 		geoRasterSrc.save(tmpData + "1.tif");
 		final int buffer = (int) (rasterEnvelope.getWidth() / 2.3);
-		final Rectangle cropRectangle = new Rectangle((int) rasterEnvelope
+		final Rectangle2D cropRectangle = new Rectangle2D.Double(rasterEnvelope
 				.getMinX()
-				+ buffer, (int) rasterEnvelope.getMinY() + buffer,
-				(int) rasterEnvelope.getWidth() - 2 * buffer,
-				(int) rasterEnvelope.getHeight() - 2 * buffer);
+				+ buffer, rasterEnvelope.getMinY() + buffer, rasterEnvelope
+				.getWidth()
+				- 2 * buffer, rasterEnvelope.getHeight() - 2 * buffer);
 		geoRasterDst = geoRasterSrc.doOperation(new Crop(cropRectangle));
 		geoRasterDst.save(tmpData + "2.tif");
 
@@ -123,8 +143,19 @@ public class CropTest extends GrapTest {
 
 	private void checkCrop(Envelope envelope, GrapImagePlus srcPixelProvider,
 			GrapImagePlus dstPixelProvider) throws IOException {
-		for (double x = envelope.getMinY(); x < envelope.getMaxY(); x++) {
-			for (double y = envelope.getMinX(); y < envelope.getMaxX(); y++) {
+		// check metadata
+		RasterMetadata dstMetadata = geoRasterDst.getMetadata();
+		float sizeX = dstMetadata.getPixelSize_X();
+		assertTrue(sizeX == geoRasterSrc.getMetadata().getPixelSize_X());
+		int numPixelsX = dstMetadata.getNCols();
+		assertTrue(numPixelsX * sizeX == dstMetadata.getEnvelope().getWidth());
+		double xOrigin = dstMetadata.getXOrigin();
+		assertTrue(xOrigin - (sizeX / 2) + numPixelsX * sizeX == dstMetadata
+				.getEnvelope().getMaxX());
+
+		// check raster values
+		for (double x = envelope.getMinY(); x < envelope.getMaxY(); x = x + 1) {
+			for (double y = envelope.getMinX(); y < envelope.getMaxX(); y = y + 1) {
 				final Point2D srcPixel = geoRasterSrc.getPixelCoords(x, y);
 				final Point2D dstPixel = geoRasterDst.getPixelCoords(x, y);
 				final float p = srcPixelProvider.getPixelValue((int) srcPixel
@@ -143,7 +174,8 @@ public class CropTest extends GrapTest {
 	public void testDontModifyOriginalRaster() throws Exception {
 		final GeoRaster gr = sampleRaster;
 		final byte[] pixels1 = gr.getGrapImagePlus().getBytePixels();
-		final GeoRaster gr2 = gr.convolve3x3(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+		final GeoRaster gr2 = gr.convolve3x3(new int[] { 1, 2, 3, 4, 5, 6, 7,
+				8, 9 });
 		final byte[] pixels2 = gr.getGrapImagePlus().getBytePixels();
 		final byte[] pixels3 = gr2.getGrapImagePlus().getBytePixels();
 		assertTrue(equals(pixels1, pixels2));
