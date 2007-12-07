@@ -57,15 +57,15 @@ import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 /**
- * 
+ *
  * @author Thomas and Erwan
- * 
+ *
  * This class is written to directly access the ESRI ascii grid format.
- * 
+ *
  * The ASCII grid data file format comprises a few lines of header data followed
  * by lists of cell values. The header data includes the following keywords and
  * values:
- * 
+ *
  * ncols - number of columns in the data set. nrows - number of rows in the data
  * set. xllcenter or xllcorner - x-coordinate of the center or lower-left corner
  * of the uper-left cell. yllcenter or yllcorner - y-coordinate of the center or
@@ -73,14 +73,14 @@ import org.grap.model.RasterMetadata;
  * set. nodata_value - value in the file assigned to cells whose value is
  * unknown. This keyword and value is optional. The nodata_value defaults to
  * -9999.
- * 
- * 
+ *
+ *
  * For example
- * 
+ *
  * ncols 480 nrows 450 xllcorner 378923 yllcorner 4072345 cellsize 30
  * nodata_value -32768 43 3 45 7 3 56 2 5 23 65 34 6 32 etc 35 45 65 34 2 6 78 4
  * 38 44 89 3 2 7 etc etc
- * 
+ *
  */
 public class EsriGRIDReader implements FileReader {
 	private InputStream in;
@@ -223,8 +223,8 @@ public class EsriGRIDReader implements FileReader {
 
 		// the -cellsize in case of pixelSize_Y parameter is due to the world
 		// file specifications
-		rasterMetadata = new RasterMetadata(upperLeftX, upperLeftY, cellsize,
-				-cellsize, nCols, nRows);
+		rasterMetadata = new RasterMetadata(upperLeftX + cellsize / 2,
+				upperLeftY - cellsize / 2, cellsize, -cellsize, nCols, nRows);
 		rasterMetadata.setNoData(noDataValue);
 		return rasterMetadata;
 	}
