@@ -175,7 +175,7 @@ public class LutGenerator {
 
 		if (arg.equalsIgnoreCase("fire"))
 			nColors = fire(fi.reds, fi.greens, fi.blues);
-		else if (arg.equalsIgnoreCase("grays"))
+		else if (arg.equalsIgnoreCase("gray"))
 			nColors = grays(fi.reds, fi.greens, fi.blues);
 		else if (arg.equalsIgnoreCase("ice"))
 			nColors = ice(fi.reds, fi.greens, fi.blues);
@@ -206,5 +206,27 @@ public class LutGenerator {
 			return cm;
 		}
 		return null;
+	}
+	
+	public static String[] getDefaultLUTS(){
+		 String[] LUTS = new String[12];
+		 
+		 LUTS[0] = "fire";
+		 LUTS[1] = "gray";
+		 LUTS[2] = "ice";
+		 LUTS[3] = "spectrum";
+		 LUTS[4] = "red";
+		 LUTS[5] = "green";
+		 LUTS[6] = "blue";
+		 LUTS[7] = "cyan";
+		 LUTS[8] = "magenta";
+		 LUTS[9] = "yellow";
+		 LUTS[10] = "redgreen";
+		 LUTS[11] = "3-3-2 RGB";
+		                               
+		
+		return LUTS;
+		
+		
 	}
 }

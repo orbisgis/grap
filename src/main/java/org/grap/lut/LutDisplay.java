@@ -13,33 +13,36 @@ public class LutDisplay {
 
 	public LutDisplay(ColorModel cm) {
 		
-		cm = this.cm;
+		this.cm = cm;
 		
 		
 	}
 	
-	public ImagePlus getImage(){
-		
-		byte[] r = new byte[256];
-		byte[] g = new byte[256];
-		byte[] b = new byte[256];
+	public ImagePlus getImagePlus(){
+				
 
-		int w = 256, h, x, y, i, j;
+		int w = 256, h, x, y, j;
 		h=20;
 		
 				ImagePlus imp = NewImage.createByteImage("Lut", w, h, 1, 0);
 				ImageProcessor ip = imp.getProcessor();
 				byte[] pixels = (byte[])ip.getPixels();
-				imp.show();
+				
+					
+				
 				j=0;
 				for (y = 0; y < h; y++) {
 					for (x = 0; x < w; x++) {
 						pixels[j++] = (byte) x;
+						
 					}
 				}
+				
+				
 				imp.getProcessor().setColorModel(cm);
-				imp.getProcessor().resize(1, 20);
+				
 				imp.updateAndDraw();
+				
 				
 				
 				return imp;

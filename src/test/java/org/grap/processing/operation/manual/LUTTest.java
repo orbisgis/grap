@@ -46,27 +46,36 @@ import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.grap.lut.LutDisplay;
+import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 
-public class RangeColorsTest {
+public class LUTTest {
 	public static void main(String[] args) throws Exception {
 		String src = "../../datas2tests/grid/sample.asc";
 
+		ColorModel cm = LutGenerator.colorModel("fire");
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		geoRaster.setRangeColors(new double[] { 70, 200, 400, 600, 1300 },
-				new Color[] { Color.BLUE, Color.CYAN, Color.GREEN, Color.RED });
+		geoRaster.setLUT(cm);
+		geoRaster.show();
+		
+		LutDisplay lutDisplay = new LutDisplay(cm);
+		
+		lutDisplay.getImagePlus().show();
 		
 		
 	
 		
-		geoRaster.show();
+		
 		
 		
 
