@@ -146,6 +146,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		final byte[] reds = new byte[nbOfColors];
 		final byte[] greens = new byte[nbOfColors];
 		final byte[] blues = new byte[nbOfColors];
+		final byte[] alpha = new byte[nbOfColors];
 		final double delta = (ranges[ranges.length - 1] - ranges[0])
 				/ (nbOfColors - 1);
 		double x = ranges[0] + delta;
@@ -158,14 +159,17 @@ public class DefaultGeoRaster implements GeoRaster {
 			reds[i] = (byte) colors[j].getRed();
 			greens[i] = (byte) colors[j].getGreen();
 			blues[i] = (byte) colors[j].getBlue();
+			alpha[i] = 1;
 		}
 		// default color for NaN pixels :
 		reds[0] = (byte) Color.BLACK.getRed();
 		greens[0] = (byte) Color.BLACK.getGreen();
 		blues[0] = (byte) Color.BLACK.getBlue();
+		alpha[0] = 0;
 
 		try {
-			setLUT(new IndexColorModel(8, nbOfColors, reds, greens, blues));
+			setLUT(new IndexColorModel(8, nbOfColors, reds, greens, blues,
+					alpha));
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
