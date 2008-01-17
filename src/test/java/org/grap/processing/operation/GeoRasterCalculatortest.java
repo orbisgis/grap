@@ -39,39 +39,27 @@
  */
 package org.grap.processing.operation;
 
-import java.io.IOException;
-
-import org.grap.io.GeoreferencingException;
+import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
-import org.grap.model.GrapImagePlus;
+import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.OperationException;
 
+public class GeoRasterCalculatortest extends GrapTest {
 
+	public void testSubtract() throws Exception {
+		// load the DEM
+		final GeoRaster geoRasterSrc = GeoRasterFactory
+				.createGeoRaster(externalData + "grid/smallsample.asc");
+		geoRasterSrc.open();
 
-public class ImageCalculator implements Operation {
-	
-	
-	private GeoRaster gr2;
-	public ImageCalculator (final GeoRaster gr2){
-		this.gr2 = gr2;
-		
-	}
-	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
-		
-		try {
-			GrapImagePlus imp1 = geoRaster.getGrapImagePlus();
-		
-			GrapImagePlus imp2 = gr2.getGrapImagePlus();
-			
-			
-		
-		} catch (IOException e) {			
-			e.printStackTrace();
+		final Operation subtract = new GeoRasterCalculator(geoRasterSrc,
+				GeoRasterCalculator.SUBSTRACT);
+		final GeoRaster gResult = geoRasterSrc.doOperation(subtract);
+
+		float[] pixels = gResult.getGrapImagePlus().getFloatPixels();
+
+		for (float pixel : pixels) {
+			assertTrue((0 == pixel) || (Float.isNaN(pixel)));
 		}
-		
-		
-		return null		;
 	}
 }
