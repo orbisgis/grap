@@ -41,7 +41,6 @@ package org.grap.processing.operation;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
@@ -78,59 +77,50 @@ public class GeoRasterCalculator implements Operation {
 	}
 
 	private GeoRaster gr2;
-
 	private int method;
 
 	public GeoRasterCalculator(final GeoRaster gr2, int method) {
 		this.gr2 = gr2;
 		this.method = method;
-
 	}
 
 	public GeoRaster execute(final GeoRaster gr1) throws OperationException,
 			GeoreferencingException {
-
 		try {
-			GrapImagePlus img1 = gr1.getGrapImagePlus();
-
-			GrapImagePlus img2 = gr2.getGrapImagePlus();
+			final GrapImagePlus img1 = gr1.getGrapImagePlus();
+			final GrapImagePlus img2 = gr2.getGrapImagePlus();
 
 			if (gr1.getMetadata().getEnvelope().equals(
 					gr2.getMetadata().getEnvelope())) {
-
-				ImageProcessor ip1 = img1.getProcessor();
-				ImageProcessor ip2 = img2.getProcessor();
-				Calibration cal1 = img1.getCalibration();
-
+				final ImageProcessor ip1 = img1.getProcessor();
+				final ImageProcessor ip2 = img2.getProcessor();
+				final Calibration cal1 = img1.getCalibration();
 				ip1.copyBits(ip2, 0, 0, method);
 
-				if (!(ip1 instanceof ByteProcessor))
+				if (!(ip1 instanceof ByteProcessor)) {
 					ip1.resetMinAndMax();
-
-				ImagePlus img3 = new ImagePlus("Result of "
+				}
+				final ImagePlus img3 = new ImagePlus("Result of "
 						+ img1.getShortTitle(), ip1);
 				img3.setCalibration(cal1);
 
 				return GeoRasterFactory
 						.createGeoRaster(img3, gr1.getMetadata());
-
 			}
-
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new OperationException(e);
 		}
-
 		return GeoRasterFactory.createNullGeoRaster();
 	}
 
+	// TODO: what is "createNewImage" used for ?
 	ImageProcessor createNewImage(ImageProcessor ip1, ImageProcessor ip2,
 			Calibration cal) {
-		int width = Math.min(ip1.getWidth(), ip2.getWidth());
-		int height = Math.min(ip1.getHeight(), ip2.getHeight());
-		ImageProcessor ip3 = ip1.createProcessor(width, height);
+		final int width = Math.min(ip1.getWidth(), ip2.getWidth());
+		final int height = Math.min(ip1.getHeight(), ip2.getHeight());
+		final ImageProcessor ip3 = ip1.createProcessor(width, height);
 
 		ip3.insert(ip1, 0, 0);
 		return ip3;
 	}
-
 }

@@ -52,14 +52,14 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class MaxValueOperation implements Operation {
-
 	private double maxValue;
 
-	public MaxValueOperation(double maxValue) {
+	public MaxValueOperation(final double maxValue) {
 		this.maxValue = maxValue;
 	}
 
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException, GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
 
@@ -70,11 +70,10 @@ public class MaxValueOperation implements Operation {
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRaster.getMetadata());
-			
+
 			return grResult;
 		} catch (IOException e) {
 			throw new OperationException("Cannot do max value operation", e);
 		}
 	}
-
 }

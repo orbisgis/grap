@@ -50,27 +50,26 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class DivideValueOperation implements Operation {
+	private double valueToDivideBy;
 
-	private int valueToMultiply;
-
-	public DivideValueOperation(int valueToMultiply) {
-		this.valueToMultiply = valueToMultiply;
+	public DivideValueOperation(final double valueToDivideBy) {
+		this.valueToDivideBy = valueToDivideBy;
 	}
 
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException, GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
 
 			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-			rImp.getProcessor().multiply(1.0/valueToMultiply);
+			rImp.getProcessor().multiply(1.0 / valueToDivideBy);
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRaster.getMetadata());
-			
+
 			return grResult;
 		} catch (IOException e) {
 			throw new OperationException("Cannot do divide value operation", e);
 		}
 	}
-
 }

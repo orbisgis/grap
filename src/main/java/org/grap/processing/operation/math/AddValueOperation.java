@@ -50,14 +50,14 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class AddValueOperation implements Operation {
-
 	private int valueToAdd;
 
-	public AddValueOperation(int valueToAdd) {
+	public AddValueOperation(final int valueToAdd) {
 		this.valueToAdd = valueToAdd;
 	}
 
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException, GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
 
@@ -66,11 +66,10 @@ public class AddValueOperation implements Operation {
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRaster.getMetadata());
-			
+
 			return grResult;
 		} catch (IOException e) {
 			throw new OperationException("Cannot do add value operation", e);
 		}
 	}
-
 }

@@ -50,27 +50,27 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class SubtractValueOperation implements Operation {
+	private int valueToSubstract;
 
-	private int valueToSubtract;
-
-	public SubtractValueOperation(int valueToSubtract) {
-		this.valueToSubtract = valueToSubtract;
+	public SubtractValueOperation(int valueToSubstract) {
+		this.valueToSubstract = valueToSubstract;
 	}
 
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException, GeoreferencingException {
+	public GeoRaster execute(GeoRaster geoRaster) throws OperationException,
+			GeoreferencingException {
 		try {
 			geoRaster.open();
 
 			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-			rImp.getProcessor().add(-valueToSubtract);
+			rImp.getProcessor().add(-valueToSubstract);
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRaster.getMetadata());
-			
+
 			return grResult;
 		} catch (IOException e) {
-			throw new OperationException("Cannot do subtract value operation", e);
+			throw new OperationException("Cannot do subtract value operation",
+					e);
 		}
 	}
-
 }

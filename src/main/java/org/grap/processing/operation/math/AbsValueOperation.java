@@ -50,10 +50,8 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class AbsValueOperation implements Operation {
-
-	
-
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException, GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
 
@@ -62,11 +60,10 @@ public class AbsValueOperation implements Operation {
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRaster.getMetadata());
-			
+
 			return grResult;
 		} catch (IOException e) {
 			throw new OperationException("Cannot do abs value operation", e);
 		}
 	}
-
 }

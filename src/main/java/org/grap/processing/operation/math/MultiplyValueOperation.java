@@ -50,14 +50,14 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class MultiplyValueOperation implements Operation {
+	private double valueToMultiply;
 
-	private int valueToMultiply;
-
-	public MultiplyValueOperation(int valueToMultiply) {
+	public MultiplyValueOperation(final double valueToMultiply) {
 		this.valueToMultiply = valueToMultiply;
 	}
 
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException, GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
 
@@ -66,11 +66,11 @@ public class MultiplyValueOperation implements Operation {
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRaster.getMetadata());
-			
+
 			return grResult;
 		} catch (IOException e) {
-			throw new OperationException("Cannot do multiply value operation", e);
+			throw new OperationException("Cannot do multiply value operation",
+					e);
 		}
 	}
-
 }
