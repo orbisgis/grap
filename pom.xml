@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>ij</groupId>
 			<artifactId>imagej</artifactId>
-			<version>1.38</version>
+			<version>1.39p</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
