@@ -39,19 +39,7 @@
  */
 package org.grap.processing.operation.manual;
 
-import ij.ImagePlus;
-import ij.gui.NewImage;
-
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
@@ -67,24 +55,11 @@ public class LUTTest {
 		geoRaster.open();
 		geoRaster.setLUT(cm);
 		geoRaster.show();
-		
+
 		LutDisplay lutDisplay = new LutDisplay(cm);
-		
+
 		lutDisplay.getImagePlus().show();
-		
-		
-	
-		
-		
-		
-		
 
 	}
-	
-	
-	
-	
-	
-	
 
 }

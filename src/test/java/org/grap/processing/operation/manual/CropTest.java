@@ -43,15 +43,11 @@ import java.awt.Rectangle;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.Operation;
 import org.grap.processing.operation.Crop;
 import org.grap.utilities.EnvelopeUtil;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.util.GeometryEditor.GeometryEditorOperation;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class CropTest {

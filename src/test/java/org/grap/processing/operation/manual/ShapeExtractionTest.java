@@ -42,8 +42,6 @@ package org.grap.processing.operation.manual;
 import ij.gui.Roi;
 import ij.gui.Wand;
 
-import java.awt.Color;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 
@@ -53,24 +51,20 @@ public class ShapeExtractionTest {
 
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		
+
 		Wand w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
-		
+
 		w.autoOutline(150, 150);
-		
+
 		System.out.println("Points:" + w.npoints);
-		
-		int x[] = w.xpoints ;
-        int y[] = w.ypoints  ;
-        Roi roi = new ij.gui.PolygonRoi(x, y, w.npoints,geoRaster.getGrapImagePlus(),
-        		Roi.POLYGON   );
-        
-        
-        
-        geoRaster.getGrapImagePlus().setRoi(roi);
-        
-        
-		
+
+		int x[] = w.xpoints;
+		int y[] = w.ypoints;
+		Roi roi = new ij.gui.PolygonRoi(x, y, w.npoints, geoRaster
+				.getGrapImagePlus(), Roi.POLYGON);
+
+		geoRaster.getGrapImagePlus().setRoi(roi);
+
 		geoRaster.show();
 	}
 }

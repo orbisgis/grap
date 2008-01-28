@@ -39,19 +39,8 @@
  */
 package org.grap.processing.operation.manual;
 
-import ij.ImagePlus;
-import ij.gui.NewImage;
-
 import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -64,26 +53,15 @@ public class TransparentColorsTest {
 		geoRaster.open();
 		geoRaster.setRangeColors(new double[] { 70, 200, 400, 600, 1300 },
 				new Color[] { Color.BLUE, Color.CYAN, Color.GREEN, Color.RED });
-		
+
 		IndexColorModel cm = (IndexColorModel) geoRaster.getColorModel();
-		
-		
-		
+
 		System.out.println(cm.getTransparentPixel());
-		
+
 		System.out.println(cm.getAlpha(-1));
-	
-		
+
 		geoRaster.show();
-		
-		
 
 	}
-	
-	
-	
-	
-	
-	
 
 }
