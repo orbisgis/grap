@@ -39,15 +39,27 @@
  */
 package org.grap.processing.operation.manual;
 
-import ij.gui.Roi;
-import ij.gui.Wand;
+import java.awt.geom.Point2D;
+import java.io.File;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import ij.gui.Wand;
+
+
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+
 public class ShapeExtractionTest {
 	public static void main(String[] args) throws Exception {
-		String src = "../../datas2tests/grid/test.tif";
+		String src = "../../datas2tests/grid/sample.asc";
 
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
@@ -60,11 +72,36 @@ public class ShapeExtractionTest {
 
 		int x[] = w.xpoints;
 		int y[] = w.ypoints;
-		Roi roi = new ij.gui.PolygonRoi(x, y, w.npoints, geoRaster
-				.getGrapImagePlus(), Roi.POLYGON);
+		Roi roi = new PolygonRoi(w.xpoints, w.ypoints, w.npoints,
+				Roi.TRACED_ROI);
+		final Coordinate[] jtsCoords = new Coordinate[w.npoints];
+		for (int i = 0; i < roi.getPolygon().npoints; i++) {
+			final int xWand = roi.getPolygon().xpoints[i];
+			final int yWand = roi.getPolygon().ypoints[i];
+			final Point2D worldXY = geoRaster.pixelToWorldCoord(xWand,
+					yWand);
 
-		geoRaster.getGrapImagePlus().setRoi(roi);
+			jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());
+		}
+		
+		final CoordinateList cl = new CoordinateList(jtsCoords);
+		cl.closeRing();
+
+		final LinearRing geomRing = new GeometryFactory()
+				.createLinearRing(cl.toCoordinateArray());
+
+		final Polygon geomResult = new GeometryFactory().createPolygon(
+				geomRing, null);
+		
+		System.out.println(geomResult.toText());
+			
+		
 
 		geoRaster.show();
 	}
+	
+	
+	
+	
+	
 }
