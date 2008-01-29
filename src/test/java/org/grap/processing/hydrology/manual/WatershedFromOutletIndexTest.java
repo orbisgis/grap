@@ -44,7 +44,7 @@ import java.awt.Color;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.GridDirection;
 import org.grap.processing.hydrology.WatershedFromOutletIndex;
 
 public class WatershedFromOutletIndexTest {
@@ -58,7 +58,7 @@ public class WatershedFromOutletIndexTest {
 		grDEM.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
+		final Operation slopesDirections = new GridDirection();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");

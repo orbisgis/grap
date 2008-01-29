@@ -149,7 +149,7 @@ public class StrahlerStreamOrder implements Operation {
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (SlopesComputations.isARiverStart(gipSlopesAccumulations,
+				if (SlopesUtilities.isARiverStart(gipSlopesAccumulations,
 						gipSlopesDirections, riverThreshold, ncols, nrows, i)) {
 					strahlerStreamOrder[i] = riversStartValue;
 					junctionsStack.add(i);
@@ -211,11 +211,11 @@ public class StrahlerStreamOrder implements Operation {
 	private Integer nextCellIsARiversJunction(final int idx, final int cIdx,
 			final int rIdx, final Set<Integer> nextJunctionsStack)
 			throws IOException {
-		final Integer next = SlopesComputations
+		final Integer next = SlopesUtilities
 				.fromCellSlopeDirectionToNextCellIndex(gipSlopesDirections,
 						ncols, nrows, idx, cIdx, rIdx);
 		if (null != next) {
-			final Set<Integer> contributiveArea = SlopesComputations
+			final Set<Integer> contributiveArea = SlopesUtilities
 					.fromCellSlopeDirectionIdxToContributiveArea(
 							gipSlopesDirections, ncols, nrows, next);
 			contributiveArea.remove(idx);
@@ -237,7 +237,7 @@ public class StrahlerStreamOrder implements Operation {
 		if (riversStartValue == strahlerStreamOrder[idx]) {
 			return 1;
 		} else {
-			final Set<Integer> contributiveArea = SlopesComputations
+			final Set<Integer> contributiveArea = SlopesUtilities
 					.fromCellSlopeDirectionIdxToContributiveArea(
 							gipSlopesDirections, ncols, nrows, idx);
 			final SortedMap<Short, Short> tm = new TreeMap<Short, Short>();

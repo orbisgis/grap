@@ -45,7 +45,7 @@ import java.util.Set;
 
 import org.grap.model.GrapImagePlus;
 
-public class SlopesComputations {
+public class SlopesUtilities {
 	private final static short[] neighboursDirection = new short[] { 16, 32,
 			64, 128, 1, 2, 4, 8 };
 

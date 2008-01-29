@@ -42,7 +42,7 @@ package org.grap.processing.hydrology;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.GridDirection;
 import org.grap.processing.hydrology.WatershedFromOutletIndex;
 
 public class WatershedFromOutletIndexTest extends GrapTest {
@@ -58,7 +58,7 @@ public class WatershedFromOutletIndexTest extends GrapTest {
 		geoRasterSrc.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
+		final Operation slopesDirections = new GridDirection();
 		final GeoRaster grSlopesDirections = geoRasterSrc
 				.doOperation(slopesDirections);
 

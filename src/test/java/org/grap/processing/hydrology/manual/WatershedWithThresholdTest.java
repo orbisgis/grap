@@ -45,8 +45,8 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.hydrology.AllOutlets;
 import org.grap.processing.hydrology.AllWatersheds;
-import org.grap.processing.hydrology.SlopesAccumulations;
-import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.GridAccumulation;
+import org.grap.processing.hydrology.GridDirection;
 import org.grap.processing.hydrology.WatershedsWithThreshold;
 
 public class WatershedWithThresholdTest {
@@ -60,13 +60,13 @@ public class WatershedWithThresholdTest {
 		grDEM.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
+		final Operation slopesDirections = new GridDirection();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new SlopesAccumulations();
+		final Operation slopesAccumulations = new GridAccumulation();
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 		grSlopesAccumulations.save("../../datas2tests/tmp/11.tif");

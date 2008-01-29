@@ -44,7 +44,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
-import org.grap.processing.hydrology.SlopesAccumulations;
+import org.grap.processing.hydrology.GridAccumulation;
 import org.grap.processing.hydrology.StrahlerStreamOrder;
 
 public class StrahlerStreamOrderTest extends GrapTest {
@@ -171,7 +171,7 @@ public class StrahlerStreamOrderTest extends GrapTest {
 							rasterMetadata);
 
 			// compute the slopes accumulations
-			final Operation slopesAccumulations = new SlopesAccumulations();
+			final Operation slopesAccumulations = new GridAccumulation();
 			final GeoRaster grSlopesAccumulations = grSlopesDirections
 					.doOperation(slopesAccumulations);
 			printGeoRasterAndArray(grSlopesAccumulations, slopesDirections[i]);

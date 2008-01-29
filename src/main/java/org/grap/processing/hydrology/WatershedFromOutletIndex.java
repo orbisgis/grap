@@ -141,7 +141,7 @@ public class WatershedFromOutletIndex implements Operation {
 		final Set<Integer> parentsCell = new HashSet<Integer>();
 		for (int sonIdx : sonsCell) {
 			sameWatershed[sonIdx] = belongsToTheWatershed;
-			parentsCell.addAll(SlopesComputations
+			parentsCell.addAll(SlopesUtilities
 					.fromCellSlopeDirectionIdxToContributiveArea(
 							ppSlopesDirections, ncols, nrows, sonIdx));
 		}

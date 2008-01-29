@@ -50,7 +50,7 @@ public class ExtractRGBBand {
             
             red.addSlice(null,r);
             green.addSlice(null,g);
-            blue.addSlice(null,b);
+           blue.addSlice(null,b);
         }
 		}
         

@@ -56,12 +56,12 @@ public class WatershedWithThresholdTest extends GrapTest {
 		geoRasterSrc.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
+		final Operation slopesDirections = new GridDirection();
 		final GeoRaster grSlopesDirections = geoRasterSrc
 				.doOperation(slopesDirections);
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new SlopesAccumulations();
+		final Operation slopesAccumulations = new GridAccumulation();
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 

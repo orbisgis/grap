@@ -42,8 +42,8 @@ package org.grap.processing.hydrology;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.hydrology.SlopesAccumulations;
-import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.GridAccumulation;
+import org.grap.processing.hydrology.GridDirection;
 
 public class SlopesAccumulationsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
@@ -58,14 +58,14 @@ public class SlopesAccumulationsTest extends GrapTest {
 		geoRasterSrc.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
+		final Operation slopesDirections = new GridDirection();
 		final GeoRaster grSlopesDirections = geoRasterSrc
 				.doOperation(slopesDirections);
 		// compare the computed directions with predefined ones
 		compareGeoRasterAndArray(grSlopesDirections, slopesDirectionForDEM);
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new SlopesAccumulations();
+		final Operation slopesAccumulations = new GridAccumulation();
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 

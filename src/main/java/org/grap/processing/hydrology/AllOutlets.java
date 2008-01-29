@@ -165,7 +165,7 @@ public class AllOutlets implements Operation {
 					// current cell is now tagged as already visited
 					outlets[curCellIdx] = tmpNoDataValue;
 					prevCellIdx = curCellIdx;
-					curCellIdx = SlopesComputations
+					curCellIdx = SlopesUtilities
 							.fromCellSlopeDirectionToNextCellIndex(
 									gipSlopesDirections, ncols, nrows,
 									curCellIdx, c, r);

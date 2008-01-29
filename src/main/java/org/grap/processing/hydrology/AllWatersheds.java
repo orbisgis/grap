@@ -154,7 +154,7 @@ public class AllWatersheds implements Operation {
 			} else {
 				if (0 == watersheds[curCellIdx]) {
 					pathStack.add(curCellIdx);
-					curCellIdx = SlopesComputations
+					curCellIdx = SlopesUtilities
 							.fromCellSlopeDirectionToNextCellIndex(
 									gipSlopesDirections, ncols, nrows,
 									curCellIdx, c, r);

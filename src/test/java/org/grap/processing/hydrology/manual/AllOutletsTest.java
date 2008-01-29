@@ -45,7 +45,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.hydrology.AllOutlets;
-import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.GridDirection;
 
 public class AllOutletsTest {
 	public static void main(String[] args) throws Exception {
@@ -58,7 +58,7 @@ public class AllOutletsTest {
 		grDEM.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new SlopesDirections();
+		final Operation slopesDirections = new GridDirection();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
