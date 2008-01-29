@@ -480,6 +480,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			}
 			final ImageProcessor processor = ip.getProcessor();
 			/*
+			 * TODO
 			 * I comment this because this doesn't work. After solving the bug
 			 * of transparencies this must be removed final IndexColorModel cm =
 			 * (IndexColorModel) processor .getColorModel(); byte[] reds = new
