@@ -47,6 +47,9 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
+
 public class GeoreferencingTest extends TestCase {
 	private static GeoRaster sampleRaster;
 	private final static double upperLeftX = 1234.56;
@@ -88,6 +91,35 @@ public class GeoreferencingTest extends TestCase {
 		}
 	}
 
+	
+	public void testFromPixelToWorld() throws Exception{
+		
+		String src = "../../datas2tests/grid/3x3.asc";
+		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		geoRaster.open();
+
+		WKTReader wkt = new WKTReader();
+		Geometry point = wkt
+				.read("POINT ( 290004.9 2259994.9)");
+
+		System.out.println("The Point for the test : " + point.toText());
+		
+		final int halfPixelSize_X = (int) geoRaster.getMetadata().getPixelSize_X() / 2;
+		final int halfPixelSize_Y = (int) Math.abs(geoRaster.getMetadata().getPixelSize_Y()) / 2;
+
+		
+		
+		Point2D worldCoord = geoRaster.getMetadata().toWorld(1, 1);
+		
+		System.out.println("Pixel world coordinates : " + worldCoord);
+		
+		
+
+		
+	}
+	
+	
+	
 	public void testToWorld() throws Exception {
 		for (int r = 0; r < nrows; r++) {
 			final double y = upperLeftY + r * pixelSize_Y;
