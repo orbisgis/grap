@@ -479,20 +479,17 @@ public class DefaultGeoRaster implements GeoRaster {
 				ip = getGrapImagePlus();
 			}
 			final ImageProcessor processor = ip.getProcessor();
-			final IndexColorModel cm = (IndexColorModel) processor
-					.getColorModel();
-			byte[] reds = new byte[256];
-			byte[] greens = new byte[256];
-			byte[] blues = new byte[256];
-			byte[] alphas = new byte[256];
-			cm.getReds(reds);
-			cm.getGreens(greens);
-			cm.getBlues(blues);
-			cm.getAlphas(alphas);
-			alphas[0] = 0;
-			cachedValues.colorModel = new IndexColorModel(8, 256, reds, greens,
-					blues, alphas);
-			// cachedValues.colorModel = processor.getColorModel();
+			/*
+			 * I comment this because this doesn't work. After solving the bug
+			 * of transparencies this must be removed final IndexColorModel cm =
+			 * (IndexColorModel) processor .getColorModel(); byte[] reds = new
+			 * byte[256]; byte[] greens = new byte[256]; byte[] blues = new
+			 * byte[256]; byte[] alphas = new byte[256]; cm.getReds(reds);
+			 * cm.getGreens(greens); cm.getBlues(blues); cm.getAlphas(alphas);
+			 * alphas[0] = 0; cachedValues.colorModel = new IndexColorModel(8,
+			 * 256, reds, greens, blues, alphas);
+			 */
+			cachedValues.colorModel = processor.getColorModel();
 
 			cachedValues.min = processor.getMin();
 			cachedValues.max = processor.getMax();
