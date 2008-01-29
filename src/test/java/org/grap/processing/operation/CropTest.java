@@ -183,16 +183,7 @@ public class CropTest extends GrapTest {
 		}
 	}
 
-	public void testDontModifyOriginalRaster() throws Exception {
-		final GeoRaster gr = sampleRaster;
-		final byte[] pixels1 = gr.getGrapImagePlus().getBytePixels();
-		final GeoRaster gr2 = gr.convolve3x3(new int[] { 1, 2, 3, 4, 5, 6, 7,
-				8, 9 });
-		final byte[] pixels2 = gr.getGrapImagePlus().getBytePixels();
-		final byte[] pixels3 = gr2.getGrapImagePlus().getBytePixels();
-		assertTrue(equals(pixels1, pixels2));
-		assertTrue(!equals(pixels3, pixels2));
-	}
+	
 
 	private boolean equals(byte[] pixels1, byte[] pixels2) {
 		for (int i = 0; i < pixels2.length; i++) {
