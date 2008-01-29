@@ -114,19 +114,7 @@ public interface GeoRaster {
 	public abstract GeoRaster crop(Rectangle2D roi) throws OperationException,
 			GeoreferencingException;
 
-	public abstract GeoRaster erode() throws OperationException,
-			GeoreferencingException;
-
-	public abstract GeoRaster convolve(float[] kernel, int focalMeanSizeX,
-			int focalMeanSizeY) throws OperationException,
-			GeoreferencingException;
-
-	public abstract GeoRaster convolve3x3(int[] kernel)
-			throws OperationException, GeoreferencingException;
-
-	public abstract GeoRaster smooth() throws OperationException,
-			GeoreferencingException;
-
+	
 	public abstract double getMin() throws IOException, GeoreferencingException;
 
 	public abstract double getMax() throws IOException, GeoreferencingException;
