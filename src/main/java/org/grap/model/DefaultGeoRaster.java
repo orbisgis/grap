@@ -180,11 +180,22 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public Point2D pixelToWorldCoord(final int xpixel, final int ypixel) {
-		return rasterMetadata.toWorld(xpixel, ypixel);
+		if ((0 <= xpixel) && (xpixel < rasterMetadata.getNRows())
+				&& (0 <= ypixel) && (ypixel < rasterMetadata.getNCols())) {
+			return rasterMetadata.toWorld(xpixel, ypixel);
+		} else {
+			throw new IllegalArgumentException(
+					"Out of the GeoRaster envelope !");
+		}
 	}
 
 	public Point2D getPixelCoords(final double mouseX, final double mouseY) {
-		return rasterMetadata.toPixel(mouseX, mouseY);
+		if (rasterMetadata.getEnvelope().contains(mouseX, mouseY)) {
+			return rasterMetadata.toPixel(mouseX, mouseY);
+		} else {
+			throw new IllegalArgumentException(
+					"Out of the GeoRaster envelope !");
+		}
 	}
 
 	public void save(final String dest) throws IOException,
