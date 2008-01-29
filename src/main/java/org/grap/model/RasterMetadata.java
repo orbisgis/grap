@@ -78,7 +78,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * Builds a raster metadata object
-	 *
+	 * 
 	 * @param upperLeftX
 	 *            center of the upper left pixel
 	 * @param upperLeftY
@@ -99,7 +99,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * Builds a raster metadata object
-	 *
+	 * 
 	 * @param upperLeftX
 	 *            center of the upper left pixel
 	 * @param upperLeftY
@@ -127,7 +127,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns upper left corner X coordinate.
-	 *
+	 * 
 	 * @return type double.
 	 */
 
@@ -137,7 +137,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns upper left corner Y coordinate.
-	 *
+	 * 
 	 * @return type double.
 	 */
 
@@ -147,7 +147,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns pixel's width.
-	 *
+	 * 
 	 * @return type int.
 	 */
 
@@ -157,7 +157,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns pixel's high.
-	 *
+	 * 
 	 * @return type int.
 	 */
 
@@ -228,7 +228,12 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toPixel(final double x, final double y) {
-		return getInverse().transform(new Point2D.Double(x, y), null);
+		if (envelope.contains(x, y)) {
+			return getInverse().transform(new Point2D.Double(x, y), null);
+		} else {
+			throw new IllegalArgumentException(
+					"Out of the GeoRaster envelope !");
+		}
 	}
 
 	private AffineTransform getInverse() {
@@ -245,7 +250,12 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toWorld(final int x, final int y) {
-		return affineTransform.transform(new Point2D.Double(x, y), null);
+		if ((0 <= x) && (x < nrows) && (0 <= y) && (y < ncols)) {
+			return affineTransform.transform(new Point2D.Double(x, y), null);
+		} else {
+			throw new IllegalArgumentException(
+					"Out of the GeoRaster envelope !");
+		}
 	}
 
 	public RasterMetadata duplicate() {

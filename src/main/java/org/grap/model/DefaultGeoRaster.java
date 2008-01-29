@@ -180,22 +180,11 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public Point2D pixelToWorldCoord(final int xpixel, final int ypixel) {
-		if ((0 <= xpixel) && (xpixel < rasterMetadata.getNRows())
-				&& (0 <= ypixel) && (ypixel < rasterMetadata.getNCols())) {
-			return rasterMetadata.toWorld(xpixel, ypixel);
-		} else {
-			throw new IllegalArgumentException(
-					"Out of the GeoRaster envelope !");
-		}
+		return rasterMetadata.toWorld(xpixel, ypixel);
 	}
 
 	public Point2D getPixelCoords(final double mouseX, final double mouseY) {
-		if (rasterMetadata.getEnvelope().contains(mouseX, mouseY)) {
-			return rasterMetadata.toPixel(mouseX, mouseY);
-		} else {
-			throw new IllegalArgumentException(
-					"Out of the GeoRaster envelope !");
-		}
+		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
 
 	public void save(final String dest) throws IOException,
@@ -248,8 +237,6 @@ public class DefaultGeoRaster implements GeoRaster {
 	public boolean isEmpty() {
 		return false;
 	}
-
-		
 
 	private GeoRaster createGeoRaster(final ImageProcessor dup,
 			final RasterMetadata rasterMetadata) throws IOException,
@@ -384,7 +371,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		return new Envelope(new Coordinate(minx, miny), new Coordinate(maxx,
 				maxy));
 	}
-	
 
 	public double getMax() throws IOException, GeoreferencingException {
 		return getCachedValues(null).max;
@@ -446,11 +432,10 @@ public class DefaultGeoRaster implements GeoRaster {
 			}
 			final ImageProcessor processor = ip.getProcessor();
 			/*
-			 * TODO
-			 * I comment this because this doesn't work. After solving the bug
-			 * of transparencies this must be removed final IndexColorModel cm =
-			 * (IndexColorModel) processor .getColorModel(); byte[] reds = new
-			 * byte[256]; byte[] greens = new byte[256]; byte[] blues = new
+			 * TODO I comment this because this doesn't work. After solving the
+			 * bug of transparencies this must be removed final IndexColorModel
+			 * cm = (IndexColorModel) processor .getColorModel(); byte[] reds =
+			 * new byte[256]; byte[] greens = new byte[256]; byte[] blues = new
 			 * byte[256]; byte[] alphas = new byte[256]; cm.getReds(reds);
 			 * cm.getGreens(greens); cm.getBlues(blues); cm.getAlphas(alphas);
 			 * alphas[0] = 0; cachedValues.colorModel = new IndexColorModel(8,
