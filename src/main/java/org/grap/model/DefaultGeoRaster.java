@@ -238,30 +238,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		return false;
 	}
 
-	public GeoRaster convolve(final float[] kernel, final int kernelWidth,
-			final int kernelHeight) throws OperationException,
-			GeoreferencingException {
-		try {
-			final ImageProcessor dup = getGrapImagePlus().getProcessor()
-					.duplicate();
-			dup.convolve(kernel, kernelWidth, kernelHeight);
-			return createGeoRaster(dup, rasterMetadata.duplicate());
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-	}
-
-	public GeoRaster convolve3x3(final int[] kernel) throws OperationException,
-			GeoreferencingException {
-		try {
-			final ImageProcessor dup = getGrapImagePlus().getProcessor()
-					.duplicate();
-			dup.convolve3x3(kernel);
-			return createGeoRaster(dup, rasterMetadata.duplicate());
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-	}
+		
 
 	private GeoRaster createGeoRaster(final ImageProcessor dup,
 			final RasterMetadata rasterMetadata) throws IOException,
@@ -396,29 +373,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		return new Envelope(new Coordinate(minx, miny), new Coordinate(maxx,
 				maxy));
 	}
-
-	public GeoRaster erode() throws OperationException, GeoreferencingException {
-		try {
-			final ImageProcessor dup = getGrapImagePlus().getProcessor()
-					.duplicate();
-			dup.erode();
-			return createGeoRaster(dup, rasterMetadata.duplicate());
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-	}
-
-	public GeoRaster smooth() throws OperationException,
-			GeoreferencingException {
-		try {
-			final ImageProcessor dup = getGrapImagePlus().getProcessor()
-					.duplicate();
-			dup.smooth();
-			return createGeoRaster(dup, rasterMetadata.duplicate());
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-	}
+	
 
 	public double getMax() throws IOException, GeoreferencingException {
 		return getCachedValues(null).max;
