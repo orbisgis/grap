@@ -43,7 +43,7 @@ import org.grap.TestUtils;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.operation.FocalMean;
+import org.grap.processing.operation.filter.MeanFilter;
 
 public class FocalMeanTest {
 	public static void main(String[] args) throws Exception {
@@ -52,7 +52,7 @@ public class FocalMeanTest {
 
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		final GeoRaster result = geoRaster.doOperation(new FocalMean(3));
+		final GeoRaster result = geoRaster.doOperation(new MeanFilter());
 		TestUtils.printFreeMemory();
 		result.setLUT(LutGenerator.colorModel("fire"));
 		TestUtils.printFreeMemory();

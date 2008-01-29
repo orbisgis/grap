@@ -44,7 +44,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.Orientations;
-import org.grap.processing.operation.Shadows;
+import org.grap.processing.operation.others.Shadows;
 
 public class ShadowsTest {
 	public static void main(String[] args) throws Exception {
