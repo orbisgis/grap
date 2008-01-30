@@ -126,26 +126,6 @@ public class RasterMetadata implements Serializable {
 	}
 
 	/**
-	 * returns upper left corner X coordinate.
-	 * 
-	 * @return type double.
-	 */
-
-	public double getXOrigin() {
-		return xulcorner;
-	}
-
-	/**
-	 * returns upper left corner Y coordinate.
-	 * 
-	 * @return type double.
-	 */
-
-	public double getYOrigin() {
-		return yulcorner;
-	}
-
-	/**
 	 * returns pixel's width.
 	 * 
 	 * @return type int.
@@ -212,11 +192,17 @@ public class RasterMetadata implements Serializable {
 		return rotationY;
 	}
 
-	public double getXllcorner() {
+	/**
+	 * @return center of the upper left pixel (x coordinate)
+	 */
+	public double getXulcorner() {
 		return xulcorner;
 	}
 
-	public double getYllcorner() {
+	/**
+	 * @return center of the upper left pixel (y coordinate)
+	 */
+	public double getYulcorner() {
 		return yulcorner;
 	}
 
@@ -228,7 +214,7 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toPixel(final double x, final double y) {
-		if (envelope.contains(x, y)) {
+		if (getEnvelope().contains(x, y)) {
 			final Point2D ptInPixelGrid = getInverse().transform(
 					new Point2D.Double(x, y), null);
 			return new Point2D.Double(Math.round(ptInPixelGrid.getX()), Math

@@ -214,10 +214,8 @@ public class BasicTest extends GrapTest {
 		assertTrue(newM.getPixelSize_Y() == originalMetadata.getPixelSize_Y());
 		assertTrue(newM.getRotation_X() == originalMetadata.getRotation_X());
 		assertTrue(newM.getRotation_Y() == originalMetadata.getRotation_Y());
-		assertTrue(newM.getXllcorner() == originalMetadata.getXllcorner());
-		assertTrue(newM.getYllcorner() == originalMetadata.getYllcorner());
-		assertTrue(newM.getXOrigin() == originalMetadata.getXOrigin());
-		assertTrue(newM.getYOrigin() == originalMetadata.getYOrigin());
+		assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
+		assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
 	}
 
 	public void testLoadSaveGrid() throws Exception {

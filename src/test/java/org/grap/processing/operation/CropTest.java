@@ -161,15 +161,17 @@ public class CropTest extends GrapTest {
 		assertTrue(sizeX == geoRasterSrc.getMetadata().getPixelSize_X());
 		int numPixelsX = dstMetadata.getNCols();
 		assertTrue(numPixelsX * sizeX == dstMetadata.getEnvelope().getWidth());
-		double xOrigin = dstMetadata.getXOrigin();
+		double xOrigin = dstMetadata.getXulcorner();
 		assertTrue(xOrigin - (sizeX / 2) + numPixelsX * sizeX == dstMetadata
 				.getEnvelope().getMaxX());
 
 		// check raster values
 		for (double x = envelope.getMinY(); x < envelope.getMaxY(); x = x + 1) {
 			for (double y = envelope.getMinX(); y < envelope.getMaxX(); y = y + 1) {
-				final Point2D srcPixel = geoRasterSrc.fromRealWorldCoordToPixelGridCoord(x, y);
-				final Point2D dstPixel = geoRasterDst.fromRealWorldCoordToPixelGridCoord(x, y);
+				final Point2D srcPixel = geoRasterSrc
+						.fromRealWorldCoordToPixelGridCoord(x, y);
+				final Point2D dstPixel = geoRasterDst
+						.fromRealWorldCoordToPixelGridCoord(x, y);
 				final float p = srcPixelProvider.getPixelValue((int) srcPixel
 						.getX(), (int) srcPixel.getX());
 				final float p2 = dstPixelProvider.getPixelValue((int) dstPixel
@@ -182,8 +184,6 @@ public class CropTest extends GrapTest {
 			}
 		}
 	}
-
-	
 
 	private boolean equals(byte[] pixels1, byte[] pixels2) {
 		for (int i = 0; i < pixels2.length; i++) {

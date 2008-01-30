@@ -52,14 +52,15 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class GeoreferencingTest extends TestCase {
 	private static GeoRaster sampleRaster;
-	private final static double upperLeftX = 1234.56;
-	private final static double upperLeftY = 987.65;
-	private final static float pixelSize_X = 2.5f;
-	private final static float pixelSize_Y = -10.5f;
-	private final static int nrows = 33;
-	private final static int ncols = 57;
 
 	static {
+		final double upperLeftX = 1234.56;
+		final double upperLeftY = 987.65;
+		final float pixelSize_X = 2.5f;
+		final float pixelSize_Y = -10.5f;
+		final int nrows = 33;
+		final int ncols = 57;
+
 		final byte[] values = new byte[nrows * ncols];
 		for (int i = 0; i < nrows * ncols; i++) {
 			values[i] = (byte) i;
@@ -72,33 +73,52 @@ public class GeoreferencingTest extends TestCase {
 	}
 
 	public void testToPixel() throws Exception {
-		final int halfPixelSize_X = (int) pixelSize_X / 2;
-		final int halfPixelSize_Y = (int) Math.abs(pixelSize_Y) / 2;
+		final RasterMetadata md = sampleRaster.getMetadata();
 
-		for (int r = 0; r < nrows; r++) {
-			final double y = upperLeftY + r * pixelSize_Y;
-			for (int c = 0; c < ncols; c++) {
-				final double x = upperLeftX + c * pixelSize_X;
+		final int halfPixelSize_X = Math.round(md.getPixelSize_X() / 2);
+		final int halfPixelSize_Y = Math
+				.round(Math.abs(md.getPixelSize_Y()) / 2);
+
+		for (int r = 0; r < md.getNRows(); r++) {
+			final double y = md.getYulcorner() + r * md.getPixelSize_Y();
+			for (int c = 0; c < md.getNCols(); c++) {
+				System.out.printf("r = %d, c = %d\n", r, c);
+				final double x = md.getXulcorner() + c * md.getPixelSize_X();
 				for (int aleaR = -halfPixelSize_Y + 1; aleaR <= halfPixelSize_Y; aleaR++) {
 					for (int aleaC = -halfPixelSize_X; aleaC < halfPixelSize_X; aleaC++) {
 						final Point2D p = sampleRaster
 								.fromRealWorldCoordToPixelGridCoord(x + aleaC,
 										y + aleaR);
-						assertTrue(c == Math.round(p.getX()));
-						assertTrue(r == Math.round(p.getY()));
+						assertTrue(c == p.getX());
+						assertTrue(r == p.getY());
 					}
 				}
 			}
 		}
 	}
 
+	public void testToWorld() throws Exception {
+		final RasterMetadata md = sampleRaster.getMetadata();
+
+		for (int r = 0; r < md.getNRows(); r++) {
+			final double y = md.getYulcorner() + r * md.getPixelSize_Y();
+			for (int c = 0; c < md.getNCols(); c++) {
+				final double x = md.getXulcorner() + c * md.getPixelSize_X();
+				final Point2D p = sampleRaster
+						.fromPixelGridCoordToRealWorldCoord(c, r);
+				assertTrue(x == p.getX());
+				assertTrue(y == p.getY());
+			}
+		}
+	}
+
 	public void testFromPixelToWorld() throws Exception {
-		String src = "../../datas2tests/grid/3x3.asc";
-		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		final String src = "../../datas2tests/grid/3x3.asc";
+		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
 
-		WKTReader wkt = new WKTReader();
-		Geometry point = wkt.read("POINT ( 290004.9 2259994.9)");
+		final WKTReader wkt = new WKTReader();
+		final Geometry point = wkt.read("POINT ( 290004.9 2259994.9)");
 
 		System.out.println("The Point for the test : " + point.toText());
 
@@ -110,18 +130,5 @@ public class GeoreferencingTest extends TestCase {
 		Point2D worldCoord = geoRaster.fromPixelGridCoordToRealWorldCoord(1, 1);
 
 		System.out.println("Pixel world coordinates : " + worldCoord);
-	}
-
-	public void testToWorld() throws Exception {
-		for (int r = 0; r < nrows; r++) {
-			final double y = upperLeftY + r * pixelSize_Y;
-			for (int c = 0; c < ncols; c++) {
-				final double x = upperLeftX + c * pixelSize_X;
-				final Point2D p = sampleRaster
-						.fromPixelGridCoordToRealWorldCoord(c, r);
-				assertTrue(x == p.getX());
-				assertTrue(y == p.getY());
-			}
-		}
 	}
 }

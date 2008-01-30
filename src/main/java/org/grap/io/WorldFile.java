@@ -184,8 +184,8 @@ public class WorldFile {
 		file.println(rasterMetadata.getRotation_X());
 		file.println(rasterMetadata.getRotation_Y());
 		file.println(rasterMetadata.getPixelSize_Y());
-		file.println(rasterMetadata.getXllcorner());
-		file.println(rasterMetadata.getYllcorner());
+		file.println(rasterMetadata.getXulcorner());
+		file.println(rasterMetadata.getYulcorner());
 		file.close();
 	}
 }
