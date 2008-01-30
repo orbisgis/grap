@@ -69,10 +69,18 @@ public class Crop implements Operation {
 
 	private Rectangle2D rectangle;
 
+	/**
+	 * @param ring
+	 *            expressed in real world coordinates.
+	 */
 	public Crop(final LinearRing ring) {
 		this.ring = ring;
 	}
 
+	/**
+	 * @param rectangle
+	 *            expressed in real world coordinates.
+	 */
 	public Crop(final Rectangle2D rectangle) {
 		this.rectangle = rectangle;
 	}

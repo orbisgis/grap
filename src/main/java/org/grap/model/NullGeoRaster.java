@@ -41,13 +41,10 @@ package org.grap.model;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
 import org.grap.processing.Operation;
-
-import com.vividsolutions.jts.geom.LinearRing;
 
 class NullGeoRaster implements GeoRaster {
 	static GeoRaster instance = new NullGeoRaster();
@@ -120,19 +117,11 @@ class NullGeoRaster implements GeoRaster {
 		return instance;
 	}
 
-	public GeoRaster crop(Rectangle2D roi) {
-		return instance;
-	}
-
 	public GeoRaster erode() {
 		return instance;
 	}
 
 	public GeoRaster smooth() {
-		return instance;
-	}
-
-	public GeoRaster crop(LinearRing roi) {
 		return instance;
 	}
 

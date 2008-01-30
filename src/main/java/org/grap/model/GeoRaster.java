@@ -41,15 +41,12 @@ package org.grap.model;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-
-import com.vividsolutions.jts.geom.LinearRing;
 
 public interface GeoRaster {
 	public abstract void open() throws GeoreferencingException, IOException;
@@ -92,28 +89,6 @@ public interface GeoRaster {
 	public abstract int getType() throws IOException, GeoreferencingException;
 
 	public abstract boolean isEmpty();
-
-	/**
-	 * 
-	 * @param roi
-	 *            expressed in real world coordinates.
-	 * @return
-	 * @throws OperationException
-	 * @throws GeoreferencingException
-	 */
-	public abstract GeoRaster crop(LinearRing roi) throws OperationException,
-			GeoreferencingException;
-
-	/**
-	 * 
-	 * @param roi
-	 *            expressed in real world coordinates.
-	 * @return
-	 * @throws OperationException
-	 * @throws GeoreferencingException
-	 */
-	public abstract GeoRaster crop(Rectangle2D roi) throws OperationException,
-			GeoreferencingException;
 
 	public abstract double getMin() throws IOException, GeoreferencingException;
 
