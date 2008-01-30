@@ -40,68 +40,63 @@
 package org.grap.io;
 
 /**
- *  XYZ2DEM_Importer Version 1.00, 2005-02-18, by
- *  Martin Schlueter, i3mainz, Mainz University of Applied Sciences, Germany
- *  Barry Joe, ZCS Inc., Calgary, AB, Canada (contributor of Geompack)
- *
- *  This ImageJ plugin imports X,Y,Z coordinates
- *  of (usually irregularly distributed) points
- *  from the first 3 columns of a plain text file
- *  and interpolates a Digital Elevation Model (DEM) image
- *  or Digital Terrain Model (DTM) image.
- *
- *  The given points are projected to the X,Y-plane and are meshed by a
- *  2D-Delaunay triangulation. For each image pixel position, a signed
- *  32-bit floating-point pixel value Z=Z(X,Y) is calculated by linear
- *  interpolation within the corresponding triangle. Pixel positions outside
- *  the convex hull get a user chosen background value. The detection of
- *  occluded surface areas is not supported.
- *  It is recommended to use the TIFF file format for 32-bit images.
- *
- *  To learn more please refer to the related web pages with examples and
- *  applications.
- *
- *  For consultance and practical applications concerning Mobile 3D Coordinate
- *  Measuring Techniques, 3D Digitizing, Deformation Measurement and Analysis
- *  please contact
- *  Martin Schlueter: xyz2dem@geoinform.fh-mainz.de
- *  or visit
- *  http://www.i3mainz.fh-mainz.de/institut/personal/schlueter/e_index.html
- *
- *  For more information on Geompack++, a comprehensive object-oriented
- *  C++ software package for finite element mesh generation (triangular,
- *  quadrilateral, surface, tetrahedral, hexahedral-dominant), please see
- *  www.allstream.net/~bjoe/index.htm
- *
- *  Copyright (c) [2004-09-30] by Prof. Dr.-Ing. Martin Schlueter, i3mainz,
- *  Mainz University of Applied Sciences, Germany
- *  with exception to the meshing methods labeled below with
- *  Copyright (c) by Dr. Barry Joe, ZCS Inc., Calgary, AB, Canada
-
- *  Permission is hereby granted, free of charge, to any person obtaining a
- *  copy of this software and associated documentation files (the "Software"),
- *  to deal in the Software without restriction, including without limitation
- *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- *  Software is furnished to do so, subject to the following conditions:
- *  The above copyright notice and this permission notice shall be included in
- *  all copies or substantial portions of the Software.
- *
- *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- *  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- *  DEALINGS IN THE SOFTWARE.
- *
- *  OSI Certified Open Source Software
+ * XYZ2DEM_Importer Version 1.00, 2005-02-18, by Martin Schlueter, i3mainz,
+ * Mainz University of Applied Sciences, Germany Barry Joe, ZCS Inc., Calgary,
+ * AB, Canada (contributor of Geompack)
+ * 
+ * This ImageJ plugin imports X,Y,Z coordinates of (usually irregularly
+ * distributed) points from the first 3 columns of a plain text file and
+ * interpolates a Digital Elevation Model (DEM) image or Digital Terrain Model
+ * (DTM) image.
+ * 
+ * The given points are projected to the X,Y-plane and are meshed by a
+ * 2D-Delaunay triangulation. For each image pixel position, a signed 32-bit
+ * floating-point pixel value Z=Z(X,Y) is calculated by linear interpolation
+ * within the corresponding triangle. Pixel positions outside the convex hull
+ * get a user chosen background value. The detection of occluded surface areas
+ * is not supported. It is recommended to use the TIFF file format for 32-bit
+ * images.
+ * 
+ * To learn more please refer to the related web pages with examples and
+ * applications.
+ * 
+ * For consultance and practical applications concerning Mobile 3D Coordinate
+ * Measuring Techniques, 3D Digitizing, Deformation Measurement and Analysis
+ * please contact Martin Schlueter: xyz2dem@geoinform.fh-mainz.de or visit
+ * http://www.i3mainz.fh-mainz.de/institut/personal/schlueter/e_index.html
+ * 
+ * For more information on Geompack++, a comprehensive object-oriented C++
+ * software package for finite element mesh generation (triangular,
+ * quadrilateral, surface, tetrahedral, hexahedral-dominant), please see
+ * www.allstream.net/~bjoe/index.htm
+ * 
+ * Copyright (c) [2004-09-30] by Prof. Dr.-Ing. Martin Schlueter, i3mainz, Mainz
+ * University of Applied Sciences, Germany with exception to the meshing methods
+ * labeled below with Copyright (c) by Dr. Barry Joe, ZCS Inc., Calgary, AB,
+ * Canada
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions: The above copyright
+ * notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * OSI Certified Open Source Software
  */
 
 import ij.IJ;
-import ij.gui.GenericDialog;
 import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -116,9 +111,9 @@ import org.grap.model.RasterMetadata;
 
 /**
  * description
- *
+ * 
  * @author bocher
- *
+ * 
  * Adapted for GRAP
  */
 public class XYZ2DEM_Importer {
@@ -136,34 +131,34 @@ public class XYZ2DEM_Importer {
 	private int numberOfEliminatedPoints = 0;
 
 	private double[] boundaryOfXYZCoordSysXYZ = new double[6]; // Actual
-																// boundary
-																// values in X,
-																// Y and Z
-																// (coordinate
-																// system: XYZ)
+	// boundary
+	// values in X,
+	// Y and Z
+	// (coordinate
+	// system: XYZ)
 	private double[] boundaryOfImageCoordSysXYZ = new double[4]; // Boundary
-																	// of target
-																	// image
-																	// (centers
-																	// of lower
-																	// left and
-																	// upper
-																	// right
-																	// pixel,
-																	// coordinate
-																	// system:
-																	// XYZ)
+	// of target
+	// image
+	// (centers
+	// of lower
+	// left and
+	// upper
+	// right
+	// pixel,
+	// coordinate
+	// system:
+	// XYZ)
 	private double[] boundaryOfXYZCoordSysImage = new double[4]; // Actual
-																	// boundary
-																	// (coordinate
-																	// system:
-																	// image
-																	// pixels)
+	// boundary
+	// (coordinate
+	// system:
+	// image
+	// pixels)
 	private int[] boundaryOfImageCoordSysImage = new int[4]; // Boundary of
-																// target image
-																// (coordinate
-																// system: image
-																// pixels)
+	// target image
+	// (coordinate
+	// system: image
+	// pixels)
 
 	FloatProcessor ip;
 
@@ -174,11 +169,12 @@ public class XYZ2DEM_Importer {
 		read(path);
 	}
 
-	public XYZ2DEM_Importer(String path, float myPixelSize, boolean myShowLimitsDecision) {
+	public XYZ2DEM_Importer(String path, float myPixelSize,
+			boolean myShowLimitsDecision) {
 		this.path = path;
 		this.myPixelSize = myPixelSize;
-		this.myShowLimitsDecision=myShowLimitsDecision;
-	read(path);
+		this.myShowLimitsDecision = myShowLimitsDecision;
+		read(path);
 	}
 
 	public void read(String path) {
@@ -210,39 +206,39 @@ public class XYZ2DEM_Importer {
 
 		// Initialize coordinate arrays:
 		double[] xVcl = new double[(numberOfPoints + 4)]; // X coordinates
-															// (input) (xVcl[0]
-															// is not used)
+		// (input) (xVcl[0]
+		// is not used)
 		double[] yVcl = new double[(numberOfPoints + 4)]; // Y coordinates
-															// (input) (yVcl[0]
-															// is not used)
+		// (input) (yVcl[0]
+		// is not used)
 		double[] zVcl = new double[(numberOfPoints + 4)]; // Z coordinates
-															// (input) (zVcl[0]
-															// is not used)
+		// (input) (zVcl[0]
+		// is not used)
 		copyCoordinatesToArrays(coordinateList, xVcl, yVcl, zVcl);
 		coordinateList.removeAllElements();
 
 		// Initialize arrays for the triangulation:
 		int[] ind = new int[numberOfPoints + 4]; // Index of sorted X/Y
-													// coordinates (ind[0] is
-													// not used)
+		// coordinates (ind[0] is
+		// not used)
 		int[][] til = new int[3][2 * (numberOfPoints + 4) + 2]; // List of
-																// triangles
-																// (til[][0] is
-																// not used)
+		// triangles
+		// (til[][0] is
+		// not used)
 		int[][] tnbr = new int[3][2 * (numberOfPoints + 4) + 2]; // List of
-																	// neighbour
-																	// triangles
-																	// (tnbr[][0]
-																	// is not
-																	// used)
+		// neighbour
+		// triangles
+		// (tnbr[][0]
+		// is not
+		// used)
 		int[] stack = new int[2 * (numberOfPoints + 4) + 2]; // Stack of
-																// triangles for
-																// which
-																// circumcircle
-																// test must be
-																// made
-																// (stack[0] is
-																// not used)
+		// triangles for
+		// which
+		// circumcircle
+		// test must be
+		// made
+		// (stack[0] is
+		// not used)
 		// Later used to mark triangles to be disregarded (myMaximumEdgeLength)
 
 		// Initialize index, sort points, eliminate point doublets (in X and Y):
@@ -335,7 +331,7 @@ public class XYZ2DEM_Importer {
 		tok.commentChar(35); // Character '#' starts a single line comment
 		tok.slashSlashComments(true); // Character '//' start a comment
 		tok.slashStarComments(true); // Character '/*' starts, '*/' ends a
-										// comment
+		// comment
 		tok.eolIsSignificant(true);
 
 		while (tok.nextToken() != StreamTokenizer.TT_EOF) {
@@ -343,17 +339,17 @@ public class XYZ2DEM_Importer {
 			case StreamTokenizer.TT_EOL:
 				if (coordinatesPerLine >= 3) {
 					coordinateList.addElement(new Double(xcoord)); // Collect
-																	// coordinates
-																	// in
-																	// Vector.
+					// coordinates
+					// in
+					// Vector.
 					coordinateList.addElement(new Double(ycoord)); // Since
-																	// Vector
-																	// only
-																	// accepts
-																	// Objects
+					// Vector
+					// only
+					// accepts
+					// Objects
 					coordinateList.addElement(new Double(zcoord)); // a wrapper
-																	// class is
-																	// used.
+					// class is
+					// used.
 					numberOfPoints++;
 
 					if (numberOfPoints % 1000 == 0)
@@ -391,53 +387,60 @@ public class XYZ2DEM_Importer {
 	 */
 
 	private int userinput() {
-//		myPixelSize = Math
-//				.max(
-//						(boundaryOfXYZCoordSysXYZ[1] - boundaryOfXYZCoordSysXYZ[0]) / 1000.0,
-//						(boundaryOfXYZCoordSysXYZ[3] - boundaryOfXYZCoordSysXYZ[2]) / 1000.0); // ...
-																								// just
-																								// a
-																								// guess
-																								// ...
+		// myPixelSize = Math
+		// .max(
+		// (boundaryOfXYZCoordSysXYZ[1] - boundaryOfXYZCoordSysXYZ[0]) / 1000.0,
+		// (boundaryOfXYZCoordSysXYZ[3] - boundaryOfXYZCoordSysXYZ[2]) /
+		// 1000.0); // ...
+		// just
+		// a
+		// guess
+		// ...
 		myBackground = boundaryOfXYZCoordSysXYZ[4]; // The minimum of Z might be
-													// a good choice for
-													// myBackground ...
+		// a good choice for
+		// myBackground ...
 
-//		GenericDialog gd = new GenericDialog("Import " + filename
-//				+ " to DEM image");
-//		gd
-//				.addMessage("The size of a pixel determines the resolution of the resulting image. \n"
-//						+ "The length of one pixel has to be given in units of your XYZ-data. \n");
-//		gd.addNumericField("Length of one pixel:", myPixelSize, 2);
-//		gd
-//				.addMessage("XYZ_Import builds up a triangular mesh for the resampling. If your XYZ-data contains \n"
-//						+ "holes or a not-convex boundary you may want to suppress the visualization of very large \n"
-//						+ "triangles by giving a maximum edge length between two points (in units of your XYZ-data). \n"
-//						+ "The default is 0.0 - which means NO maximum length is assumed - ('show all!)'.");
-//		gd.addNumericField("Maximum edge length:", myMaximumEdgeLength, 2);
-//		gd.addMessage("Areas without data are filled with the \n");
-//		gd.addNumericField("Background value:", myBackground, 2);
-//		gd.addCheckbox("Show protocol and coordinate limits in X and Y.",
-//				myShowLimitsDecision);
-//		gd.addMessage("Number of accepted points: " + numberOfPoints + "\n"
-//				+ "Number of eliminated points (doublets in X/Y): "
-//				+ numberOfEliminatedPoints);
-//
-//		gd.showDialog();
-//		myPixelSize = gd.getNextNumber();
-//		myMaximumEdgeLength = gd.getNextNumber();
-//		myBackground = gd.getNextNumber();
-//		myShowLimitsDecision = gd.getNextBoolean();
-//
-//		if (gd.wasCanceled()) {
-//			return 0;
-//		} else if (gd.invalidNumber()) {
-//			IJ.showMessage("XYZ_Import",
-//					"Input Error - Please enter valid numbers!");
-//			return -1;
-//		} else {
-			return 1;
-//		}
+		// GenericDialog gd = new GenericDialog("Import " + filename
+		// + " to DEM image");
+		// gd
+		// .addMessage("The size of a pixel determines the resolution of the
+		// resulting image. \n"
+		// + "The length of one pixel has to be given in units of your XYZ-data.
+		// \n");
+		// gd.addNumericField("Length of one pixel:", myPixelSize, 2);
+		// gd
+		// .addMessage("XYZ_Import builds up a triangular mesh for the
+		// resampling. If your XYZ-data contains \n"
+		// + "holes or a not-convex boundary you may want to suppress the
+		// visualization of very large \n"
+		// + "triangles by giving a maximum edge length between two points (in
+		// units of your XYZ-data). \n"
+		// + "The default is 0.0 - which means NO maximum length is assumed -
+		// ('show all!)'.");
+		// gd.addNumericField("Maximum edge length:", myMaximumEdgeLength, 2);
+		// gd.addMessage("Areas without data are filled with the \n");
+		// gd.addNumericField("Background value:", myBackground, 2);
+		// gd.addCheckbox("Show protocol and coordinate limits in X and Y.",
+		// myShowLimitsDecision);
+		// gd.addMessage("Number of accepted points: " + numberOfPoints + "\n"
+		// + "Number of eliminated points (doublets in X/Y): "
+		// + numberOfEliminatedPoints);
+		//
+		// gd.showDialog();
+		// myPixelSize = gd.getNextNumber();
+		// myMaximumEdgeLength = gd.getNextNumber();
+		// myBackground = gd.getNextNumber();
+		// myShowLimitsDecision = gd.getNextBoolean();
+		//
+		// if (gd.wasCanceled()) {
+		// return 0;
+		// } else if (gd.invalidNumber()) {
+		// IJ.showMessage("XYZ_Import",
+		// "Input Error - Please enter valid numbers!");
+		// return -1;
+		// } else {
+		return 1;
+		// }
 	}
 
 	/**
@@ -587,11 +590,11 @@ public class XYZ2DEM_Importer {
 		// Sort all points in lexicographically increasing (x,y) order:
 		dHeapSort(numberOfPoints, xVcl, yVcl, ind, tol);
 		boundaryOfXYZCoordSysXYZ[0] = xVcl[ind[1]]; // Minimum value in
-													// direction of X
+		// direction of X
 		boundaryOfXYZCoordSysXYZ[1] = xVcl[ind[numberOfPoints]]; // Maximum
-																	// value in
-																	// direction
-																	// of X
+		// value in
+		// direction
+		// of X
 
 		// Check for identical points; find minimum and maximum value in
 		// direction of y:
@@ -607,16 +610,16 @@ public class XYZ2DEM_Importer {
 		for (int i = 2; i <= numberOfPoints; i++) {
 			if (yVcl[i] < boundaryOfXYZCoordSysXYZ[2])
 				boundaryOfXYZCoordSysXYZ[2] = yVcl[i]; // Minimum value in
-														// direction of Y
+			// direction of Y
 			if (yVcl[i] > boundaryOfXYZCoordSysXYZ[3])
 				boundaryOfXYZCoordSysXYZ[3] = yVcl[i]; // Maximum value in
-														// direction of Y
+			// direction of Y
 			if (zVcl[i] < boundaryOfXYZCoordSysXYZ[4])
 				boundaryOfXYZCoordSysXYZ[4] = zVcl[i]; // Minimum value in
-														// direction of Y
+			// direction of Y
 			if (zVcl[i] > boundaryOfXYZCoordSysXYZ[5])
 				boundaryOfXYZCoordSysXYZ[5] = zVcl[i]; // Maximum value in
-														// direction of Y
+			// direction of Y
 			m = m1;
 			m1 = ind[i];
 			cmax = Math.max(Math.abs(xVcl[m]), Math.abs(xVcl[m1]));
@@ -698,7 +701,7 @@ public class XYZ2DEM_Importer {
 	/**
 	 * Determine image boundary coordinates depending on the minimum and maximum
 	 * values of the input data (in X and Y):
-	 *
+	 * 
 	 * Please note that in accordance to the concept of ImageJ - the center of
 	 * the upper left pixel is (0.0;0.0) in pixel coordinates - the center of
 	 * the lower right pixel is (cols-1;rows-1) in pixel coordinates
@@ -739,11 +742,11 @@ public class XYZ2DEM_Importer {
 		// Boundary coordinates of target image in pixel coordinate system:
 		boundaryOfImageCoordSysImage[0] = 0;
 		boundaryOfImageCoordSysImage[1] = (int) (((boundaryOfImageCoordSysXYZ[1] - boundaryOfImageCoordSysXYZ[0]) / myPixelSize) + 0.5); // number
-																																			// of
-																																			// cols
+		// of
+		// cols
 		boundaryOfImageCoordSysImage[2] = (int) (((boundaryOfImageCoordSysXYZ[3] - boundaryOfImageCoordSysXYZ[2]) / myPixelSize) + 0.5); // number
-																																			// of
-																																			// rows
+		// of
+		// rows
 		boundaryOfImageCoordSysImage[3] = 0;
 
 		// Actual coordinates (from XYZ) in pixel coordinate system:
@@ -761,12 +764,12 @@ public class XYZ2DEM_Importer {
 
 	/**
 	 * Purpose: Initialize relative tolerance
-	 *
+	 * 
 	 * Input parameters: tolin - relative tolerance used to determine tol
-	 *
+	 * 
 	 * Output parameters: initializeTolerance - relative tolerance max(tolin,
 	 * 100.0e0*eps) where eps is approximation to machine epsilon
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -791,15 +794,15 @@ public class XYZ2DEM_Importer {
 	 * incremental approach and diagonal edge swaps. Vertices first have been
 	 * sorted in lexicographically increasing (x,y) order, and now are inserted
 	 * one at a time from outside the convex hull.
-	 *
+	 * 
 	 * Input parameters: numberOfPoints - number of 2-D points (vertices)
 	 * stack.length - maximum size available for stack array; should be about
 	 * numberOfPoints to be safe, but max(10,2*LOG2(numberOfPoints)) usually
 	 * enough xVcl[], yVcl[] - coordinates of 2-D vertices ind[1:numberOfPoints] -
 	 * indices in xVcl, yVcl of vertices to be triangulated
-	 *
+	 * 
 	 * Updated parameters: ind[1:numberOfPoints] - permuted due to sort
-	 *
+	 * 
 	 * Output parameters: numberOfTriangles - number of triangles in
 	 * triangulation; equal to (2*numberOfPoints - nb - 2) where nb = number of
 	 * boundary vertices til[1:3],[1:numberOfTriangles] - triangle incidence
@@ -808,15 +811,15 @@ public class XYZ2DEM_Importer {
 	 * negative values are used for links of CCW linked list of boundary edges;
 	 * link = -(3*i + j-1) where i, j = triangle, edge index tnbr[J][I] refers
 	 * to the neighbour along edge from vertex j to j+1 (mod 3)
-	 *
+	 * 
 	 * Working parameters: stack[] - used for stack of triangles for which
 	 * circumcircle test must be made
-	 *
+	 * 
 	 * Abnormal return: ierr is set to 8 or 225
-	 *
+	 * 
 	 * Routines called: dHeapSort, leftOrRightOfLine, swapEdge,
 	 * visibleBoundaryEdge
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1000,14 +1003,14 @@ public class XYZ2DEM_Importer {
 	 * Purpose: Use dHeapSort to obtain the permutation of n 2-dimensional
 	 * double precision points so that the points are in lexicographic
 	 * increasing order.
-	 *
+	 * 
 	 * Input parameters: numberOfPoints, xVcl[], yVcl[], ind[] - see above
-	 *
+	 * 
 	 * Updated parameters: ind[n] - elements are permuted so that xVcl(ind[1]) <=
 	 * xVcl(ind[2]) <= ... <= xVcl(ind[n])
-	 *
+	 * 
 	 * Methods called: dShiftDownHeap
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1031,14 +1034,14 @@ public class XYZ2DEM_Importer {
 	/**
 	 * Purpose: Shift xVcl[ind[lowerindex]] and yVcl[ind[lowerindex]] down a
 	 * heap of size upperindex.
-	 *
+	 * 
 	 * Input parameters: lowerindex, upperindex - lower and upper index of part
 	 * of heap xVcl[], yVcl[], ind[], tol - see above
-	 *
+	 * 
 	 * Updated parameters: ind[] - see above
-	 *
+	 * 
 	 * Methods called: dLess
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1072,12 +1075,12 @@ public class XYZ2DEM_Importer {
 	/**
 	 * Purpose: Determine whether point p is lexicographically less than point q
 	 * in floating point arithmetic?
-	 *
+	 * 
 	 * Input parameters: px,py and qx,qy - two 2-dimensional double precision
 	 * points
-	 *
+	 * 
 	 * Returned function value: dLess - true if p < q, false otherwise
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1114,23 +1117,23 @@ public class XYZ2DEM_Importer {
 	 * index of new vertex added to triangulation. Determine whether triangles
 	 * in stack are Delaunay, and swap diagonal edge of convex quadrilateral if
 	 * not.
-	 *
+	 * 
 	 * Input parameters: i - index in xVcl[], yVcl[] of new vertex top - index
 	 * of top of stack, >= 0 btri,bedg - if positive, these are triangle and
 	 * edge index of a boundary edge whose updated indices must be recorded
 	 * xVcl[], yVcl[], til[][], tnbr[][] - see above stack[1:top] - index of
 	 * initial triangles (involving vertex i) put in stack; the edges opposite i
 	 * should be in interior
-	 *
+	 * 
 	 * Updated parameters: top - becomes 0, i.e. stack is empty btri,bedg - may
 	 * be updated due to swap(s) til,tnbr - updated due to swaps
-	 *
+	 * 
 	 * Working parameters: stack[top+1:(stack.length-1)] - used as stack
-	 *
+	 * 
 	 * Abnormal return: swapEdge is set to 8
-	 *
+	 * 
 	 * Routines called: diagonalEdge
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1287,14 +1290,14 @@ public class XYZ2DEM_Importer {
 	 * Purpose: Determine whether 02 or 13 is the diagonal edge chosen based on
 	 * the circumcircle criterion, where (x0,y0), (x1,y1), (x2,y2), (x3,y3) are
 	 * the vertices of a simple quadrilateral in counterclockwise order.
-	 *
+	 * 
 	 * Input parameters: x0,y0, x1,y1, x2,y2, x3,y3 - vertex coordinates
-	 *
+	 * 
 	 * Returned function value: diagonalEdge - 1 if diagonal edge 02 is chosen,
 	 * i.e. 02 is inside quadrilateral + vertex 3 is outside circumcircle 012 -1
 	 * if diagonal edge 13 is chosen, i.e. 13 is inside quadrilateral + vertex 0
 	 * is outside circumcircle 123 0 if four vertices are cocircular
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1363,21 +1366,21 @@ public class XYZ2DEM_Importer {
 	 * from point (X,Y) outside convex hull. Find rightmost visible boundary
 	 * edge using links, then possibly leftmost visible boundary edge using
 	 * triangle neighbour info.
-	 *
+	 * 
 	 * Input parameters: x,y - 2-D point outside convex hull xVcl[], yVcl[],
 	 * til[][], tnbr[][] - see above ltri,ledg - if ltri <> 0 then they are
 	 * assumed to be as defined below and are not changed, else they are updated
 	 * rtri - index of boundary triangle to begin search at redg - edge of
 	 * triangle rtri that is visible from (x,y)
-	 *
+	 * 
 	 * Updated parameters: ltri - index of boundary triangle to left of leftmost
 	 * boundary triangle visible from (x,y) ledg - boundary edge of triangle
 	 * ltri to left of leftmost boundary edge visible from (x,y) rtri - index of
 	 * rightmost boundary triangle visible from (x,y) redg - edge of triangle
 	 * rtri that is visible from (x,y) [Note: 1 <= ledg, redg <= 3]
-	 *
+	 * 
 	 * Methods called: leftOrRightOfLine
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1457,17 +1460,17 @@ public class XYZ2DEM_Importer {
 	/**
 	 * Purpose: Determine whether a point is to the left of, right of, or on a
 	 * directed line parallel to a line through given points.
-	 *
+	 * 
 	 * Input parameters: xu,yu, xv1,yv1, xv2,yv2 - vertex coordinates; the
 	 * directed line is parallel to and at signed distance DV to the left of the
 	 * directed line from (xv1,yv1) to (xv2,yv2); (xu,yu) is the vertex for
 	 * which the position relative to the directed line is to be determined dv -
 	 * signed distance (positive for left)
-	 *
+	 * 
 	 * Returned function value: leftOrRightOfLine - +1, 0, or -1 depending on
 	 * whether (xu,yu) is to the right of, on, or left of the directed line (0
 	 * if line degenerates to a point)
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
@@ -1513,11 +1516,11 @@ public class XYZ2DEM_Importer {
 	 * the pixel position is outside the convex hull of the given points or is
 	 * within a triangle which exceeds a specified maximum edge length, a
 	 * background value is assigned.
-	 *
+	 * 
 	 * myMaximumEdgeLength=0 - use every triangle for interpolation
 	 * myMaximumEdgeLength>0 - disregard triangles if the length of one edge >
 	 * myMaximumEdgeLength
-	 *
+	 * 
 	 * Note: The triangulation offers very fast access to neighbouring
 	 * triangles. It should be straightforward to implement complexer
 	 * interpolation schemes which need access to a larger surrounding (not only
@@ -1526,12 +1529,12 @@ public class XYZ2DEM_Importer {
 
 	private void interpolateImageLinear(int[][] til, int[][] tnbr,
 			double[] xVcl, double[] yVcl, double[] zVcl, int[] stack, // temporarily
-																		// used
-																		// to
-																		// mark
-																		// triangles
-																		// to be
-																		// disregarded
+			// used
+			// to
+			// mark
+			// triangles
+			// to be
+			// disregarded
 			float[] myPixelValues, // depth image
 			double tol) {
 
@@ -1620,9 +1623,9 @@ public class XYZ2DEM_Importer {
 					myPixelValues[i0++] = (float) myBackground;
 					if (triangleIndex < 0)
 						triangleIndex = triangleIndex * (-1); // reset if
-																// point was
-																// outside of
-																// convex hull
+					// point was
+					// outside of
+					// convex hull
 				}
 
 				if (i2 == 1)
@@ -1638,14 +1641,14 @@ public class XYZ2DEM_Importer {
 	 * a triangle is found containing point (x,y) or (x,y) is found to be
 	 * outside the convex hull. Search is guaranteed to terminate for a Delaunay
 	 * triangulation, else a cycle may occur.
-	 *
+	 * 
 	 * This method is based on code originally written and copyrighted by Dr.
 	 * Barry Joe, Canada. Inclusion by courtesy of Barry Joe.
 	 */
 
 	private int walkThroughTriangulation(double x, double y,
 			double[] bary, // uses barycentric coordinates to determine where
-							// (x,y) is located
+			// (x,y) is located
 			double[] xVcl, double[] yVcl, int[][] til, int[][] tnbr,
 			int triangleIndex, // index of triangle to begin search at
 			double tol) {
@@ -1667,14 +1670,14 @@ public class XYZ2DEM_Importer {
 
 			if ((bary[0] > tol) && (bary[1] > tol) && (bary[2] > tol)) {
 				return triangleIndex; // (x,y) is in the interior of triangle
-										// triangleIndex
+				// triangleIndex
 			} else if (bary[0] < -(tol)) {
 				i = tnbr[1][triangleIndex];
 				if (i <= 0) {
 					// iedg = -2; // (x,y) is outside convex hull due to walking
 					// past edge 2 of triangle triangleIndex
 					return triangleIndex * (-1); // point is outside convex
-													// hull
+					// hull
 				}
 			} else if (bary[1] < -(tol)) {
 				i = tnbr[2][triangleIndex];
@@ -1682,7 +1685,7 @@ public class XYZ2DEM_Importer {
 					// iedg = -3; // (x,y) is outside convex hull due to walking
 					// past edge 3 of triangle triangleIndex
 					return triangleIndex * (-1); // point is outside convex
-													// hull
+					// hull
 				}
 			} else if (bary[2] < -(tol)) {
 				i = tnbr[0][triangleIndex];
@@ -1690,7 +1693,7 @@ public class XYZ2DEM_Importer {
 					// iedg = -1; // (x,y) is outside convex hull due to walking
 					// past edge 1 of triangle triangleIndex
 					return triangleIndex * (-1); // (x,y) is outside convex
-													// hull
+					// hull
 				}
 			} else if (bary[0] <= tol) {
 				// if (bary[1] <= tol) {
