@@ -197,7 +197,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			fileSaver.saveAsGif(dest);
 			WorldFile.save(localFileNamePrefix + ".gfw", rasterMetadata);
 		} else if (tmp.endsWith("bmp")) {
-			fileSaver.saveAsGif(dest);
+			fileSaver.saveAsBmp(dest);
 			WorldFile.save(localFileNamePrefix + ".bpw", rasterMetadata);
 		} else {
 			throw new RuntimeException("Cannot write in format: "
