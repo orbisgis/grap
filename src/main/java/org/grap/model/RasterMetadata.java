@@ -229,7 +229,10 @@ public class RasterMetadata implements Serializable {
 
 	public Point2D toPixel(final double x, final double y) {
 		if (envelope.contains(x, y)) {
-			return getInverse().transform(new Point2D.Double(x, y), null);
+			final Point2D ptInPixelGrid = getInverse().transform(
+					new Point2D.Double(x, y), null);
+			return new Point2D.Double(Math.round(ptInPixelGrid.getX()), Math
+					.round(ptInPixelGrid.getY()));
 		} else {
 			throw new IllegalArgumentException(
 					"Out of the GeoRaster envelope !");
@@ -243,14 +246,12 @@ public class RasterMetadata implements Serializable {
 			} catch (NoninvertibleTransformException e) {
 				throw new RuntimeException(e);
 			}
-
 		}
-
 		return inverseTransform;
 	}
 
 	public Point2D toWorld(final int x, final int y) {
-		if ((0 <= x) && (x < nrows) && (0 <= y) && (y < ncols)) {
+		if ((0 <= x) && (x <= ncols) && (0 <= y) && (y <= nrows)) {
 			return affineTransform.transform(new Point2D.Double(x, y), null);
 		} else {
 			throw new IllegalArgumentException(
@@ -272,7 +273,7 @@ public class RasterMetadata implements Serializable {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof RasterMetadata) {
-			RasterMetadata rm = (RasterMetadata) obj;
+			final RasterMetadata rm = (RasterMetadata) obj;
 			return affineTransform.equals(rm.affineTransform);
 		} else {
 			return false;
