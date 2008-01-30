@@ -139,28 +139,22 @@ public class WorldImageReader implements FileReader {
 		}
 
 		// read other image's metadata
-		double xOrigin = 0;
-		double yOrigin = 0;
-		float xSize = 1;
-		float ySize = 1;
-		double xRotation = 0;
-		double yRotation = 0;
 		if (isThereAnyWorldFile() == true) {
 			final WorldFile wf = WorldFile.read(worldFile);
 
-			xOrigin = wf.getXUpperLeft();
-			yOrigin = wf.getYUpperLeft();
-			xSize = wf.getXSize();
-			ySize = wf.getYSize();
-			xRotation = wf.getColRotation();
-			yRotation = wf.getRowRotation();
+			final double upperLeftX = wf.getXUpperLeft();
+			final double upperLeftY = wf.getYUpperLeft();
+			final float pixelSize_X = wf.getXSize();
+			final float pixelSize_Y = wf.getYSize();
+			final float xRotation = wf.getColRotation();
+			final float yRotation = wf.getRowRotation();
+
+			return new RasterMetadata(upperLeftX, upperLeftY, pixelSize_X,
+					pixelSize_Y, ncols, nrows, xRotation, yRotation);
 		} else {
 			throw new GeoreferencingException("Could not find world file for "
 					+ fileName);
 		}
-		final RasterMetadata rasterMetadata = new RasterMetadata(xOrigin,
-				yOrigin, xSize, ySize, ncols, nrows, xRotation, yRotation);
-		return rasterMetadata;
 	}
 
 	public GrapImagePlus readGrapImagePlus() throws IOException {
