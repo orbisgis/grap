@@ -82,7 +82,6 @@ public class GeoreferencingTest extends TestCase {
 		for (int r = 0; r < md.getNRows(); r++) {
 			final double y = md.getYulcorner() + r * md.getPixelSize_Y();
 			for (int c = 0; c < md.getNCols(); c++) {
-				System.out.printf("r = %d, c = %d\n", r, c);
 				final double x = md.getXulcorner() + c * md.getPixelSize_X();
 				for (int aleaR = -halfPixelSize_Y + 1; aleaR <= halfPixelSize_Y; aleaR++) {
 					for (int aleaC = -halfPixelSize_X; aleaC < halfPixelSize_X; aleaC++) {
