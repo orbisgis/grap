@@ -78,7 +78,7 @@ public class ShapeExtractionTest {
 		for (int i = 0; i < roi.getPolygon().npoints; i++) {
 			final int xWand = roi.getPolygon().xpoints[i];
 			final int yWand = roi.getPolygon().ypoints[i];
-			final Point2D worldXY = geoRaster.pixelToWorldCoord(xWand,
+			final Point2D worldXY = geoRaster.fromPixelGridCoordToRealWorldCoord(xWand,
 					yWand);
 
 			jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());

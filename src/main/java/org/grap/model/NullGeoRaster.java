@@ -70,7 +70,7 @@ class NullGeoRaster implements GeoRaster {
 		return null;
 	}
 
-	public Point2D getPixelCoords(double mouseX, double mouseY) {
+	public Point2D fromRealWorldCoordToPixelGridCoord(double mouseX, double mouseY) {
 		return null;
 	}
 
@@ -81,7 +81,7 @@ class NullGeoRaster implements GeoRaster {
 	public void open() {
 	}
 
-	public Point2D pixelToWorldCoord(int xpixel, int ypixel) {
+	public Point2D fromPixelGridCoordToRealWorldCoord(int xpixel, int ypixel) {
 		return null;
 	}
 

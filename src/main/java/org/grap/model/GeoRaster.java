@@ -65,10 +65,11 @@ public interface GeoRaster {
 
 	public abstract void setNodataValue(final float value);
 
-	public abstract Point2D pixelToWorldCoord(final int xpixel, final int ypixel);
+	public abstract Point2D fromPixelGridCoordToRealWorldCoord(
+			final int xpixel, final int ypixel);
 
-	public abstract Point2D getPixelCoords(final double mouseX,
-			final double mouseY);
+	public abstract Point2D fromRealWorldCoordToPixelGridCoord(
+			final double mouseX, final double mouseY);
 
 	public abstract void save(final String dest) throws IOException,
 			GeoreferencingException;
@@ -114,7 +115,6 @@ public interface GeoRaster {
 	public abstract GeoRaster crop(Rectangle2D roi) throws OperationException,
 			GeoreferencingException;
 
-	
 	public abstract double getMin() throws IOException, GeoreferencingException;
 
 	public abstract double getMax() throws IOException, GeoreferencingException;

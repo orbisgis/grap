@@ -168,8 +168,8 @@ public class CropTest extends GrapTest {
 		// check raster values
 		for (double x = envelope.getMinY(); x < envelope.getMaxY(); x = x + 1) {
 			for (double y = envelope.getMinX(); y < envelope.getMaxX(); y = y + 1) {
-				final Point2D srcPixel = geoRasterSrc.getPixelCoords(x, y);
-				final Point2D dstPixel = geoRasterDst.getPixelCoords(x, y);
+				final Point2D srcPixel = geoRasterSrc.fromRealWorldCoordToPixelGridCoord(x, y);
+				final Point2D dstPixel = geoRasterDst.fromRealWorldCoordToPixelGridCoord(x, y);
 				final float p = srcPixelProvider.getPixelValue((int) srcPixel
 						.getX(), (int) srcPixel.getX());
 				final float p2 = dstPixelProvider.getPixelValue((int) dstPixel

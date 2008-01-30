@@ -179,11 +179,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		rasterMetadata.setNoData(value);
 	}
 
-	public Point2D pixelToWorldCoord(final int xpixel, final int ypixel) {
+	public Point2D fromPixelGridCoordToRealWorldCoord(final int xpixel, final int ypixel) {
 		return rasterMetadata.toWorld(xpixel, ypixel);
 	}
 
-	public Point2D getPixelCoords(final double mouseX, final double mouseY) {
+	public Point2D fromRealWorldCoordToPixelGridCoord(final double mouseX, final double mouseY) {
 		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
 
@@ -346,9 +346,9 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	private Rectangle2D getRectangleInPixels(final Rectangle2D rectangle) {
-		final Point2D min = getPixelCoords(rectangle.getMinX(), rectangle
+		final Point2D min = fromRealWorldCoordToPixelGridCoord(rectangle.getMinX(), rectangle
 				.getMinY());
-		final Point2D max = getPixelCoords(rectangle.getMaxX(), rectangle
+		final Point2D max = fromRealWorldCoordToPixelGridCoord(rectangle.getMaxX(), rectangle
 				.getMaxY());
 		final int minx = (int) Math.min(min.getX(), max.getX());
 		final int maxx = (int) Math

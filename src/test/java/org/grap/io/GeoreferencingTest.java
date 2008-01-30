@@ -81,8 +81,9 @@ public class GeoreferencingTest extends TestCase {
 				final double x = upperLeftX + c * pixelSize_X;
 				for (int aleaR = -halfPixelSize_Y + 1; aleaR <= halfPixelSize_Y; aleaR++) {
 					for (int aleaC = -halfPixelSize_X; aleaC < halfPixelSize_X; aleaC++) {
-						final Point2D p = sampleRaster.getPixelCoords(
-								x + aleaC, y + aleaR);
+						final Point2D p = sampleRaster
+								.fromRealWorldCoordToPixelGridCoord(x + aleaC,
+										y + aleaR);
 						assertTrue(c == Math.round(p.getX()));
 						assertTrue(r == Math.round(p.getY()));
 					}
@@ -91,41 +92,33 @@ public class GeoreferencingTest extends TestCase {
 		}
 	}
 
-	
-	public void testFromPixelToWorld() throws Exception{
-		
+	public void testFromPixelToWorld() throws Exception {
 		String src = "../../datas2tests/grid/3x3.asc";
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
 
 		WKTReader wkt = new WKTReader();
-		Geometry point = wkt
-				.read("POINT ( 290004.9 2259994.9)");
+		Geometry point = wkt.read("POINT ( 290004.9 2259994.9)");
 
 		System.out.println("The Point for the test : " + point.toText());
-		
-		final int halfPixelSize_X = (int) geoRaster.getMetadata().getPixelSize_X() / 2;
-		final int halfPixelSize_Y = (int) Math.abs(geoRaster.getMetadata().getPixelSize_Y()) / 2;
 
-		
-		
-		Point2D worldCoord = geoRaster.getMetadata().toWorld(1, 1);
-		
+		final int halfPixelSize_X = (int) geoRaster.getMetadata()
+				.getPixelSize_X() / 2;
+		final int halfPixelSize_Y = (int) Math.abs(geoRaster.getMetadata()
+				.getPixelSize_Y()) / 2;
+
+		Point2D worldCoord = geoRaster.fromPixelGridCoordToRealWorldCoord(1, 1);
+
 		System.out.println("Pixel world coordinates : " + worldCoord);
-		
-		
-
-		
 	}
-	
-	
-	
+
 	public void testToWorld() throws Exception {
 		for (int r = 0; r < nrows; r++) {
 			final double y = upperLeftY + r * pixelSize_Y;
 			for (int c = 0; c < ncols; c++) {
 				final double x = upperLeftX + c * pixelSize_X;
-				final Point2D p = sampleRaster.pixelToWorldCoord(c, r);
+				final Point2D p = sampleRaster
+						.fromPixelGridCoordToRealWorldCoord(c, r);
 				assertTrue(x == p.getX());
 				assertTrue(y == p.getY());
 			}
