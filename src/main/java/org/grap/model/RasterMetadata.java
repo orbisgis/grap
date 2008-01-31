@@ -237,7 +237,7 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toWorld(final int x, final int y) {
-		if ((0 <= x) && (x <= ncols) && (0 <= y) && (y <= nrows)) {
+		if ((0 <= x) && (x < ncols) && (0 <= y) && (y < nrows)) {
 			return affineTransform.transform(new Point2D.Double(x, y), null);
 		} else {
 			throw new IllegalArgumentException(

@@ -75,16 +75,15 @@ public class GeoreferencingTest extends TestCase {
 	public void testToPixel() throws Exception {
 		final RasterMetadata md = sampleRaster.getMetadata();
 
-		final int halfPixelSize_X = Math.round(md.getPixelSize_X() / 2);
-		final int halfPixelSize_Y = Math
-				.round(Math.abs(md.getPixelSize_Y()) / 2);
+		final float halfPixelSize_X = md.getPixelSize_X() / 2;
+		final float halfPixelSize_Y = Math.abs(md.getPixelSize_Y()) / 2;
 
 		for (int r = 0; r < md.getNRows(); r++) {
 			final double y = md.getYulcorner() + r * md.getPixelSize_Y();
 			for (int c = 0; c < md.getNCols(); c++) {
 				final double x = md.getXulcorner() + c * md.getPixelSize_X();
-				for (int aleaR = -halfPixelSize_Y + 1; aleaR <= halfPixelSize_Y; aleaR++) {
-					for (int aleaC = -halfPixelSize_X; aleaC < halfPixelSize_X; aleaC++) {
+				for (float aleaR = -halfPixelSize_Y + 1; aleaR <= halfPixelSize_Y; aleaR++) {
+					for (float aleaC = -halfPixelSize_X + 1; aleaC <= halfPixelSize_X; aleaC++) {
 						final Point2D p = sampleRaster
 								.fromRealWorldCoordToPixelGridCoord(x + aleaC,
 										y + aleaR);

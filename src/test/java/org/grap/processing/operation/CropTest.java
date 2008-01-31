@@ -153,33 +153,45 @@ public class CropTest extends GrapTest {
 				dstGrapImagePlus);
 	}
 
-	private void checkCrop(Envelope envelope, GrapImagePlus srcPixelProvider,
-			GrapImagePlus dstPixelProvider) throws IOException {
+	private void checkCrop(final Envelope envelope,
+			final GrapImagePlus srcPixelProvider,
+			final GrapImagePlus dstPixelProvider) throws IOException {
 		// check metadata
-		RasterMetadata dstMetadata = geoRasterDst.getMetadata();
-		float sizeX = dstMetadata.getPixelSize_X();
-		assertTrue(sizeX == geoRasterSrc.getMetadata().getPixelSize_X());
-		int numPixelsX = dstMetadata.getNCols();
-		assertTrue(numPixelsX * sizeX == dstMetadata.getEnvelope().getWidth());
-		double xOrigin = dstMetadata.getXulcorner();
-		assertTrue(xOrigin - (sizeX / 2) + numPixelsX * sizeX == dstMetadata
+		final RasterMetadata dstMetadata = geoRasterDst.getMetadata();
+		final float pixelSize_X = dstMetadata.getPixelSize_X();
+		final float pixelSize_Y = dstMetadata.getPixelSize_Y();
+		final int ncols = dstMetadata.getNCols();
+		final int nrows = dstMetadata.getNRows();
+		final double xulcorner = dstMetadata.getXulcorner();
+		final double yulcorner = dstMetadata.getYulcorner();
+
+		assertTrue(pixelSize_X == geoRasterDst.getMetadata().getPixelSize_X());
+		assertTrue(ncols * pixelSize_X == dstMetadata.getEnvelope().getWidth());
+		assertTrue(xulcorner - (pixelSize_X / 2) + ncols * pixelSize_X == dstMetadata
 				.getEnvelope().getMaxX());
 
+		assertTrue(pixelSize_Y == geoRasterDst.getMetadata().getPixelSize_Y());
+		assertTrue(nrows * Math.abs(pixelSize_Y) == dstMetadata.getEnvelope()
+				.getHeight());
+		assertTrue(yulcorner - (pixelSize_Y / 2) - nrows
+				* Math.abs(pixelSize_Y) == dstMetadata.getEnvelope().getMinY());
+
 		// check raster values
-		for (double x = envelope.getMinY(); x < envelope.getMaxY(); x = x + 1) {
-			for (double y = envelope.getMinX(); y < envelope.getMaxX(); y = y + 1) {
+		for (double y = envelope.getMinY(); y < envelope.getMaxY(); y = y + 1) {
+			for (double x = envelope.getMinX(); x < envelope.getMaxX(); x = x + 1) {
 				final Point2D srcPixel = geoRasterSrc
 						.fromRealWorldCoordToPixelGridCoord(x, y);
 				final Point2D dstPixel = geoRasterDst
 						.fromRealWorldCoordToPixelGridCoord(x, y);
-				final float p = srcPixelProvider.getPixelValue((int) srcPixel
-						.getX(), (int) srcPixel.getX());
-				final float p2 = dstPixelProvider.getPixelValue((int) dstPixel
-						.getX(), (int) dstPixel.getX());
-				if (Float.isNaN(p)) {
-					assertTrue(Float.isNaN(p2));
+				final float srcPixelValue = srcPixelProvider.getPixelValue(
+						(int) srcPixel.getX(), (int) srcPixel.getY());
+				final float dstPixelValue = dstPixelProvider.getPixelValue(
+						(int) dstPixel.getX(), (int) dstPixel.getY());
+				if (Float.isNaN(srcPixelValue)) {
+					assertTrue(Float.isNaN(dstPixelValue));
 				} else {
-					assertTrue("pixel[" + x + ", " + y + "]", p == p2);
+					assertTrue("pixel[" + x + ", " + y + "]",
+							srcPixelValue == dstPixelValue);
 				}
 			}
 		}
