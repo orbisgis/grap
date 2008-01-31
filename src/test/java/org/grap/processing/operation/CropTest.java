@@ -160,6 +160,8 @@ public class CropTest extends GrapTest {
 		final RasterMetadata dstMetadata = geoRasterDst.getMetadata();
 		final float pixelSize_X = dstMetadata.getPixelSize_X();
 		final float pixelSize_Y = dstMetadata.getPixelSize_Y();
+		final float halfPixelSize_X = dstMetadata.getPixelSize_X() / 2;
+		final float halfPixelSize_Y = Math.abs(dstMetadata.getPixelSize_Y()) / 2;
 		final int ncols = dstMetadata.getNCols();
 		final int nrows = dstMetadata.getNRows();
 		final double xulcorner = dstMetadata.getXulcorner();
@@ -177,8 +179,10 @@ public class CropTest extends GrapTest {
 				* Math.abs(pixelSize_Y) == dstMetadata.getEnvelope().getMinY());
 
 		// check raster values
-		for (double y = envelope.getMinY(); y < envelope.getMaxY(); y = y + 1) {
-			for (double x = envelope.getMinX(); x < envelope.getMaxX(); x = x + 1) {
+		for (double y = envelope.getMinY() + halfPixelSize_Y; y < envelope
+				.getMaxY(); y = y + 1) {
+			for (double x = envelope.getMinX() + halfPixelSize_X; x < envelope
+					.getMaxX(); x = x + 1) {
 				final Point2D srcPixel = geoRasterSrc
 						.fromRealWorldCoordToPixelGridCoord(x, y);
 				final Point2D dstPixel = geoRasterDst
@@ -195,14 +199,5 @@ public class CropTest extends GrapTest {
 				}
 			}
 		}
-	}
-
-	private boolean equals(byte[] pixels1, byte[] pixels2) {
-		for (int i = 0; i < pixels2.length; i++) {
-			if (pixels1[i] != pixels2[i]) {
-				return false;
-			}
-		}
-		return pixels1.length == pixels2.length;
 	}
 }

@@ -47,17 +47,14 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
-
 public class GeoreferencingTest extends TestCase {
 	private static GeoRaster sampleRaster;
 
 	static {
 		final double upperLeftX = 1234.56;
 		final double upperLeftY = 987.65;
-		final float pixelSize_X = 2.5f;
-		final float pixelSize_Y = -10.5f;
+		final float pixelSize_X = 2f;
+		final float pixelSize_Y = -10.25f;
 		final int nrows = 33;
 		final int ncols = 57;
 
@@ -77,13 +74,15 @@ public class GeoreferencingTest extends TestCase {
 
 		final float halfPixelSize_X = md.getPixelSize_X() / 2;
 		final float halfPixelSize_Y = Math.abs(md.getPixelSize_Y()) / 2;
+		final float deltaX = md.getPixelSize_X() / 10;
+		final float deltaY = Math.abs(md.getPixelSize_Y()) / 10;
 
 		for (int r = 0; r < md.getNRows(); r++) {
 			final double y = md.getYulcorner() + r * md.getPixelSize_Y();
 			for (int c = 0; c < md.getNCols(); c++) {
 				final double x = md.getXulcorner() + c * md.getPixelSize_X();
-				for (float aleaR = -halfPixelSize_Y + 1; aleaR <= halfPixelSize_Y; aleaR++) {
-					for (float aleaC = -halfPixelSize_X + 1; aleaC <= halfPixelSize_X; aleaC++) {
+				for (float aleaR = -halfPixelSize_Y + deltaX; aleaR <= halfPixelSize_Y; aleaR += deltaX) {
+					for (float aleaC = -halfPixelSize_X + deltaY; aleaC < halfPixelSize_X; aleaC += deltaY) {
 						final Point2D p = sampleRaster
 								.fromRealWorldCoordToPixelGridCoord(x + aleaC,
 										y + aleaR);
@@ -108,25 +107,5 @@ public class GeoreferencingTest extends TestCase {
 				assertTrue(y == p.getY());
 			}
 		}
-	}
-
-	public void testFromPixelToWorld() throws Exception {
-		final String src = "../../datas2tests/grid/3x3.asc";
-		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
-		geoRaster.open();
-
-		final WKTReader wkt = new WKTReader();
-		final Geometry point = wkt.read("POINT ( 290004.9 2259994.9)");
-
-		System.out.println("The Point for the test : " + point.toText());
-
-		final int halfPixelSize_X = (int) geoRaster.getMetadata()
-				.getPixelSize_X() / 2;
-		final int halfPixelSize_Y = (int) Math.abs(geoRaster.getMetadata()
-				.getPixelSize_Y()) / 2;
-
-		Point2D worldCoord = geoRaster.fromPixelGridCoordToRealWorldCoord(1, 1);
-
-		System.out.println("Pixel world coordinates : " + worldCoord);
 	}
 }

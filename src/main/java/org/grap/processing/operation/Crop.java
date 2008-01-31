@@ -201,15 +201,14 @@ public class Crop implements Operation {
 	}
 
 	private LinearRing toPixel(final GeoRaster geoRaster, final LinearRing ring) {
-		final Coordinate[] coords = ring.getCoordinates();
-		final Coordinate[] transformedCoords = new Coordinate[coords.length];
-		for (int i = 0; i < transformedCoords.length; i++) {
+		final Coordinate[] realWorldCoords = ring.getCoordinates();
+		final Coordinate[] pixelGridCoords = new Coordinate[realWorldCoords.length];
+		for (int i = 0; i < pixelGridCoords.length; i++) {
 			final Point2D p = geoRaster.fromRealWorldCoordToPixelGridCoord(
-					coords[i].x, coords[i].y);
-			transformedCoords[i] = new Coordinate(p.getX(), p.getY());
+					realWorldCoords[i].x, realWorldCoords[i].y);
+			pixelGridCoords[i] = new Coordinate(p.getX(), p.getY());
 		}
-
-		return new GeometryFactory().createLinearRing(transformedCoords);
+		return new GeometryFactory().createLinearRing(pixelGridCoords);
 	}
 
 	private Rectangle2D toPixel(final GeoRaster geoRaster,
