@@ -39,32 +39,28 @@
  */
 package org.grap.processing.operation.others;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class FindEdges implements Operation {
-	
-	
 	public GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
+			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			imagePlus.getProcessor().findEdges();
 
-			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-			rImp.getProcessor().findEdges();
-
-			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
-					geoRaster.getMetadata());
-
-			return grResult;
+			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+					.getMetadata());
 		} catch (IOException e) {
 			throw new OperationException("Cannot find edges", e);
-		}	
+		}
 	}
 }

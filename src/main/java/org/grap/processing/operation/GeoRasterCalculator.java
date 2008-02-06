@@ -79,7 +79,7 @@ public class GeoRasterCalculator implements Operation {
 	private GeoRaster gr2;
 	private int method;
 
-	public GeoRasterCalculator(final GeoRaster gr2, int method) {
+	public GeoRasterCalculator(final GeoRaster gr2, final int method) {
 		this.gr2 = gr2;
 		this.method = method;
 	}

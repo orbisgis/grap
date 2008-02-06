@@ -40,29 +40,26 @@
 
 package org.grap.processing.operation.math;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class SquareValueOperation implements Operation {
-
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException,
-			GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
+			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			imagePlus.getProcessor().sqr();
 
-			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-			rImp.getProcessor().sqr();
-
-			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
-					geoRaster.getMetadata());
-
-			return grResult;
+			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+					.getMetadata());
 		} catch (IOException e) {
 			throw new OperationException("Cannot do square value operation", e);
 		}

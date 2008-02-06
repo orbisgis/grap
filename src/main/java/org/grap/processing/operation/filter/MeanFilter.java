@@ -39,45 +39,34 @@
  */
 package org.grap.processing.operation.filter;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class MeanFilter implements Operation {
-	
-	
+	private final static float[] KERNEL = new float[] {//
+			1, 1, 1, //
+			1, 1, 1, //
+			1, 1, 1 //
+	};
+
 	public GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException, GeoreferencingException {
-		
-		
 		try {
 			geoRaster.open();
+			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			imagePlus.getProcessor().convolve(KERNEL, 3, 3);
 
-			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-			rImp.getProcessor().convolve(buildKernel(3), 3, 3);
-
-			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
-					geoRaster.getMetadata());
-
-			return grResult;
+			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+					.getMetadata());
 		} catch (IOException e) {
 			throw new OperationException("Cannot apply the mean filter", e);
-		}	
-		
-		
-	}
-	
-	private float[] buildKernel(final int size) {
-		final float[] kernel = new float[size * size];
-		for (int i = 0; i < kernel.length; i++) {
-			kernel[i] = 1;
 		}
-		return kernel;
 	}
-	
 }

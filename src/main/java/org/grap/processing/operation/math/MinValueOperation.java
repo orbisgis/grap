@@ -40,6 +40,7 @@
 
 package org.grap.processing.operation.math;
 
+import ij.ImagePlus;
 import ij.process.ByteProcessor;
 
 import java.io.IOException;
@@ -47,7 +48,6 @@ import java.io.IOException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
@@ -62,16 +62,14 @@ public class MinValueOperation implements Operation {
 			throws OperationException, GeoreferencingException {
 		try {
 			geoRaster.open();
+			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			imagePlus.getProcessor().min(minValue);
+			if (!(imagePlus.getProcessor() instanceof ByteProcessor)) {
+				imagePlus.getProcessor().resetMinAndMax();
+			}
 
-			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-			rImp.getProcessor().min(minValue);
-			if (!(rImp.getProcessor() instanceof ByteProcessor))
-				rImp.getProcessor().resetMinAndMax();
-
-			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
-					geoRaster.getMetadata());
-
-			return grResult;
+			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+					.getMetadata());
 		} catch (IOException e) {
 			throw new OperationException("Cannot do min value operation", e);
 		}

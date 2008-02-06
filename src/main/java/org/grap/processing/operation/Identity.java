@@ -53,15 +53,14 @@ import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAN;
 
 public class Identity implements Operation {
-
-	public GeoRaster execute(GeoRaster geoRaster) throws OperationException,
-			GeoreferencingException {
+	public GeoRaster execute(final GeoRaster geoRaster)
+			throws OperationException, GeoreferencingException {
 		try {
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
-			final float[] pixels = geoRaster.getGrapImagePlus()
-					.getFloatPixels();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
+			final float[] pixels = geoRaster.getGrapImagePlus()
+					.getFloatPixels();
 
 			final ICA ca = new CAFIdentity(pixels, nrows, ncols);
 			final ICAN ccan = CANFactory.createCAN(ca);

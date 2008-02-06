@@ -58,69 +58,58 @@ public class Shadows implements Operation {
 
 	public GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException, GeoreferencingException {
-
 		try {
 			geoRaster.open();
+			final GrapImagePlus imagePlus = geoRaster.getGrapImagePlus();
 
-			final GrapImagePlus rImp = geoRaster.getGrapImagePlus();
-						
-			
 			switch (orientation) {
-			case NORTH:				
-				rImp.getProcessor().convolve3x3(new int[] { 1, 2, 1, 0, 1, 0, -1, -2,
-						-1 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+			case NORTH:
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { 1, 2, 1, 0, 1, 0, -1, -2, -1 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			case SOUTH:
-				
-				rImp.getProcessor().convolve3x3(new int[] { -1, -2, -1, 0, 1, 0, 1, 2,
-						1 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
-				
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { -1, -2, -1, 0, 1, 0, 1, 2, 1 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
+
 			case EAST:
-				rImp.getProcessor().convolve3x3(new int[] { -1, 0, 1, -2, 1, 2, -1, 0,
-						1 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { -1, 0, 1, -2, 1, 2, -1, 0, 1 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			case WEST:
-				rImp.getProcessor().convolve3x3(new int[] { 1, 0, -1, 2, 1, -2, 1, 0,
-						-1 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { 1, 0, -1, 2, 1, -2, 1, 0, -1 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			case NORTHWEST:
-				rImp.getProcessor().convolve3x3(new int[] { 2, 1, 0, 1, 1, -1, 0, -1,
-						-2 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { 2, 1, 0, 1, 1, -1, 0, -1, -2 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			case SOUTHEAST:
-				rImp.getProcessor().convolve3x3(new int[] { -2, -1, 0, -1, 1, 1, 0, 1,
-						2 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { -2, -1, 0, -1, 1, 1, 0, 1, 2 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			case NORTHEAST:
-				rImp.getProcessor().convolve3x3(new int[] { 0, 1, 2, -1, 1, 1, -2, -1,
-						0 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { 0, 1, 2, -1, 1, 1, -2, -1, 0 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			case SOUTHWEST:
-				rImp.getProcessor().convolve3x3(new int[] { 0, -1, -2, 1, 1, -1, 2, 1,
-						0 });
-				return GeoRasterFactory.createGeoRaster(rImp,
-						geoRaster.getMetadata());
+				imagePlus.getProcessor().convolve3x3(
+						new int[] { 0, -1, -2, 1, 1, -1, 2, 1, 0 });
+				return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
+						.getMetadata());
 			default:
-				throw new OperationException("Unknown orientation: " + orientation);
+				throw new OperationException("Unknown orientation: "
+						+ orientation);
 			}
-			
-			
 		} catch (IOException e) {
 			throw new OperationException("Cannot smooth the geoRaster", e);
-		}	
+		}
 	}
-	
-		
-	
-	
-	
-	
 }
