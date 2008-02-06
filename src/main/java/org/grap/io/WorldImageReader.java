@@ -39,9 +39,11 @@
  */
 package org.grap.io;
 
+import ij.ImagePlus;
 import ij.io.FileInfo;
 import ij.io.Opener;
 import ij.io.TiffDecoder;
+import ij.process.ImageProcessor;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -159,7 +161,9 @@ public class WorldImageReader implements FileReader {
 
 	public GrapImagePlus readGrapImagePlus() throws IOException {
 		// return new Opener().openImage(fileName);
-		return new GrapImagePlus("", new Opener().openImage(fileName)
-				.getProcessor());
+		ImagePlus imagePlus = new Opener().openImage(fileName);
+		final ImageProcessor imageProcessor = imagePlus.getProcessor();
+		imagePlus = null;
+		return new GrapImagePlus("", imageProcessor);
 	}
 }
