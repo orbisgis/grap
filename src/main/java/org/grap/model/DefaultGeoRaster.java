@@ -124,6 +124,25 @@ public class DefaultGeoRaster implements GeoRaster {
 		getCachedValues(null).maxThreshold = max;
 	}
 
+	public static IndexColorModel setTransparency(
+			final IndexColorModel indexColorModel) {
+		final int nbOfColors = indexColorModel.getMapSize();
+		final byte[] reds = new byte[nbOfColors];
+		final byte[] greens = new byte[nbOfColors];
+		final byte[] blues = new byte[nbOfColors];
+		final byte[] alphas = new byte[nbOfColors];
+
+		indexColorModel.getReds(reds);
+		indexColorModel.getGreens(greens);
+		indexColorModel.getBlues(blues);
+		indexColorModel.getAlphas(alphas);
+
+		// transparency for NaN pixels
+		alphas[0] = 0;
+
+		return new IndexColorModel(8, nbOfColors, reds, greens, blues, alphas);
+	}
+
 	public void setRangeColors(final double[] ranges, final Color[] colors)
 			throws OperationException, IOException, GeoreferencingException {
 		checkRangeColors(ranges, colors);
@@ -168,11 +187,13 @@ public class DefaultGeoRaster implements GeoRaster {
 		rasterMetadata.setNoData(value);
 	}
 
-	public Point2D fromPixelGridCoordToRealWorldCoord(final int xpixel, final int ypixel) {
+	public Point2D fromPixelGridCoordToRealWorldCoord(final int xpixel,
+			final int ypixel) {
 		return rasterMetadata.toWorld(xpixel, ypixel);
 	}
 
-	public Point2D fromRealWorldCoordToPixelGridCoord(final double mouseX, final double mouseY) {
+	public Point2D fromRealWorldCoordToPixelGridCoord(final double mouseX,
+			final double mouseY) {
 		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
 
@@ -286,18 +307,9 @@ public class DefaultGeoRaster implements GeoRaster {
 				ip = getGrapImagePlus();
 			}
 			final ImageProcessor processor = ip.getProcessor();
-			/*
-			 * TODO I comment this because this doesn't work. After solving the
-			 * bug of transparencies this must be removed final IndexColorModel
-			 * cm = (IndexColorModel) processor .getColorModel(); byte[] reds =
-			 * new byte[256]; byte[] greens = new byte[256]; byte[] blues = new
-			 * byte[256]; byte[] alphas = new byte[256]; cm.getReds(reds);
-			 * cm.getGreens(greens); cm.getBlues(blues); cm.getAlphas(alphas);
-			 * alphas[0] = 0; cachedValues.colorModel = new IndexColorModel(8,
-			 * 256, reds, greens, blues, alphas);
-			 */
+			// cachedValues.colorModel = setTransparency((IndexColorModel) processor
+			//		.getColorModel());
 			cachedValues.colorModel = processor.getColorModel();
-
 			cachedValues.min = processor.getMin();
 			cachedValues.max = processor.getMax();
 			cachedValues.height = ip.getHeight();
