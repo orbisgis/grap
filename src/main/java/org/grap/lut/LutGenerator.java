@@ -198,8 +198,9 @@ public class LutGenerator {
 		else if (arg.equalsIgnoreCase("redgreen"))
 			nColors = redGreen(fi.reds, fi.greens, fi.blues);
 		if (nColors > 0) {
-			if (nColors < 256)
+			if (nColors < 256) {
 				interpolate(fi.reds, fi.greens, fi.blues, nColors);
+			}
 			fi.fileName = arg;
 			final ColorModel cm = new IndexColorModel(8, 256, fi.reds,
 					fi.greens, fi.blues);
@@ -207,26 +208,10 @@ public class LutGenerator {
 		}
 		return null;
 	}
-	
-	public static String[] getDefaultLUTS(){
-		 String[] LUTS = new String[12];
-		 
-		 LUTS[0] = "fire";
-		 LUTS[1] = "gray";
-		 LUTS[2] = "ice";
-		 LUTS[3] = "spectrum";
-		 LUTS[4] = "red";
-		 LUTS[5] = "green";
-		 LUTS[6] = "blue";
-		 LUTS[7] = "cyan";
-		 LUTS[8] = "magenta";
-		 LUTS[9] = "yellow";
-		 LUTS[10] = "redgreen";
-		 LUTS[11] = "3-3-2 RGB";
-		                               
-		
-		return LUTS;
-		
-		
+
+	public static String[] getDefaultLUTS() {
+		return new String[] { "fire", "gray", "ice", "spectrum",
+				"red", "green", "blue", "cyan", "magenta", "yellow",
+				"redgreen", "3-3-2 RGB" };
 	}
 }
