@@ -124,7 +124,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		getCachedValues(null).maxThreshold = max;
 	}
 
-	public static ColorModel setTransparency(final ColorModel colorModel) {
+	private ColorModel setTransparency(final ColorModel colorModel) {
 		if (colorModel instanceof IndexColorModel) {
 			final IndexColorModel indexColorModel = (IndexColorModel) colorModel;
 			final int nbOfColors = indexColorModel.getMapSize();
@@ -159,7 +159,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		final byte[] reds = new byte[nbOfColors];
 		final byte[] greens = new byte[nbOfColors];
 		final byte[] blues = new byte[nbOfColors];
-		final byte[] alpha = new byte[nbOfColors];
 		final double delta = (ranges[ranges.length - 1] - ranges[0])
 				/ (nbOfColors - 1);
 		double x = ranges[0] + delta;
@@ -172,17 +171,14 @@ public class DefaultGeoRaster implements GeoRaster {
 			reds[i] = (byte) colors[j].getRed();
 			greens[i] = (byte) colors[j].getGreen();
 			blues[i] = (byte) colors[j].getBlue();
-			alpha[i] = 1;
 		}
 		// default color for NaN pixels :
 		reds[0] = (byte) Color.BLACK.getRed();
 		greens[0] = (byte) Color.BLACK.getGreen();
 		blues[0] = (byte) Color.BLACK.getBlue();
-		alpha[0] = 0;
 
 		try {
-			setLUT(new IndexColorModel(8, nbOfColors, reds, greens, blues,
-					alpha));
+			setLUT(new IndexColorModel(8, nbOfColors, reds, greens, blues));
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
@@ -237,7 +233,7 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public void setLUT(final ColorModel colorModel) throws IOException,
 			GeoreferencingException {
-		getCachedValues(null).colorModel = colorModel;
+		getCachedValues(null).colorModel = setTransparency(colorModel);
 	}
 
 	public GeoRaster doOperation(final Operation operation)
@@ -312,7 +308,6 @@ public class DefaultGeoRaster implements GeoRaster {
 				ip = getGrapImagePlus();
 			}
 			final ImageProcessor processor = ip.getProcessor();
-			// cachedValues.colorModel = processor.getColorModel();
 			cachedValues.colorModel = setTransparency(processor.getColorModel());
 			cachedValues.min = processor.getMin();
 			cachedValues.max = processor.getMax();
