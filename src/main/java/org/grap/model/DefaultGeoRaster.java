@@ -124,23 +124,28 @@ public class DefaultGeoRaster implements GeoRaster {
 		getCachedValues(null).maxThreshold = max;
 	}
 
-	public static IndexColorModel setTransparency(
-			final IndexColorModel indexColorModel) {
-		final int nbOfColors = indexColorModel.getMapSize();
-		final byte[] reds = new byte[nbOfColors];
-		final byte[] greens = new byte[nbOfColors];
-		final byte[] blues = new byte[nbOfColors];
-		final byte[] alphas = new byte[nbOfColors];
+	public static ColorModel setTransparency(final ColorModel colorModel) {
+		if (colorModel instanceof IndexColorModel) {
+			final IndexColorModel indexColorModel = (IndexColorModel) colorModel;
+			final int nbOfColors = indexColorModel.getMapSize();
+			final byte[] reds = new byte[nbOfColors];
+			final byte[] greens = new byte[nbOfColors];
+			final byte[] blues = new byte[nbOfColors];
+			final byte[] alphas = new byte[nbOfColors];
 
-		indexColorModel.getReds(reds);
-		indexColorModel.getGreens(greens);
-		indexColorModel.getBlues(blues);
-		indexColorModel.getAlphas(alphas);
+			indexColorModel.getReds(reds);
+			indexColorModel.getGreens(greens);
+			indexColorModel.getBlues(blues);
+			indexColorModel.getAlphas(alphas);
 
-		// transparency for NaN pixels
-		alphas[0] = 0;
+			// transparency for NaN pixels
+			alphas[0] = 0;
 
-		return new IndexColorModel(8, nbOfColors, reds, greens, blues, alphas);
+			return new IndexColorModel(8, nbOfColors, reds, greens, blues,
+					alphas);
+		} else {
+			return colorModel;
+		}
 	}
 
 	public void setRangeColors(final double[] ranges, final Color[] colors)
@@ -307,9 +312,8 @@ public class DefaultGeoRaster implements GeoRaster {
 				ip = getGrapImagePlus();
 			}
 			final ImageProcessor processor = ip.getProcessor();
-			// cachedValues.colorModel = setTransparency((IndexColorModel) processor
-			//		.getColorModel());
-			cachedValues.colorModel = processor.getColorModel();
+			// cachedValues.colorModel = processor.getColorModel();
+			cachedValues.colorModel = setTransparency(processor.getColorModel());
 			cachedValues.min = processor.getMin();
 			cachedValues.max = processor.getMax();
 			cachedValues.height = ip.getHeight();
