@@ -5,40 +5,34 @@ import ij.gui.NewImage;
 import ij.process.ImageProcessor;
 
 import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 
 public class LutDisplay {
+	private ColorModel colorModel;
 
-	private ColorModel cm;
-
-	public LutDisplay(ColorModel cm) {
-
-		this.cm = cm;
-
+	public LutDisplay(final ColorModel colorModel) {
+		this.colorModel = colorModel;
 	}
 
 	public ImagePlus getImagePlus() {
+		final int w = 256;
+		final int h = 20;
+		final ImagePlus imagePlus = NewImage.createByteImage("Lut", w, h, 1, 0);
 
-		int w = 256, h, x, y, j;
-		h = 20;
+		if (colorModel instanceof IndexColorModel) {
+			final ImageProcessor imageProcessor = imagePlus.getProcessor();
+			final byte[] pixels = (byte[]) imageProcessor.getPixels();
 
-		ImagePlus imp = NewImage.createByteImage("Lut", w, h, 1, 0);
-		ImageProcessor ip = imp.getProcessor();
-		byte[] pixels = (byte[]) ip.getPixels();
-
-		j = 0;
-		for (y = 0; y < h; y++) {
-			for (x = 0; x < w; x++) {
-				pixels[j++] = (byte) x;
-
+			int j = 0;
+			for (int y = 0; y < h; y++) {
+				for (int x = 0; x < w; x++) {
+					pixels[j++] = (byte) x;
+				}
 			}
+			imagePlus.getProcessor().setColorModel(colorModel);
+			imagePlus.updateAndDraw();
 		}
-
-		imp.getProcessor().setColorModel(cm);
-
-		imp.updateAndDraw();
-
-		return imp;
-
+		
+		return imagePlus;
 	}
-
 }

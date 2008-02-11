@@ -148,6 +148,34 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
+	private ColorModel setTransparency(final ColorModel colorModel,
+			final byte opacity) {
+		if (colorModel instanceof IndexColorModel) {
+			final IndexColorModel indexColorModel = (IndexColorModel) colorModel;
+			final int nbOfColors = indexColorModel.getMapSize();
+			final byte[] reds = new byte[nbOfColors];
+			final byte[] greens = new byte[nbOfColors];
+			final byte[] blues = new byte[nbOfColors];
+			final byte[] alphas = new byte[nbOfColors];
+
+			indexColorModel.getReds(reds);
+			indexColorModel.getGreens(greens);
+			indexColorModel.getBlues(blues);
+			indexColorModel.getAlphas(alphas);
+
+			for (int i = 1; i < nbOfColors; i++) {
+				alphas[i] = opacity;
+			}
+			// transparency for NaN pixels
+			alphas[0] = 0;
+
+			return new IndexColorModel(8, nbOfColors, reds, greens, blues,
+					alphas);
+		} else {
+			return colorModel;
+		}
+	}
+
 	public void setRangeColors(final double[] ranges, final Color[] colors)
 			throws OperationException, IOException, GeoreferencingException {
 		checkRangeColors(ranges, colors);
@@ -234,6 +262,11 @@ public class DefaultGeoRaster implements GeoRaster {
 	public void setLUT(final ColorModel colorModel) throws IOException,
 			GeoreferencingException {
 		getCachedValues(null).colorModel = setTransparency(colorModel);
+	}
+
+	public void setLUT(final ColorModel colorModel, final byte opacity)
+			throws IOException, GeoreferencingException {
+		getCachedValues(null).colorModel = setTransparency(colorModel, opacity);
 	}
 
 	public GeoRaster doOperation(final Operation operation)

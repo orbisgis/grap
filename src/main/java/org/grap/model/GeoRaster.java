@@ -76,6 +76,9 @@ public interface GeoRaster {
 	public abstract void setLUT(final ColorModel colorModel)
 			throws IOException, GeoreferencingException;
 
+	public abstract void setLUT(final ColorModel colorModel, final byte opacity)
+			throws IOException, GeoreferencingException;
+
 	public abstract GeoRaster doOperation(final Operation operation)
 			throws OperationException, GeoreferencingException;
 

@@ -67,7 +67,8 @@ class NullGeoRaster implements GeoRaster {
 		return null;
 	}
 
-	public Point2D fromRealWorldCoordToPixelGridCoord(double mouseX, double mouseY) {
+	public Point2D fromRealWorldCoordToPixelGridCoord(double mouseX,
+			double mouseY) {
 		return null;
 	}
 
@@ -86,6 +87,9 @@ class NullGeoRaster implements GeoRaster {
 	}
 
 	public void setLUT(ColorModel LUTName) {
+	}
+
+	public void setLUT(ColorModel LUTName, final byte opacity) {
 	}
 
 	public void setNodataValue(float value) {
