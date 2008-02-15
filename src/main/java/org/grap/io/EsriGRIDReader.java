@@ -57,55 +57,55 @@ import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 /**
- * 
+ *
  * @author Thomas and Erwan
- * 
+ *
  * This class is written to directly access the ESRI ascii grid format.
- * 
+ *
  * The ASCII grid data file format comprises a few lines of header data followed
  * by lists of cell values. The header data includes the following keywords and
  * values:
- * 
+ *
  * ncols : number of columns in the data set.
- * 
+ *
  * nrows : number of rows in the data set.
- * 
+ *
  * xllcorner : x-coordinate of the west border of the LowerLeft corner.
- * 
+ *
  * yllcorner : y-coordinate of the south border of the LowerLeft corner.
- * 
+ *
  * cellsize : size of the square cell of the data set.
- * 
+ *
  * NODATA_value : arbitrary value assigned to unknown cells.
- * 
+ *
  * Grap's meta-data matches the world file specifications as mentioned in the
  * wikipedia web page http://en.wikipedia.org/wiki/World_file
- * 
+ *
  * Indeed, the first pixel of the pixels grid (with raw and column indexes both
  * equals to zero, at the upper left corner) corresponds, in the real world, to
  * the centroid of the corresponding UpperLeft rectangle.
- * 
+ *
  * As defined in the ESRI Grid specifications wikipedia web page
  * http://en.wikipedia.org/wiki/ESRI_grid, the given lower left coordinates
  * (those that corresponds to the south-west edge of the LowerLeft rectangle in
  * the real world) have to be converted into the Grap UpperLeft centroid.
- * 
+ *
  * Concerning the unique cellsize (pixel are square in ESRI Grid format), it is
  * converted into pixelSize_X (without any modification) and pixelSize_Y (using
  * the opposite -cellsize value).
- * 
+ *
  * For example
- * 
+ *
  * ncols 466
- * 
+ *
  * nrows 448
- * 
+ *
  * xllcorner 634592
- * 
+ *
  * yllcorner 5588395
- * 
+ *
  * cellsize 10
- * 
+ *
  * NODATA_value -9999
  */
 public class EsriGRIDReader implements FileReader {
@@ -263,7 +263,7 @@ public class EsriGRIDReader implements FileReader {
 	 * @throws GeoreferencingException
 	 * @throws IOException
 	 */
-	public final RasterMetadata readRasterMetadata()
+	public synchronized final RasterMetadata readRasterMetadata()
 			throws GeoreferencingException, IOException {
 		open();
 		rasterMetadata = readHeaderPart();
@@ -271,7 +271,7 @@ public class EsriGRIDReader implements FileReader {
 		return rasterMetadata;
 	}
 
-	public GrapImagePlus readGrapImagePlus() throws GeoreferencingException,
+	public synchronized GrapImagePlus readGrapImagePlus() throws GeoreferencingException,
 			IOException {
 		open();
 		readHeaderPart();
