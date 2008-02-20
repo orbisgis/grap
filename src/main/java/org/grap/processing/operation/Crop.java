@@ -127,7 +127,7 @@ public class Crop implements Operation {
 								.getRotation_X(), geoRaster.getMetadata()
 								.getRotation_Y());
 
-				return createGeoRaster(geoRaster, result, metadataResult);
+				return GeoRasterFactory.createGeoRaster( result, metadataResult);
 			} else {
 				return GeoRasterFactory.createNullGeoRaster();
 			}
@@ -163,8 +163,10 @@ public class Crop implements Operation {
 								.getHeight(), geoRaster.getMetadata()
 								.getRotation_X(), geoRaster.getMetadata()
 								.getRotation_Y());
-
-				return createGeoRaster(geoRaster, result, metadataResult);
+				//duplicate data not necessary
+				//return createGeoRaster(geoRaster, result, metadataResult);
+				
+				return GeoRasterFactory.createGeoRaster(result, metadataResult);
 			} else {
 				return GeoRasterFactory.createNullGeoRaster();
 			}
@@ -173,7 +175,7 @@ public class Crop implements Operation {
 		}
 	}
 
-	private GeoRaster createGeoRaster(final GeoRaster geoRaster,
+	/*private GeoRaster createGeoRaster(final GeoRaster geoRaster,
 			final ImageProcessor dup, final RasterMetadata rasterMetadata)
 			throws IOException, GeoreferencingException {
 		final int width = dup.getWidth();
@@ -198,7 +200,7 @@ public class Crop implements Operation {
 		default:
 			throw new IllegalStateException("Unknown type: " + type);
 		}
-	}
+	}*/
 
 	private LinearRing toPixel(final GeoRaster geoRaster, final LinearRing ring) {
 		final Coordinate[] realWorldCoords = ring.getCoordinates();
