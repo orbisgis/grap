@@ -237,12 +237,14 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toWorld(final int x, final int y) {
-		if ((0 <= x) && (x < ncols) && (0 <= y) && (y < nrows)) {
+		
+		// TODO must be in orbisgis gui because it relates to a tool
+		//if ((0 <= x) && (x < ncols) && (0 <= y) && (y < nrows)) {
 			return affineTransform.transform(new Point2D.Double(x, y), null);
-		} else {
+		/*} else {
 			throw new IllegalArgumentException(
 					"Out of the GeoRaster envelope !");
-		}
+		}*/
 	}
 
 	public RasterMetadata duplicate() {
