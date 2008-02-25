@@ -324,9 +324,15 @@ public class DefaultGeoRaster implements GeoRaster {
 			grapImagePlus.getProcessor().setThreshold(
 					getCachedValues(null).minThreshold,
 					getCachedValues(null).maxThreshold,
-					ImageProcessor.NO_LUT_UPDATE);
+					ImageProcessor.BLACK_AND_WHITE_LUT);
+						
 			WindowManager.setTempCurrentImage(grapImagePlus);
-			IJ.run("NaN Background");
+			if (ImagePlus.GRAY32 == getType()){
+				
+				
+				IJ.run("NaN Background");
+			}
+			grapImagePlus.updateImage();
 		}
 		return grapImagePlus;
 	}
