@@ -163,8 +163,6 @@ public class Crop implements Operation {
 								.getHeight(), geoRaster.getMetadata()
 								.getRotation_X(), geoRaster.getMetadata()
 								.getRotation_Y());
-				//duplicate data not necessary
-				//return createGeoRaster(geoRaster, result, metadataResult);
 				
 				return GeoRasterFactory.createGeoRaster(result, metadataResult);
 			} else {
@@ -175,32 +173,7 @@ public class Crop implements Operation {
 		}
 	}
 
-	/*private GeoRaster createGeoRaster(final GeoRaster geoRaster,
-			final ImageProcessor dup, final RasterMetadata rasterMetadata)
-			throws IOException, GeoreferencingException {
-		final int width = dup.getWidth();
-		final int height = dup.getHeight();
-		final ColorModel cm = dup.getColorModel();
-		final int type = geoRaster.getType();
-		switch (type) {
-		case ImagePlus.GRAY8:
-		case ImagePlus.COLOR_256:
-			final byte[] bytePixels = (byte[]) dup.getPixels();
-			return GeoRasterFactory.createGeoRaster(bytePixels, width, height,
-					cm, rasterMetadata);
-		case ImagePlus.GRAY16:
-			final short[] shortPixels = (short[]) dup.getPixels();
-			return GeoRasterFactory.createGeoRaster(shortPixels, width, height,
-					cm, rasterMetadata);
-		case ImagePlus.GRAY32:
-		case ImagePlus.COLOR_RGB:
-			final float[] floatPixels = (float[]) dup.getPixels();
-			return GeoRasterFactory.createGeoRaster(floatPixels, width, height,
-					cm, rasterMetadata);
-		default:
-			throw new IllegalStateException("Unknown type: " + type);
-		}
-	}*/
+	
 
 	private LinearRing toPixel(final GeoRaster geoRaster, final LinearRing ring) {
 		final Coordinate[] realWorldCoords = ring.getCoordinates();
