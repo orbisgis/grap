@@ -39,10 +39,10 @@
  */
 package org.grap.model;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import ij.io.FileSaver;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.awt.Color;
@@ -324,20 +324,54 @@ public class DefaultGeoRaster implements GeoRaster {
 			grapImagePlus.getProcessor().setThreshold(
 					getCachedValues(null).minThreshold,
 					getCachedValues(null).maxThreshold,
+					// ImageProcessor.NO_LUT_UPDATE);
 					ImageProcessor.BLACK_AND_WHITE_LUT);
-						
+			// Makes the specified image temporarily the active image. Allows
+			// use of IJ.run() commands on images that are not displayed in a
+			// window. Call again with a null argument to revert to the previous
+			// active image.
 			WindowManager.setTempCurrentImage(grapImagePlus);
-			if (ImagePlus.GRAY32 == getType()){
-				
-				
-				IJ.run("NaN Background");
-			}
+			// Sets non-thresholded pixels in 32-bit float images to the NaN
+			// (Not a Number) value. For float images, the "Apply" option in
+			// Image/Adjust Threshold runs this command. Pixels with a value of
+			// Float.NaN (0f/0f), Float.POSITIVE_INFINITY (1f/0f) or
+			// Float.NEGATIVE_INFINITY (-1f/0f) are ignored when making
+			// measurements on 32-bit float images.
+			//
+			// IJ.run("NaN Background");
+			setBackgroundToNaN(grapImagePlus.getProcessor());
+			// is following instruction really usefull ?
 			grapImagePlus.updateImage();
 		}
 		return grapImagePlus;
 	}
 
-	// private method
+	// private methods
+	private static void setBackgroundToNaN(ImageProcessor ip) {
+		// copy & paste from ImageMath.setBackgroundToNaN(ImageProcessor ip)
+		// Set non-thresholded pixels in a float image to NaN
+		final double lower = ip.getMinThreshold();
+		final double upper = ip.getMaxThreshold();
+		if ((lower != ImageProcessor.NO_THRESHOLD)
+				&& (ip instanceof FloatProcessor)) {
+			final float[] pixels = (float[]) ip.getPixels();
+			final int width = ip.getWidth();
+			final int height = ip.getHeight();
+			double v;
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++) {
+					v = pixels[y * width + x];
+					if (v < lower || v > upper)
+						pixels[y * width + x] = Float.NaN;
+				}
+			}
+			ip.resetMinAndMax();
+		} else {
+			System.err
+					.println("setBackgroundToNaN : Thresholded 32-bit float image required");
+		}
+	}
+
 	private CachedValues getCachedValues(ImagePlus img) throws IOException,
 			GeoreferencingException {
 		if (null == cachedValues) {

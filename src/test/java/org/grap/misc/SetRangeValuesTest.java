@@ -1,9 +1,6 @@
 package org.grap.misc;
 
 import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;

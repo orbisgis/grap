@@ -64,9 +64,10 @@ public class BasicTest extends GrapTest {
 
 	public void testXYZDEMReader() throws Exception {
 		try {
-			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-					+ "/xyz/MNT_Nantes_Lambert.xyz", GeoProcessorType.FLOAT,
-					10);
+			final GeoRaster gr = GeoRasterFactory
+					.createGeoRaster(externalData
+							+ "/xyz/MNT_Nantes_Lambert.xyz",
+							GeoProcessorType.FLOAT, 10);
 			gr.open();
 			gr.show();
 			gr.save(tmpData + "xyzdem.tif");
@@ -154,7 +155,10 @@ public class BasicTest extends GrapTest {
 		final ColorModel cm = gr.getColorModel();
 		final int[] componentSize = cm.getComponentSize();
 		for (int i = 0; i < componentSize.length; i++) {
-			assertTrue(cm.getAlpha(i) == originalCM.getAlpha(i));
+			assertTrue(cm.hasAlpha());
+			if (originalCM.hasAlpha()) {
+				assertFalse(cm.getAlpha(i) == originalCM.getAlpha(i));
+			}
 			assertTrue(cm.getRed(i) == originalCM.getRed(i));
 			assertTrue(cm.getGreen(i) == originalCM.getGreen(i));
 			assertTrue(cm.getBlue(i) == originalCM.getBlue(i));
