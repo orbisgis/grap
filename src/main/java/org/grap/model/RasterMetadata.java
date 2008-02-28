@@ -78,7 +78,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * Builds a raster metadata object
-	 * 
+	 *
 	 * @param upperLeftX
 	 *            center of the upper left pixel
 	 * @param upperLeftY
@@ -99,7 +99,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * Builds a raster metadata object
-	 * 
+	 *
 	 * @param upperLeftX
 	 *            center of the upper left pixel
 	 * @param upperLeftY
@@ -127,7 +127,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns pixel's width.
-	 * 
+	 *
 	 * @return type int.
 	 */
 
@@ -137,7 +137,7 @@ public class RasterMetadata implements Serializable {
 
 	/**
 	 * returns pixel's high.
-	 * 
+	 *
 	 * @return type int.
 	 */
 
@@ -214,15 +214,10 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toPixel(final double x, final double y) {
-		if (getEnvelope().contains(x, y)) {
-			final Point2D ptInPixelGrid = getInverse().transform(
-					new Point2D.Double(x, y), null);
-			return new Point2D.Double(Math.round(ptInPixelGrid.getX()), Math
-					.round(ptInPixelGrid.getY()));
-		} else {
-			throw new IllegalArgumentException(
-					"Out of the GeoRaster envelope !");
-		}
+		final Point2D ptInPixelGrid = getInverse().transform(
+				new Point2D.Double(x, y), null);
+		return new Point2D.Double(Math.round(ptInPixelGrid.getX()), Math
+				.round(ptInPixelGrid.getY()));
 	}
 
 	private AffineTransform getInverse() {
@@ -237,14 +232,7 @@ public class RasterMetadata implements Serializable {
 	}
 
 	public Point2D toWorld(final int x, final int y) {
-		
-		// TODO must be in orbisgis gui because it relates to a tool
-		//if ((0 <= x) && (x < ncols) && (0 <= y) && (y < nrows)) {
-			return affineTransform.transform(new Point2D.Double(x, y), null);
-		/*} else {
-			throw new IllegalArgumentException(
-					"Out of the GeoRaster envelope !");
-		}*/
+		return affineTransform.transform(new Point2D.Double(x, y), null);
 	}
 
 	public RasterMetadata duplicate() {

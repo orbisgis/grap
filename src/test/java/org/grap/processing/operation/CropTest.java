@@ -200,4 +200,17 @@ public class CropTest extends GrapTest {
 			}
 		}
 	}
+
+	public void testCropLeHavre() throws Exception {
+		String src = externalData + "geotif/littlelehavre.tif";
+		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		geoRaster.open();
+		RasterMetadata metadata = geoRaster.getMetadata();
+		Crop crop = new Crop(new Rectangle2D.Double(metadata.getXulcorner(),
+				metadata.getYulcorner(), 10, -110));
+		// Just test it doesn't throw any exception
+		geoRaster.doOperation(crop);
+
+		assertTrue(true);
+	}
 }
