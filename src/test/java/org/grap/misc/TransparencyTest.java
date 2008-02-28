@@ -1,36 +1,12 @@
 package org.grap.misc;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
-import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
-public class TransparencyTest extends GrapTest {
-	private final static int RED = Color.RED.getRGB();
-
-	private BufferedImage overlapRedBackGroundWithAGeoRaster(
-			final GeoRaster geoRaster) throws IOException,
-			GeoreferencingException {
-		final BufferedImage redImage = new BufferedImage(geoRaster.getWidth(),
-				geoRaster.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		final Graphics graphics = redImage.getGraphics();
-		graphics.setColor(Color.RED);
-		graphics.fillRect(0, 0, geoRaster.getWidth(), geoRaster.getHeight());
-
-		graphics.drawImage(geoRaster.getGrapImagePlus().getImage(), 0, 0, null);
-
-		System.out.println("Color model of the buffered image : "
-				+ redImage.getColorModel());
-
-		return redImage;
-	}
-
+public class TransparencyTest extends AbstractTransparencyTest {
 	public void testTransparency() throws Exception {
 		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
@@ -39,14 +15,24 @@ public class TransparencyTest extends GrapTest {
 		final int width = gr.getWidth();
 		final int height = gr.getHeight();
 		final BufferedImage bi = overlapRedBackGroundWithAGeoRaster(gr);
+
 		// new ImagePlus("", bi).show();
-		// for (int y = 0; y < height; y++) {
-		// for (int x = 0; x < width; x++) {
-		// if (Float.isNaN(gr.getGrapImagePlus().getPixelValue(x, y))) {
-		// assertTrue(bi.getRGB(x, y) == RED);
-		// }
-		// }
-		// }
+
+		final float[] pixels = (float[]) gr.getGrapImagePlus().getPixels();
+		for (int y = 0, i = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (Float.isNaN(pixels[i])) {
+					assertTrue(bi.getRGB(x, y) == RED);
+				} else {
+					if (bi.getRGB(x, y) == RED) {
+						System.out.printf("[%d, %d] %x (%g)\n", x, y, bi
+								.getRGB(x, y), pixels[i]);
+					}
+					// assertFalse(bi.getRGB(x, y) == RED);
+				}
+				i++;
+			}
+		}
 		assertTrue(bi.getRGB(0, 0) == RED);
 		assertTrue(bi.getRGB(width - 1, 0) == RED);
 		assertTrue(bi.getRGB(0, height - 1) == RED);

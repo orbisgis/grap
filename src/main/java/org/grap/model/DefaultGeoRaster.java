@@ -330,7 +330,9 @@ public class DefaultGeoRaster implements GeoRaster {
 			// use of IJ.run() commands on images that are not displayed in a
 			// window. Call again with a null argument to revert to the previous
 			// active image.
+			// TODO: is following instruction really usefull ?
 			WindowManager.setTempCurrentImage(grapImagePlus);
+			
 			// Sets non-thresholded pixels in 32-bit float images to the NaN
 			// (Not a Number) value. For float images, the "Apply" option in
 			// Image/Adjust Threshold runs this command. Pixels with a value of
@@ -340,7 +342,8 @@ public class DefaultGeoRaster implements GeoRaster {
 			//
 			// IJ.run("NaN Background");
 			setBackgroundToNaN(grapImagePlus.getProcessor());
-			// is following instruction really usefull ?
+
+			// TODO: is following instruction really usefull ?
 			grapImagePlus.updateImage();
 		}
 		return grapImagePlus;
@@ -367,7 +370,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			}
 			ip.resetMinAndMax();
 		} else {
-			System.err
+			System.out
 					.println("setBackgroundToNaN : Thresholded 32-bit float image required");
 		}
 	}

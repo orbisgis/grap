@@ -65,6 +65,8 @@ public class AllTests extends TestSuite {
 		// Solve bug ticket #3736 before un-commenting following instruction :
 		// suite.addTestSuite(TransparencyTest.class);
 
+		// suite.addTestSuite(SetRangeValuesTest.class);
+
 		suite.addTestSuite(AllOutletsTest.class);
 		suite.addTestSuite(AllWatershedsTest.class);
 		suite.addTestSuite(CANImplementationsTest.class);
