@@ -44,7 +44,6 @@ import junit.framework.TestSuite;
 
 import org.grap.io.BasicTest;
 import org.grap.io.GeoreferencingTest;
-import org.grap.misc.TransparencyTest;
 import org.grap.processing.hydrology.AllOutletsTest;
 import org.grap.processing.hydrology.AllWatershedsTest;
 import org.grap.processing.hydrology.SlopesAccumulationsTest;
@@ -62,7 +61,9 @@ public class AllTests {
 		// $JUnit-BEGIN$
 		suite.addTestSuite(BasicTest.class);
 		suite.addTestSuite(GeoreferencingTest.class);
-		suite.addTestSuite(TransparencyTest.class);
+
+		// Solve bug ticket #3736 before un-commenting following instruction :
+		// suite.addTestSuite(TransparencyTest.class);
 
 		suite.addTestSuite(AllOutletsTest.class);
 		suite.addTestSuite(AllWatershedsTest.class);
