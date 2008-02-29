@@ -54,15 +54,19 @@ public class SetRangeValuesTest extends AbstractTransparencyTest {
 
 		new ImagePlus("", bi).show();
 
-		final float[] pixels = (float[]) gr.getGrapImagePlus().getPixels();
+		final byte[] pixels = (byte[]) gr.getGrapImagePlus().getPixels();
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (Float.isNaN(pixels[i]) || (pixels[i] < min)
 						|| (pixels[i] > max)) {
-					assertTrue(bi.getRGB(x, y) == RED);
+					if (bi.getRGB(x, y) != 0xffffffff /* RED */) {
+						System.out.printf("** [%d, %d] %x (%d)\n", x, y, bi
+								.getRGB(x, y), pixels[i]);
+					}
+					// assertTrue(bi.getRGB(x, y) == RED);
 				} else {
 					if (bi.getRGB(x, y) == RED) {
-						System.out.printf("[%d, %d] %x (%g)\n", x, y, bi
+						System.out.printf("[%d, %d] %x (%d)\n", x, y, bi
 								.getRGB(x, y), pixels[i]);
 					}
 					// assertFalse(bi.getRGB(x, y) == RED);
