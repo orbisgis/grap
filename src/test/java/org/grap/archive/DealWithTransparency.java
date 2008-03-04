@@ -65,7 +65,8 @@ public class DealWithTransparency {
 		for (int r = 0; r < resultBI.getHeight(); r++) {
 			for (int c = 0; c < resultBI.getWidth(); c++) {
 				if (resultBI.getRGB(c, r) == color.getRGB()) {
-					resultBI.setRGB(c, r, 0x8F1C1C);
+					resultBI.setRGB(c, r, 0x00FFFFFF & resultBI.getRGB(c, r));
+					// resultBI.setRGB(c, r, 0x8F1C1C);
 				}
 			}
 		}
@@ -86,13 +87,12 @@ public class DealWithTransparency {
 
 	private void loadAndDisplayImage(final JFrame frame) throws IOException {
 		// final BufferedImage img = produceDraughtboard(400, 400, Color.GREEN);
-		// final BufferedImage img =
-		// makeColorTransparent(produceDraughtboard(400,
-		// 400, Color.GREEN), Color.BLACK);
-		final BufferedImage img = makeGlobalImageTransparent(
-				makeColorTransparent(
-						produceDraughtboard(400, 400, Color.GREEN), Color.BLACK),
-				0.25f);
+		 final BufferedImage img = makeColorTransparent(produceDraughtboard(400,
+				400, Color.GREEN), Color.BLACK);
+		// final BufferedImage img = makeGlobalImageTransparent(
+		// makeColorTransparent(
+		// produceDraughtboard(400, 400, Color.GREEN), Color.BLACK),
+		//				0.25f);
 
 		final BufferedImage newImg = overlapRedBackGroundWithAnImage(img);
 

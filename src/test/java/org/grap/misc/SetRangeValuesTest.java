@@ -15,6 +15,7 @@ public class SetRangeValuesTest extends AbstractTransparencyTest {
 				+ "grid/sample.asc");
 		gr.open();
 		gr.setRangeValues(min, max);
+		assertTrue(ImagePlus.GRAY32 == gr.getType());
 
 		final int width = gr.getWidth();
 		final int height = gr.getHeight();
@@ -41,12 +42,13 @@ public class SetRangeValuesTest extends AbstractTransparencyTest {
 	}
 
 	public void testSetRangeValues2() throws Exception {
-		final double min = 75;
+		final double min = 99;
 		final double max = 100;
 		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "geotif/440606.tif");
 		gr.open();
 		gr.setRangeValues(min, max);
+		assertTrue(ImagePlus.GRAY8 == gr.getType());
 
 		final int width = gr.getWidth();
 		final int height = gr.getHeight();
