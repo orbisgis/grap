@@ -47,7 +47,6 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.Orientations;
 
 public class Shadows implements Operation {
 	private Orientations orientation;
