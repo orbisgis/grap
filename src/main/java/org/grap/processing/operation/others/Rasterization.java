@@ -68,6 +68,24 @@ public class Rasterization implements Operation {
 		
 	}
 	
+	
+	public Rasterization(final RasteringMode rasteringMode, final Roi[] rois, final double value){
+		
+			values = new double[rois.length];
+		for (int i = 0; i < rois.length; i++) {
+			values[i] = value;
+			
+		}
+		
+
+		this.rasteringMode =rasteringMode;
+		this.rois=rois;
+		this.values=values;
+			
+		
+	}
+
+	
 	public GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException, GeoreferencingException {
 		try {
