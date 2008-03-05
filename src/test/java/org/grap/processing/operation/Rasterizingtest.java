@@ -138,6 +138,45 @@ public class Rasterizingtest extends GrapTest {
 	}
 	
 	
+	public void testRasterizingSameValueDraw() throws Exception {
+		// load the DEM
+		final GeoRaster geoRasterSrc = GeoRasterFactory
+				.createGeoRaster(externalData + "/geotif/440607.tif");
+		geoRasterSrc.open();
+		
+		Roi[] rois = new Roi[1];
+		rois[0] = new Roi(new Rectangle(1000, 1000));
+		
+		double value =  12;
+		
+		final Operation rasterizing = new Rasterization(RasteringMode.DRAW, rois, value);
+		
+		
+		final GeoRaster gResult = geoRasterSrc.doOperation(rasterizing);
+
+		
+			gResult.getGrapImagePlus().setRoi(rois[0]);
+		
+		 Rectangle r = gResult.getGrapImagePlus().getRoi().getBoundingRect();
+		
+		 ImageProcessor processor = gResult.getGrapImagePlus().getProcessor();
+		
+		 //Ckeck if pixel values are correct. Only contour. 
+		
+		 for (int y=0; y<r.height; y++) {
+		        for (int x=0; x<r.width; x++) {
+		        
+		        if (processor.getPixel(x,y)!=0) {
+		          assertTrue((value- processor.getPixelValue(x+r.x, y+r.y))==0);
+		        	
+		        }
+		        }
+		      }
+		 
+		 
+	}
+	
+	
 	
 
 		
