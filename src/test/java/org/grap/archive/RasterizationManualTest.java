@@ -43,6 +43,7 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
@@ -84,8 +85,8 @@ public class RasterizationManualTest {
 	private static void roiManualSameValue(GeoRaster geoRasterSrc, RasteringMode rasteringMode) {
 		try {
 			
-			Roi[] rois = new Roi[1];
-			rois[0] = new Roi(new Rectangle(1000, 1000));
+			ArrayList<Roi> rois = new ArrayList<Roi>();
+			rois.add(new Roi(new Rectangle(1000, 1000)));
 			
 			double value = 12;
 			
@@ -115,11 +116,11 @@ public class RasterizationManualTest {
 		
 		try {
 			
-		Roi[] rois = new Roi[1];
-		rois[0] = new Roi(new Rectangle(1000, 1000));
+		ArrayList<Roi> rois = new ArrayList<Roi>();
+		rois.add(new Roi(new Rectangle(1000, 1000)));
 		
-		double[] values = new double[1];
-		values[0] = 12;
+		ArrayList<Double> values = new ArrayList<Double>();
+		values.add(new Double(12));
 		
 		final Operation rasterizing = new Rasterization(rasteringMode, rois, values);
 		
@@ -148,16 +149,18 @@ public static void roisManual(GeoRaster geoRasterSrc, RasteringMode rasteringMod
 		
 		try {
 			
-			Roi[] rois = new Roi[2];
-			rois[0] = new Roi(new Rectangle(1000, 1000));
-			rois[1] = new Roi(new Rectangle(1002, 1002, 100, 100));
+			
+			ArrayList<Roi> rois = new ArrayList<Roi>();
+			rois.add(new Roi(new Rectangle(1000, 1000)));
+			rois.add(new Roi(new Rectangle(1002, 1002, 100, 100)));
 			
 			
+			ArrayList<Double> values = new ArrayList<Double>();
+			values.add(new Double(12));
+			values.add(new Double(120));
 			
-			double[] values = new double[2];
-			values[0] = 12;
-			values[1] = 120;
 			
+						
 		
 			final Operation rasterizing = new Rasterization(rasteringMode, rois, values);
 		
