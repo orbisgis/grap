@@ -41,6 +41,7 @@ package org.grap.processing.operation;
 
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -64,11 +65,11 @@ public class Rasterizingtest extends GrapTest {
 				.createGeoRaster(externalData + "/geotif/440607.tif");
 		geoRasterSrc.open();
 		
-		Roi[] rois = new Roi[1];
-		rois[0] = new Roi(new Rectangle(1000, 1000));
+		ArrayList<Roi> rois = new ArrayList<Roi>();
+		rois.add(new Roi(new Rectangle(1000, 1000)));
 		
-		double[] values = new double[1];
-		values[0] = 12;
+		ArrayList<Double> values = new ArrayList<Double>();
+		values.add(new Double(12));
 		
 		final Operation rasterizing = new Rasterization(RasteringMode.DRAW, rois, values);
 		
@@ -76,7 +77,7 @@ public class Rasterizingtest extends GrapTest {
 		final GeoRaster gResult = geoRasterSrc.doOperation(rasterizing);
 
 		
-			gResult.getGrapImagePlus().setRoi(rois[0]);
+			gResult.getGrapImagePlus().setRoi(rois.get(0));
 		
 		 Rectangle r = gResult.getGrapImagePlus().getRoi().getBoundingRect();
 		
@@ -88,7 +89,7 @@ public class Rasterizingtest extends GrapTest {
 		        for (int x=0; x<r.width; x++) {
 		        
 		        if (processor.getPixel(x,y)!=0) {
-		          assertTrue((values[0] - processor.getPixelValue(x+r.x, y+r.y))==0);
+		          assertTrue((values.get(0) - processor.getPixelValue(x+r.x, y+r.y))==0);
 		        	
 		        }
 		        }
@@ -104,20 +105,19 @@ public class Rasterizingtest extends GrapTest {
 				.createGeoRaster(externalData + "/geotif/440607.tif");
 		geoRasterSrc.open();
 		
-		Roi[] rois = new Roi[1];
-		rois[0] = new Roi(new Rectangle(1000, 1000));
+		ArrayList<Roi> rois = new ArrayList<Roi>();
+		rois.add(new Roi(new Rectangle(1000, 1000)));
 		
-		double[] values = new double[1];
-		values[0] = 12;
+		ArrayList<Double> values = new ArrayList<Double>();
+		values.add(new Double(12));
 		
 		final Operation rasterizing = new Rasterization(RasteringMode.FILL, rois, values);
 		
 		
 		final GeoRaster gResult = geoRasterSrc.doOperation(rasterizing);
 
-		gResult.getGrapImagePlus().setRoi(rois[0]);
 		
-		 Rectangle r = rois[0].getBoundingRect();
+		 Rectangle r = rois.get(0).getBoundingRect();
 		
 		 ImageProcessor processor = gResult.getGrapImagePlus().getProcessor();
 		
@@ -128,7 +128,7 @@ public class Rasterizingtest extends GrapTest {
 		 for (int y=0; y<r.height-1; y++) {
 		        for (int x=0; x<r.width-1; x++) {
 		         	   
-		        	assertTrue((values[0] - processor.getPixelValue(x+r.x, y+r.y))==0);
+		        	assertTrue((values.get(0) - processor.getPixelValue(x+r.x, y+r.y))==0);
 		        
 		        	
 		        }
@@ -144,8 +144,10 @@ public class Rasterizingtest extends GrapTest {
 				.createGeoRaster(externalData + "/geotif/440607.tif");
 		geoRasterSrc.open();
 		
-		Roi[] rois = new Roi[1];
-		rois[0] = new Roi(new Rectangle(1000, 1000));
+		ArrayList<Roi> rois = new ArrayList<Roi>();
+		rois.add(new Roi(new Rectangle(1000, 1000)));
+		
+		
 		
 		double value =  12;
 		
@@ -155,7 +157,6 @@ public class Rasterizingtest extends GrapTest {
 		final GeoRaster gResult = geoRasterSrc.doOperation(rasterizing);
 
 		
-			gResult.getGrapImagePlus().setRoi(rois[0]);
 		
 		 Rectangle r = gResult.getGrapImagePlus().getRoi().getBoundingRect();
 		
