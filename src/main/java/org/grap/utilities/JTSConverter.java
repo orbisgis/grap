@@ -43,6 +43,7 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class JTSConverter {
@@ -73,6 +74,25 @@ public class JTSConverter {
 		return new PolygonRoi(coordsX, coordsY, coordsX.length, Roi.POLYGON);
 	}
 
+	
+	
+	public static PolygonRoi toPolygonRoi (final LineString lineString){
+		
+		final Coordinate[] coordinates = lineString.getCoordinates();
+		
+		final int[] coordsX = new int[coordinates.length];
+		final int[] coordsY = new int[coordinates.length];
+
+		for (int i = 0; i < coordinates.length; i++) {
+			coordsX[i] = (int) coordinates[i].x;
+			coordsY[i] = (int) coordinates[i].y;
+		}
+		return new PolygonRoi(coordsX, coordsY, coordsX.length, Roi.POLYLINE);
+			
+		
+	}
+	
+	
 	// public static Geometry roiToJTS(final Roi roi) {
 	// Geometry geometry = null;
 	//
