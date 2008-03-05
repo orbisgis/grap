@@ -46,6 +46,7 @@ import ij.process.ImageProcessor;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
@@ -56,10 +57,10 @@ import org.grap.processing.OperationException;
 public class Rasterization implements Operation {
 	
 	private RasteringMode rasteringMode;
-	private Roi[] rois;
-	private double[] values;
+	private ArrayList<Roi> rois;
+	private ArrayList<Double> values;
 
-	public Rasterization(final RasteringMode rasteringMode, final Roi[] rois, final double[] values){
+	public Rasterization(final RasteringMode rasteringMode, final ArrayList<Roi> rois, ArrayList<Double> values){
 		
 		this.rasteringMode =rasteringMode;
 		this.rois=rois;
@@ -69,18 +70,17 @@ public class Rasterization implements Operation {
 	}
 	
 	
-	public Rasterization(final RasteringMode rasteringMode, final Roi[] rois, final double value){
+	public Rasterization(final RasteringMode rasteringMode, final ArrayList<Roi> rois, final double value){
 		
-			values = new double[rois.length];
-		for (int i = 0; i < rois.length; i++) {
-			values[i] = value;
+		 values = new ArrayList<Double>();
+		for (int i = 0; i < rois.size(); i++) {
+			values.add(new Double(value));
 			
 		}
-		
 
 		this.rasteringMode =rasteringMode;
 		this.rois=rois;
-		this.values=values;
+		
 			
 		
 	}
@@ -99,21 +99,23 @@ public class Rasterization implements Operation {
 			ImageProcessor processor = resultImp.getProcessor();
 			
 			
-			for (int i = 0; i < rois.length; i++) {
+			for (int i = 0; i < rois.size(); i++) {
 				processor.snapshot();
-					
+				Roi roi = rois.get(i);
+				Double value = values.get(i);
 				switch (rasteringMode) {
 				
 				case FILL :
-					processor.setRoi(rois[i]);
-					processor.setValue(values[i]);
-					processor.fillPolygon(rois[i].getPolygon());
+					
+					processor.setRoi(roi);
+					processor.setValue(value);
+					processor.fillPolygon(roi.getPolygon());
 					
 					break;
 				case DRAW :
 					//processor.setColor(Color.red);	
-					processor.setValue(values[i]);
-					rois[i].drawPixels(processor);
+					processor.setValue(value);
+					roi.drawPixels(processor);
 					break;
 				default:
 					throw new OperationException("Unknown rasterizing mode: "
