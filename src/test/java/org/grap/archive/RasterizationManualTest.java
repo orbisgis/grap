@@ -75,11 +75,42 @@ public class RasterizationManualTest {
 		roiManual(geoRasterSrc, RasteringMode.DRAW);
 		
 		roisManual(geoRasterSrc, RasteringMode.FILL);
-
+		
+		roiManualSameValue(geoRasterSrc, RasteringMode.DRAW);
 		
 	}
 	
 	
+	private static void roiManualSameValue(GeoRaster geoRasterSrc, RasteringMode rasteringMode) {
+		try {
+			
+			Roi[] rois = new Roi[1];
+			rois[0] = new Roi(new Rectangle(1000, 1000));
+			
+			double value = 12;
+			
+			final Operation rasterizing = new Rasterization(rasteringMode, rois, value);
+			
+			
+			final GeoRaster gResult = geoRasterSrc.doOperation(rasterizing);
+			
+			
+			gResult.save("/tmp/rasterisationRoi.tif");
+			
+			
+			gResult.show();
+			
+			} catch (GeoreferencingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (OperationException e) {
+				e.printStackTrace();
+			}
+		
+	}
+
+
 	public static void roiManual(GeoRaster geoRasterSrc, RasteringMode rasteringMode ){
 		
 		try {
