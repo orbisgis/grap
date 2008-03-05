@@ -43,7 +43,7 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.Orientations;
+import org.grap.processing.operation.others.Orientations;
 import org.grap.processing.operation.others.Shadows;
 
 public class ShadowsTest {
