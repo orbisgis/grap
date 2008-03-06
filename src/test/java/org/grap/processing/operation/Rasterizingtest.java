@@ -62,11 +62,11 @@ public class Rasterizingtest extends GrapTest {
 	public void testRasterizingDraw() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
-				.createGeoRaster(externalData + "/geotif/440607.tif");
+				.createGeoRaster(externalData + "/grid/sample.asc");
 		geoRasterSrc.open();
 		
 		ArrayList<Roi> rois = new ArrayList<Roi>();
-		rois.add(new Roi(new Rectangle(1000, 1000)));
+		rois.add(new Roi(new Rectangle(100, 100)));
 		
 		ArrayList<Double> values = new ArrayList<Double>();
 		values.add(new Double(12));
@@ -102,11 +102,11 @@ public class Rasterizingtest extends GrapTest {
 	public void testRasterizingFILL() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
-				.createGeoRaster(externalData + "/geotif/440607.tif");
+				.createGeoRaster(externalData + "/grid/sample.asc");
 		geoRasterSrc.open();
 		
 		ArrayList<Roi> rois = new ArrayList<Roi>();
-		rois.add(new Roi(new Rectangle(1000, 1000)));
+		rois.add(new Roi(new Rectangle(100, 100)));
 		
 		ArrayList<Double> values = new ArrayList<Double>();
 		values.add(new Double(12));
@@ -141,11 +141,11 @@ public class Rasterizingtest extends GrapTest {
 	public void testRasterizingSameValueDraw() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
-				.createGeoRaster(externalData + "/geotif/440607.tif");
+				.createGeoRaster(externalData + "/grid/sample.asc");
 		geoRasterSrc.open();
 		
 		ArrayList<Roi> rois = new ArrayList<Roi>();
-		rois.add(new Roi(new Rectangle(1000, 1000)));
+		rois.add(new Roi(new Rectangle(100, 100)));
 		
 		
 		
