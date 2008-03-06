@@ -53,7 +53,6 @@ import org.grap.processing.hydrology.WatershedWithThresholdTest;
 import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
-import org.grap.processing.operation.Rasterizingtest;
 
 public class AllTests extends TestSuite {
 
@@ -77,7 +76,7 @@ public class AllTests extends TestSuite {
 		suite.addTestSuite(WatershedFromOutletIndexTest.class);
 		suite.addTestSuite(WatershedWithThresholdTest.class);
 		suite.addTestSuite(StrahlerStreamOrderTest.class);
-		suite.addTestSuite(Rasterizingtest.class);
+		
 		// $JUnit-END$
 		return suite;
 	}
