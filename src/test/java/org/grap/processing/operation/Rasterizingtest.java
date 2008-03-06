@@ -156,9 +156,8 @@ public class Rasterizingtest extends GrapTest {
 		
 		final GeoRaster gResult = geoRasterSrc.doOperation(rasterizing);
 
-		
-		
-		 Rectangle r = gResult.getGrapImagePlus().getRoi().getBoundingRect();
+		 Rectangle r =   rois.get(0).getBoundingRect();
+			
 		
 		 ImageProcessor processor = gResult.getGrapImagePlus().getProcessor();
 		
