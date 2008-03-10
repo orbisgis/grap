@@ -39,14 +39,12 @@
  */
 package org.grap.processing.operation;
 
-import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.process.ImageProcessor;
 
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.ColorModel;
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
@@ -127,7 +125,7 @@ public class Crop implements Operation {
 								.getRotation_X(), geoRaster.getMetadata()
 								.getRotation_Y());
 
-				return GeoRasterFactory.createGeoRaster( result, metadataResult);
+				return GeoRasterFactory.createGeoRaster(result, metadataResult);
 			} else {
 				return GeoRasterFactory.createNullGeoRaster();
 			}
@@ -163,7 +161,7 @@ public class Crop implements Operation {
 								.getHeight(), geoRaster.getMetadata()
 								.getRotation_X(), geoRaster.getMetadata()
 								.getRotation_Y());
-				
+
 				return GeoRasterFactory.createGeoRaster(result, metadataResult);
 			} else {
 				return GeoRasterFactory.createNullGeoRaster();
@@ -172,8 +170,6 @@ public class Crop implements Operation {
 			throw new OperationException(e);
 		}
 	}
-
-	
 
 	private LinearRing toPixel(final GeoRaster geoRaster, final LinearRing ring) {
 		final Coordinate[] realWorldCoords = ring.getCoordinates();
