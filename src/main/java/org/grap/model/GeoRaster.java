@@ -101,6 +101,9 @@ public interface GeoRaster {
 
 	public abstract int getHeight() throws IOException, GeoreferencingException;
 
+	public ColorModel getOriginalColorModel() throws IOException,
+			GeoreferencingException;
+
 	public abstract ColorModel getColorModel() throws IOException,
 			GeoreferencingException;
 

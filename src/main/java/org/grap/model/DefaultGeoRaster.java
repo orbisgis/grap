@@ -67,6 +67,7 @@ public class DefaultGeoRaster implements GeoRaster {
 	private RasterMetadata rasterMetadata;
 	private FileReader fileReader;
 	private CachedValues cachedValues;
+	private CachedValues originalCachedValues;
 	private GrapImagePlus cachedGrapImagePlus;
 
 	// internal class
@@ -298,6 +299,12 @@ public class DefaultGeoRaster implements GeoRaster {
 		return getCachedValues(null).width;
 	}
 
+	public ColorModel getOriginalColorModel() throws IOException,
+			GeoreferencingException {
+		getCachedValues(null);
+		return originalCachedValues.colorModel;
+	}
+
 	public ColorModel getColorModel() throws IOException,
 			GeoreferencingException {
 		return getCachedValues(null).colorModel;
@@ -332,7 +339,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			// active image.
 			// TODO: is following instruction really usefull ?
 			WindowManager.setTempCurrentImage(grapImagePlus);
-			
+
 			// Sets non-thresholded pixels in 32-bit float images to the NaN
 			// (Not a Number) value. For float images, the "Apply" option in
 			// Image/Adjust Threshold runs this command. Pixels with a value of
@@ -392,6 +399,19 @@ public class DefaultGeoRaster implements GeoRaster {
 			cachedValues.type = ip.getType();
 			cachedValues.minThreshold = null;
 			cachedValues.maxThreshold = null;
+
+			if (null == originalCachedValues) {
+				originalCachedValues = new CachedValues();
+				originalCachedValues.colorModel = setTransparency(processor
+						.getColorModel());
+				originalCachedValues.min = processor.getMin();
+				originalCachedValues.max = processor.getMax();
+				originalCachedValues.height = ip.getHeight();
+				originalCachedValues.width = ip.getWidth();
+				originalCachedValues.type = ip.getType();
+				originalCachedValues.minThreshold = null;
+				originalCachedValues.maxThreshold = null;
+			}
 		}
 		return cachedValues;
 	}
