@@ -61,6 +61,18 @@ public class BasicTest extends GrapTest {
 		} catch (GeoreferencingException e) {
 		}
 	}
+	
+	public void testJPGReader()throws Exception{
+	
+		try {
+		final GeoRaster  gr = GeoRasterFactory
+		.createGeoRaster("../../datas2tests/geotif/bv_chezineLambert1.jpg");
+		
+		gr.open();
+		assertTrue(true);
+		} catch (GeoreferencingException e) {
+		}
+	}
 
 	public void testXYZDEMReader() throws Exception {
 		try {
