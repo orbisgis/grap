@@ -45,6 +45,7 @@ import ij.io.Opener;
 import ij.io.TiffDecoder;
 import ij.process.ImageProcessor;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,9 @@ import java.util.Map;
 import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGImageDecoder;
+
 public class WorldImageReader implements FileReader {
 	private static Map<String, String[]> worldFileExtensions;
 
@@ -64,10 +68,15 @@ public class WorldImageReader implements FileReader {
 	private File worldFile;
 
 	private boolean isTiff = false;
+	private boolean isJpg = false;
 
 	private String fileNamePrefix;
 
 	private String fileNameExtension;
+
+	private JPEGImageDecoder jpgDecoder;
+
+	private BufferedImage bufJpg;
 
 	static {
 		worldFileExtensions = new HashMap<String, String[]>();
@@ -93,6 +102,9 @@ public class WorldImageReader implements FileReader {
 		if (fileNameExtension.equals("tif") || fileNameExtension.equals("tiff")) {
 			isTiff = true;
 		}
+		else if (fileNameExtension.equals("jpg")|| fileNameExtension.equals("jpeg")){
+			isJpg = true;
+		}
 	}
 
 	// private method
@@ -117,7 +129,7 @@ public class WorldImageReader implements FileReader {
 	public RasterMetadata readRasterMetadata() throws IOException,
 			GeoreferencingException {
 		final File file = new File(fileName);
-		final InputStream inputStream = new BufferedInputStream(
+		InputStream inputStream = new BufferedInputStream(
 				new FileInputStream(file));
 
 		// read image's dimensions
@@ -129,7 +141,19 @@ public class WorldImageReader implements FileReader {
 			final FileInfo[] fileInfo = tiffDecoder.getTiffInfo();
 			ncols = fileInfo[0].width;
 			nrows = fileInfo[0].height;
-		} else {
+			
+		} 
+		else if (isJpg){
+			
+			jpgDecoder = JPEGCodec.createJPEGDecoder(inputStream);
+			
+			bufJpg = jpgDecoder.decodeAsBufferedImage();
+			ncols =  bufJpg.getWidth();
+			nrows = bufJpg.getHeight();
+			
+		}
+		
+		else {
 			final ImageInfo imageInfo = new ImageInfo();
 			imageInfo.setInput(inputStream);
 			if (imageInfo.check()) {
@@ -139,6 +163,8 @@ public class WorldImageReader implements FileReader {
 				throw new RuntimeException("Unsupported image file format.");
 			}
 		}
+		
+		inputStream.close();
 
 		// read other image's metadata
 		if (isThereAnyWorldFile() == true) {
@@ -161,9 +187,21 @@ public class WorldImageReader implements FileReader {
 
 	public GrapImagePlus readGrapImagePlus() throws IOException {
 		// return new Opener().openImage(fileName);
-		ImagePlus imagePlus = new Opener().openImage(fileName);
-		final ImageProcessor imageProcessor = imagePlus.getProcessor();
+		
+		ImagePlus imagePlus ;
+		final ImageProcessor imageProcessor;
+		if(isJpg){
+			
+			imagePlus = new ImagePlus("jpg", bufJpg);
+			imageProcessor = imagePlus.getProcessor();
+		}
+		else {
+		
+		imagePlus = new Opener().openImage(fileName);
+		imageProcessor = imagePlus.getProcessor();
 		imagePlus = null;
+		}
+		
 		return new GrapImagePlus("", imageProcessor);
 	}
 }
