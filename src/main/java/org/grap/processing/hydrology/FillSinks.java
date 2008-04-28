@@ -76,16 +76,21 @@ public class FillSinks implements Operation {
 	private GrapImagePlus imp;
 	private ImageProcessor m_BorderProcessor;
 	private ImageProcessor m_PreprocessedDEMProcessor;
+	private Double minSlope = 0.01;
 	
 	private final static int m_iOffsetX []= {  0,  1,  1,  1,  0, -1, -1, -1};
 	private final static int m_iOffsetY []= {  1,  1,  0, -1, -1, -1,  0,  1};
 	private final static double INIT_ELEVATION = 50000D;
 	
 	
+	public FillSinks(Double minSlope) {
+		this.minSlope  = minSlope;
+	}
+
 	public GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException, GeoreferencingException {
 	
-		return processAlgorithm(geoRaster, 0.01);
+		return processAlgorithm(geoRaster, minSlope);
 	}
 	
 	/**

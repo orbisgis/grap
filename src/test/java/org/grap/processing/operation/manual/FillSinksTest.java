@@ -57,7 +57,7 @@ public class FillSinksTest {
 		
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		final GeoRaster result = geoRaster.doOperation(new FillSinks());
+		final GeoRaster result = geoRaster.doOperation(new FillSinks(0.01));
 		result.show();
 		result.save("/tmp/nosinks.tif");
 		
