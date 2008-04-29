@@ -39,19 +39,13 @@
  */
 package org.grap.processing.operation.manual;
 
-import org.grap.TestUtils;
-import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.Operation;
-import org.grap.processing.operation.filter.MeanFilter;
-import org.grap.processing.operation.hydrology.AllWatersheds;
 import org.grap.processing.operation.hydrology.FillSinks;
-import org.grap.processing.operation.hydrology.GridDirection;
 
 public class FillSinksTest {
 	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/geotif/nantesDEM.tif";
+		final String src = "../../datas2tests/grid/smallsample.asc";
 		
 		long start = System.currentTimeMillis();
 		
