@@ -239,9 +239,7 @@ public class FillSinks implements Operation {
 				border = false;
 				dValue = m_DEM.getPixelValue(x, y);
 				
-				if (Float.isNaN(dValue)){
-					System.out.println(dValue);
-				}
+				
 				if(!Float.isNaN(dValue)){
 					for(i=0; i<8; i++){
 						ix	= x + m_iOffsetX[i];
