@@ -39,6 +39,7 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
@@ -54,7 +55,6 @@ import org.grap.processing.OperationException;
 
 
 
-
 public class FillSinks implements Operation {
 	
 	
@@ -66,8 +66,8 @@ public class FillSinks implements Operation {
 	private int[] dC = new int[8];
 	private int[] fR= new int [8];
 	private int[] fC = new int[8];
-	private GeoRaster geoRasterPreprocessedDEM;
-	private GeoRaster geoRasterBorder;
+	//private GeoRaster geoRasterPreprocessedDEM;
+	//private GeoRaster geoRasterBorder;
 	private int depth;
 	private int ncols;
 	private int nrows;
@@ -126,13 +126,14 @@ public class FillSinks implements Operation {
 		
 		//The new georaster filled.
 		//Step 1 : an empty georaster is created
-		geoRasterPreprocessedDEM = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
+		//geoRasterPreprocessedDEM = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
 		
 		//A new georaster to deal with border
-		geoRasterBorder = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
+		//geoRasterBorder = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
 		
-		m_PreprocessedDEM = geoRasterPreprocessedDEM.getGrapImagePlus().getProcessor();
-		m_Border = geoRasterBorder.getGrapImagePlus().getProcessor();
+		//m_PreprocessedDEM = geoRasterPreprocessedDEM.getGrapImagePlus().getProcessor();
+		//m_Border = geoRasterBorder.getGrapImagePlus().getProcessor();
+		
 		
 		for(i=0; i<8; i++){
 			dEpsilon[i] = dMinSlope * getDistToNeighborInDir(i,cellSize );
@@ -214,7 +215,8 @@ public class FillSinks implements Operation {
 		}
 		
 		
-		return geoRasterPreprocessedDEM;
+		
+		return GeoRasterFactory.createGeoRaster(m_PreprocessedDEM, geoRaster.getMetadata());
 		
 	}
 	
@@ -225,15 +227,21 @@ public class FillSinks implements Operation {
 		int x, y, i, ix, iy;
 		float dValue;
 		
-		assignNoData(geoRasterPreprocessedDEM);
+		m_PreprocessedDEM = m_DEM.duplicate();
+		m_Border = m_DEM.duplicate();
 		
-		assignNoData(geoRasterBorder);
-		
+		m_PreprocessedDEM.multiply(Double.NaN);
+		m_Border.multiply(Double.NaN);
+				
 	
 		for(x=0; x<ncols; x++){
 			for(y=0; y<nrows; y++){
 				border = false;
 				dValue = m_DEM.getPixelValue(x, y);
+				
+				if (Float.isNaN(dValue)){
+					System.out.println(dValue);
+				}
 				if(!Float.isNaN(dValue)){
 					for(i=0; i<8; i++){
 						ix	= x + m_iOffsetX[i];
@@ -260,30 +268,6 @@ public class FillSinks implements Operation {
 		
 	}
 
-	/**
-	 * It will be cool to add it onto a class utilities.
-	 * Assign nodata to all pixel
-	 * @param geoRaster
-	 */
-	private void assignNoData(GeoRaster geoRaster) {
-	
-		try {
-			
-			
-				final float[] pixels = new float[ncols*nrows];
-				
-				 for (int i=0; i<pixels.length; i++){
-				       pixels[i]=Float.NaN;
-				 }
-				 geoRaster.getGrapImagePlus().getProcessor().setPixels(pixels);
-				 
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (GeoreferencingException e) {
-			e.printStackTrace();
-		}
-		}
 	
 	
 	private void dryUpwardCell(int x, int y) {
