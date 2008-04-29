@@ -76,11 +76,11 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.hydrology;
+package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
@@ -90,85 +90,87 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class WatershedsWithThreshold implements Operation {
-	public final static short noDataValue = (short) Float.NaN;
-
-	private GrapImagePlus gipAllWatersheds;
-	private GrapImagePlus gipAllOutlets;
-	private GrapImagePlus gipSlopesAccumulations;
-	private short[] watershedsWithThreshold;
-	private int threshold;
+public class AllWatersheds implements Operation {
+	private GrapImagePlus gipSlopesDirections;
+	private float[] watersheds;
 	private int ncols;
 	private int nrows;
 
-	public WatershedsWithThreshold(final GeoRaster grAllWatersheds,
-			final GeoRaster grAllOutlets, final int threshold)
-			throws OperationException, GeoreferencingException {
-		try {
-			gipAllWatersheds = grAllWatersheds.getGrapImagePlus();
-			gipAllOutlets = grAllOutlets.getGrapImagePlus();
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-		this.threshold = threshold;
-	}
-
-	public GeoRaster execute(final GeoRaster grSlopesAccumulations)
+	public GeoRaster execute(final GeoRaster grSlopesDirections)
 			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
-			final RasterMetadata rasterMetadata = grSlopesAccumulations
+			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = grSlopesDirections
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold();
-			final GeoRaster grWatershedsWithThreshold = GeoRasterFactory
-					.createGeoRaster(watershedsWithThreshold, ncols, nrows,
-							rasterMetadata);
-			grWatershedsWithThreshold.setNodataValue(noDataValue);
-			System.out.printf(
-					"%d watersheds (outlet's threshold = %d) in %d ms\n",
-					nbOfWatershedsWithThreshold, threshold, System
-							.currentTimeMillis()
-							- startTime);
-			return grWatershedsWithThreshold;
+			int nbOfWatersheds = computeAllWatersheds();
+			final GeoRaster grAllWatersheds = GeoRasterFactory.createGeoRaster(
+					watersheds, ncols, nrows, rasterMetadata);
+			grAllWatersheds.setNodataValue(Float.NaN);
+			System.out.printf("%d watersheds in %d ms\n", nbOfWatersheds,
+					System.currentTimeMillis() - startTime);
+			return grAllWatersheds;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	private int computeAllwatershedsWithThreshold() throws IOException {
-		short nbOfWatershedsWithThreshold = 0;
-		final Map<Float, Short> mapOfBigOutlets = new HashMap<Float, Short>();
+	private int computeAllWatersheds() throws IOException {
+		watersheds = new float[nrows * ncols];
+		float newDefaultColor = 1;
 
-		// 1st step: identify the "good" outlets...
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if ((!Float.isNaN(gipAllOutlets.getPixelValue(c, r)))
-						&& (gipSlopesAccumulations.getPixelValue(c, r) >= threshold)) {
-					// current cell is an outlet. It's slopes accumulation value
-					// is greater or equal to the threshold value.
-					System.out.printf("(%d, %d) : %.0f\n", c, r,
-							gipSlopesAccumulations.getPixelValue(c, r));
-					nbOfWatershedsWithThreshold++;
-					mapOfBigOutlets.put(gipAllWatersheds.getPixelValue(c, r),
-							nbOfWatershedsWithThreshold);
+				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
+					watersheds[i] = Float.NaN;
+				} else if (0 == watersheds[i]) {
+					// current cell value has not been yet modified...
+					Float color = null;
+					final List<Integer> pathStack = new LinkedList<Integer>();
+					color = findOutlet(i, pathStack);
+					if (null == color) {
+						color = newDefaultColor;
+						newDefaultColor++;
+					}
+					colourize(pathStack, color);
 				}
 			}
 		}
-		// 2nd step:
-		watershedsWithThreshold = new short[nrows * ncols];
-		i = 0;
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++, i++) {
-				final float tmp = gipAllWatersheds.getPixelValue(c, r);
-				watershedsWithThreshold[i] = mapOfBigOutlets.containsKey(tmp) ? mapOfBigOutlets
-						.get(tmp)
-						: noDataValue;
+		return (int) (newDefaultColor - 1);
+	}
+
+	private Float findOutlet(final int i, final List<Integer> pathStack)
+			throws IOException {
+		Integer curCellIdx = i;
+		do {
+			final int r = curCellIdx / ncols;
+			final int c = curCellIdx % ncols;
+
+			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
+				return null;
+			} else {
+				if (0 == watersheds[curCellIdx]) {
+					pathStack.add(curCellIdx);
+					curCellIdx = SlopesUtilities
+							.fromCellSlopeDirectionToNextCellIndex(
+									gipSlopesDirections, ncols, nrows,
+									curCellIdx, c, r);
+				} else {
+					// current watershed's cell as already been modified : it is
+					// a break condition !
+					return watersheds[curCellIdx];
+				}
 			}
+		} while (null != curCellIdx);
+		return null;
+	}
+
+	private void colourize(final List<Integer> pathStack, final float color) {
+		for (Integer cellItem : pathStack) {
+			watersheds[cellItem] = color;
 		}
-		return nbOfWatershedsWithThreshold;
 	}
 }

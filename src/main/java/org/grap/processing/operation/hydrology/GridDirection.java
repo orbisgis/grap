@@ -76,7 +76,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.hydrology;
+package org.grap.processing.operation.hydrology;
+
+import ij.ImagePlus;
 
 import java.io.IOException;
 
@@ -88,99 +90,90 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class AllOutlets implements Operation {
-	public final static byte tmpNoDataValue = (byte) 0xff;
-	public final static byte noDataValue = 0;
-	public final static byte isAnOutletValue = 1;
-
-	private GrapImagePlus gipSlopesDirections;
-	private byte[] outlets;
+public class GridDirection implements Operation {
+	public final static short noDataValue = 0;
+	public final static short indecision = 255;
+	private final static float SQRT2 = (float) Math.sqrt(2d);
+	private GrapImagePlus ppDEM;
+	private short[] slopesDirections;
 	private int ncols;
 	private int nrows;
 
-	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException, GeoreferencingException {
+	public GeoRaster execute(final GeoRaster grDEM) throws OperationException,
+			GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();
-			final RasterMetadata rasterMetadata = grSlopesDirections
-					.getMetadata();
+
+			if ((ImagePlus.GRAY16 != grDEM.getType())
+					&& (ImagePlus.GRAY32 != grDEM.getType())) {
+				throw new OperationException(
+						"The DEM must be a GRAY16 or a GRAY32 image !");
+			}
+
+			ppDEM = grDEM.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfOutlets = computeAllOutlets();
-			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
-					outlets, ncols, nrows, rasterMetadata);
-			grAllOutlets.setNodataValue(noDataValue);
-			System.out.printf("%d outlets in %d ms\n", nbOfOutlets, System
+			computeSlopesDirections();
+			final GeoRaster grSlopesDirections = GeoRasterFactory
+					.createGeoRaster(slopesDirections, ncols, nrows,
+							rasterMetadata);
+			grSlopesDirections.setNodataValue(noDataValue);
+			System.out.printf("Slopes directions in %d ms\n", System
 					.currentTimeMillis()
 					- startTime);
-			return grAllOutlets;
+			return grSlopesDirections;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	private int computeAllOutlets() throws IOException {
-		outlets = new byte[nrows * ncols];
-		int nbOfOutlets = 0;
+	private void computeSlopesDirections() throws IOException {
+		slopesDirections = new short[nrows * ncols];
 		int i = 0;
 
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
-					outlets[i] = tmpNoDataValue;
-				} else if (0 == outlets[i]) {
-					// current cell value has not been yet modified...
-					nbOfOutlets += findOutlet(i);
+				final float currentElevation = ppDEM.getPixelValue(c, r);
+
+				if (Float.isNaN(currentElevation)) {
+					slopesDirections[i] = noDataValue;
+				} else {
+					final float[] tmpSlopes = new float[] {
+							currentElevation - getDEMValue(r, c + 1),
+							(currentElevation - getDEMValue(r + 1, c + 1))
+									/ SQRT2,
+							currentElevation - getDEMValue(r + 1, c),
+							(currentElevation - getDEMValue(r + 1, c - 1))
+									/ SQRT2,
+							currentElevation - getDEMValue(r, c - 1),
+							(currentElevation - getDEMValue(r - 1, c - 1))
+									/ SQRT2,
+							currentElevation - getDEMValue(r - 1, c),
+							(currentElevation - getDEMValue(r - 1, c + 1))
+									/ SQRT2 };
+					final int idx = getIdxForMaxValue(tmpSlopes);
+					slopesDirections[i] = (-1 == idx) ? indecision
+							: (short) (1 << idx);
 				}
 			}
 		}
-
-		for (int idx = 0; idx < outlets.length; idx++) {
-			if (isAnOutletValue == outlets[idx]) {
-				// System.err.println(idx);
-			} else {
-				outlets[idx] = noDataValue;
-			}
-		}
-		return nbOfOutlets;
 	}
 
-	private int findOutlet(final int i) throws IOException {
-		Integer curCellIdx = i;
-		Integer prevCellIdx = i;
-
-		do {
-			final int r = curCellIdx / ncols;
-			final int c = curCellIdx % ncols;
-
-			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
-				// previous cell is a new outlet...
-				outlets[prevCellIdx] = isAnOutletValue;
-				outlets[curCellIdx] = tmpNoDataValue;
-				return 1;
-			} else {
-				if (0 == outlets[curCellIdx]) {
-					// current cell value has not been yet modified...
-					// current cell is now tagged as already visited
-					outlets[curCellIdx] = tmpNoDataValue;
-					prevCellIdx = curCellIdx;
-					curCellIdx = SlopesUtilities
-							.fromCellSlopeDirectionToNextCellIndex(
-									gipSlopesDirections, ncols, nrows,
-									curCellIdx, c, r);
-					if (null == curCellIdx) {
-						// previous cell is a new outlet...
-						outlets[prevCellIdx] = isAnOutletValue;
-						return 1;
-					} else {
-						// join an already identified river...
-						return 0;
-					}
-				} else {
-					return 0;
-				}
+	private static int getIdxForMaxValue(final float[] values) {
+		float max = 0;
+		int result = -1;
+		for (int i = 0; i < values.length; i++) {
+			if ((!Float.isNaN(values[i])) && (values[i] > max)) {
+				result = i;
+				max = values[i];
 			}
-		} while (true);
+		}
+		return result;
+	}
+
+	private float getDEMValue(final int r, final int c) throws IOException {
+		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? Float.NaN
+				: ppDEM.getPixelValue(c, r);
 	}
 }

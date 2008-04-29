@@ -76,11 +76,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.hydrology;
+package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
@@ -90,9 +88,13 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class AllWatersheds implements Operation {
+public class AllOutlets implements Operation {
+	public final static byte tmpNoDataValue = (byte) 0xff;
+	public final static byte noDataValue = 0;
+	public final static byte isAnOutletValue = 1;
+
 	private GrapImagePlus gipSlopesDirections;
-	private float[] watersheds;
+	private byte[] outlets;
 	private int ncols;
 	private int nrows;
 
@@ -105,72 +107,80 @@ public class AllWatersheds implements Operation {
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfWatersheds = computeAllWatersheds();
-			final GeoRaster grAllWatersheds = GeoRasterFactory.createGeoRaster(
-					watersheds, ncols, nrows, rasterMetadata);
-			grAllWatersheds.setNodataValue(Float.NaN);
-			System.out.printf("%d watersheds in %d ms\n", nbOfWatersheds,
-					System.currentTimeMillis() - startTime);
-			return grAllWatersheds;
+			int nbOfOutlets = computeAllOutlets();
+			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
+					outlets, ncols, nrows, rasterMetadata);
+			grAllOutlets.setNodataValue(noDataValue);
+			System.out.printf("%d outlets in %d ms\n", nbOfOutlets, System
+					.currentTimeMillis()
+					- startTime);
+			return grAllOutlets;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	private int computeAllWatersheds() throws IOException {
-		watersheds = new float[nrows * ncols];
-		float newDefaultColor = 1;
-
+	private int computeAllOutlets() throws IOException {
+		outlets = new byte[nrows * ncols];
+		int nbOfOutlets = 0;
 		int i = 0;
+
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
 				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
-					watersheds[i] = Float.NaN;
-				} else if (0 == watersheds[i]) {
+					outlets[i] = tmpNoDataValue;
+				} else if (0 == outlets[i]) {
 					// current cell value has not been yet modified...
-					Float color = null;
-					final List<Integer> pathStack = new LinkedList<Integer>();
-					color = findOutlet(i, pathStack);
-					if (null == color) {
-						color = newDefaultColor;
-						newDefaultColor++;
-					}
-					colourize(pathStack, color);
+					nbOfOutlets += findOutlet(i);
 				}
 			}
 		}
-		return (int) (newDefaultColor - 1);
+
+		for (int idx = 0; idx < outlets.length; idx++) {
+			if (isAnOutletValue == outlets[idx]) {
+				// System.err.println(idx);
+			} else {
+				outlets[idx] = noDataValue;
+			}
+		}
+		return nbOfOutlets;
 	}
 
-	private Float findOutlet(final int i, final List<Integer> pathStack)
-			throws IOException {
+	private int findOutlet(final int i) throws IOException {
 		Integer curCellIdx = i;
+		Integer prevCellIdx = i;
+
 		do {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
 			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
-				return null;
+				// previous cell is a new outlet...
+				outlets[prevCellIdx] = isAnOutletValue;
+				outlets[curCellIdx] = tmpNoDataValue;
+				return 1;
 			} else {
-				if (0 == watersheds[curCellIdx]) {
-					pathStack.add(curCellIdx);
+				if (0 == outlets[curCellIdx]) {
+					// current cell value has not been yet modified...
+					// current cell is now tagged as already visited
+					outlets[curCellIdx] = tmpNoDataValue;
+					prevCellIdx = curCellIdx;
 					curCellIdx = SlopesUtilities
 							.fromCellSlopeDirectionToNextCellIndex(
 									gipSlopesDirections, ncols, nrows,
 									curCellIdx, c, r);
+					if (null == curCellIdx) {
+						// previous cell is a new outlet...
+						outlets[prevCellIdx] = isAnOutletValue;
+						return 1;
+					} else {
+						// join an already identified river...
+						return 0;
+					}
 				} else {
-					// current watershed's cell as already been modified : it is
-					// a break condition !
-					return watersheds[curCellIdx];
+					return 0;
 				}
 			}
-		} while (null != curCellIdx);
-		return null;
-	}
-
-	private void colourize(final List<Integer> pathStack, final float color) {
-		for (Integer cellItem : pathStack) {
-			watersheds[cellItem] = color;
-		}
+		} while (true);
 	}
 }

@@ -37,7 +37,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.hydrology;
+package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
 import java.util.HashSet;

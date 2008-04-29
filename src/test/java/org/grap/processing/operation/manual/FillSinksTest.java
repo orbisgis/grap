@@ -44,10 +44,10 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.hydrology.AllWatersheds;
-import org.grap.processing.hydrology.FillSinks;
-import org.grap.processing.hydrology.GridDirection;
 import org.grap.processing.operation.filter.MeanFilter;
+import org.grap.processing.operation.hydrology.AllWatersheds;
+import org.grap.processing.operation.hydrology.FillSinks;
+import org.grap.processing.operation.hydrology.GridDirection;
 
 public class FillSinksTest {
 	public static void main(String[] args) throws Exception {

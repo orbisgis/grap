@@ -76,11 +76,11 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.hydrology;
-
-import ij.ImagePlus;
+package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
@@ -90,90 +90,85 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class GridDirection implements Operation {
-	public final static short noDataValue = 0;
-	public final static short indecision = 255;
-	private final static float SQRT2 = (float) Math.sqrt(2d);
-	private GrapImagePlus ppDEM;
-	private short[] slopesDirections;
+public class WatershedsWithThreshold implements Operation {
+	public final static short noDataValue = (short) Float.NaN;
+
+	private GrapImagePlus gipAllWatersheds;
+	private GrapImagePlus gipAllOutlets;
+	private GrapImagePlus gipSlopesAccumulations;
+	private short[] watershedsWithThreshold;
+	private int threshold;
 	private int ncols;
 	private int nrows;
 
-	public GeoRaster execute(final GeoRaster grDEM) throws OperationException,
-			GeoreferencingException {
+	public WatershedsWithThreshold(final GeoRaster grAllWatersheds,
+			final GeoRaster grAllOutlets, final int threshold)
+			throws OperationException, GeoreferencingException {
+		try {
+			gipAllWatersheds = grAllWatersheds.getGrapImagePlus();
+			gipAllOutlets = grAllOutlets.getGrapImagePlus();
+		} catch (IOException e) {
+			throw new OperationException(e);
+		}
+		this.threshold = threshold;
+	}
+
+	public GeoRaster execute(final GeoRaster grSlopesAccumulations)
+			throws OperationException, GeoreferencingException {
 		try {
 			final long startTime = System.currentTimeMillis();
-
-			if ((ImagePlus.GRAY16 != grDEM.getType())
-					&& (ImagePlus.GRAY32 != grDEM.getType())) {
-				throw new OperationException(
-						"The DEM must be a GRAY16 or a GRAY32 image !");
-			}
-
-			ppDEM = grDEM.getGrapImagePlus();
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
+			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = grSlopesAccumulations
+					.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			computeSlopesDirections();
-			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections, ncols, nrows,
+			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold();
+			final GeoRaster grWatershedsWithThreshold = GeoRasterFactory
+					.createGeoRaster(watershedsWithThreshold, ncols, nrows,
 							rasterMetadata);
-			grSlopesDirections.setNodataValue(noDataValue);
-			System.out.printf("Slopes directions in %d ms\n", System
-					.currentTimeMillis()
-					- startTime);
-			return grSlopesDirections;
+			grWatershedsWithThreshold.setNodataValue(noDataValue);
+			System.out.printf(
+					"%d watersheds (outlet's threshold = %d) in %d ms\n",
+					nbOfWatershedsWithThreshold, threshold, System
+							.currentTimeMillis()
+							- startTime);
+			return grWatershedsWithThreshold;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	private void computeSlopesDirections() throws IOException {
-		slopesDirections = new short[nrows * ncols];
-		int i = 0;
+	private int computeAllwatershedsWithThreshold() throws IOException {
+		short nbOfWatershedsWithThreshold = 0;
+		final Map<Float, Short> mapOfBigOutlets = new HashMap<Float, Short>();
 
+		// 1st step: identify the "good" outlets...
+		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				final float currentElevation = ppDEM.getPixelValue(c, r);
-
-				if (Float.isNaN(currentElevation)) {
-					slopesDirections[i] = noDataValue;
-				} else {
-					final float[] tmpSlopes = new float[] {
-							currentElevation - getDEMValue(r, c + 1),
-							(currentElevation - getDEMValue(r + 1, c + 1))
-									/ SQRT2,
-							currentElevation - getDEMValue(r + 1, c),
-							(currentElevation - getDEMValue(r + 1, c - 1))
-									/ SQRT2,
-							currentElevation - getDEMValue(r, c - 1),
-							(currentElevation - getDEMValue(r - 1, c - 1))
-									/ SQRT2,
-							currentElevation - getDEMValue(r - 1, c),
-							(currentElevation - getDEMValue(r - 1, c + 1))
-									/ SQRT2 };
-					final int idx = getIdxForMaxValue(tmpSlopes);
-					slopesDirections[i] = (-1 == idx) ? indecision
-							: (short) (1 << idx);
+				if ((!Float.isNaN(gipAllOutlets.getPixelValue(c, r)))
+						&& (gipSlopesAccumulations.getPixelValue(c, r) >= threshold)) {
+					// current cell is an outlet. It's slopes accumulation value
+					// is greater or equal to the threshold value.
+					System.out.printf("(%d, %d) : %.0f\n", c, r,
+							gipSlopesAccumulations.getPixelValue(c, r));
+					nbOfWatershedsWithThreshold++;
+					mapOfBigOutlets.put(gipAllWatersheds.getPixelValue(c, r),
+							nbOfWatershedsWithThreshold);
 				}
 			}
 		}
-	}
-
-	private static int getIdxForMaxValue(final float[] values) {
-		float max = 0;
-		int result = -1;
-		for (int i = 0; i < values.length; i++) {
-			if ((!Float.isNaN(values[i])) && (values[i] > max)) {
-				result = i;
-				max = values[i];
+		// 2nd step:
+		watershedsWithThreshold = new short[nrows * ncols];
+		i = 0;
+		for (int r = 0; r < nrows; r++) {
+			for (int c = 0; c < ncols; c++, i++) {
+				final float tmp = gipAllWatersheds.getPixelValue(c, r);
+				watershedsWithThreshold[i] = mapOfBigOutlets.containsKey(tmp) ? mapOfBigOutlets
+						.get(tmp)
+						: noDataValue;
 			}
 		}
-		return result;
-	}
-
-	private float getDEMValue(final int r, final int c) throws IOException {
-		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? Float.NaN
-				: ppDEM.getPixelValue(c, r);
+		return nbOfWatershedsWithThreshold;
 	}
 }

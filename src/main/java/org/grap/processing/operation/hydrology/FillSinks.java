@@ -37,7 +37,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.hydrology;
+package org.grap.processing.operation.hydrology;
 
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
