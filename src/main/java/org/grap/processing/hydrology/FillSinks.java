@@ -66,16 +66,14 @@ public class FillSinks implements Operation {
 	private int[] dC = new int[8];
 	private int[] fR= new int [8];
 	private int[] fC = new int[8];
-	private GeoRaster m_PreprocessedDEM;
-	private GeoRaster m_Border;
+	private GeoRaster geoRasterPreprocessedDEM;
+	private GeoRaster geoRasterBorder;
 	private int depth;
 	private int ncols;
 	private int nrows;
-	private GeoRaster geoRaster;
-	private ImageProcessor srcDemProcessor;
-	private GrapImagePlus imp;
-	private ImageProcessor m_BorderProcessor;
-	private ImageProcessor m_PreprocessedDEMProcessor;
+	private ImageProcessor m_DEM;
+	private ImageProcessor m_Border;
+	private ImageProcessor m_PreprocessedDEM;
 	private Double minSlope = 0.01;
 	
 	private final static int m_iOffsetX []= {  0,  1,  1,  1,  0, -1, -1, -1};
@@ -101,15 +99,15 @@ public class FillSinks implements Operation {
 	
 	public GeoRaster processAlgorithm(final GeoRaster geoRaster, final double minSlope){
 		
-		this.geoRaster = geoRaster;
 		
 		try {
 		
-		imp = geoRaster.getGrapImagePlus();
+		m_DEM = geoRaster.getGrapImagePlus().getProcessor();
 	
 		
 		int i;
 		double iValue;
+		int x,y;
 		int scan;
 		int it;
 		int ix, iy;
@@ -124,17 +122,17 @@ public class FillSinks implements Operation {
 		depth = 0;
 		 
 		
-		FloatProcessor floatProcessor = new FloatProcessor(nrows,ncols);
+		FloatProcessor floatProcessor = new FloatProcessor(ncols,nrows);
 		
 		//The new georaster filled.
 		//Step 1 : an empty georaster is created
-		m_PreprocessedDEM = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
+		geoRasterPreprocessedDEM = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
 		
 		//A new georaster to deal with border
-		m_Border = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
+		geoRasterBorder = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
 		
-		m_PreprocessedDEMProcessor = m_PreprocessedDEM.getGrapImagePlus().getProcessor();
-		m_BorderProcessor = m_Border.getGrapImagePlus().getProcessor();
+		m_PreprocessedDEM = geoRasterPreprocessedDEM.getGrapImagePlus().getProcessor();
+		m_Border = geoRasterBorder.getGrapImagePlus().getProcessor();
 		
 		for(i=0; i<8; i++){
 			dEpsilon[i] = dMinSlope * getDistToNeighborInDir(i,cellSize );
@@ -152,10 +150,10 @@ public class FillSinks implements Operation {
 		initAltitude();
 		
 		//TODO : Add progress listenner setProgressText("Fase 1");
-		for(int x = 0; x<ncols; x++){
-			for(int y = 0; y<nrows; y++){
+		for( x = 0; x<ncols; x++){
+			for( y = 0; y<nrows; y++){
 				
-					iValue = m_BorderProcessor.getPixelValue(x, y);
+					iValue = m_Border.getPixelValue(x, y);
 				
 				if(iValue == 1){
 					dryUpwardCell(x, y);
@@ -173,23 +171,23 @@ public class FillSinks implements Operation {
 				something_done = false;
 				
 				do{
-					z = imp.getPixelValue(C, R);
-					wz = m_PreprocessedDEMProcessor.getPixelValue(C, R);
+					z = m_DEM.getPixelValue(C, R);
+					wz = m_PreprocessedDEM.getPixelValue(C, R);
 					if(!Float.isNaN(z) && (wz > z)){
 						for(i=0; i<8; i++){
 							ix	= C + m_iOffsetX[i];
 							iy	= R + m_iOffsetY[i];
-							z2 = imp.getPixelValue(ix, iy);
+							z2 = m_DEM.getPixelValue(ix, iy);
 							if(!Float.isNaN(z2)){
-								wzn = m_PreprocessedDEMProcessor.getPixelValue(ix, iy) + (float) dEpsilon[i];
+								wzn = m_PreprocessedDEM.getPixelValue(ix, iy) + (float) dEpsilon[i];
 								if( z >= wzn){
-									m_PreprocessedDEMProcessor.putPixelValue(C, R, z);
+									m_PreprocessedDEM.putPixelValue(C, R, z);
 									something_done = true;
 									dryUpwardCell(C, R);
 									break;
 								}
 								if(wz > wzn){
-									m_PreprocessedDEMProcessor.putPixelValue(C, R, wzn);
+									m_PreprocessedDEM.putPixelValue(C, R, wzn);
 									something_done = true;
 								}
 							}
@@ -214,7 +212,9 @@ public class FillSinks implements Operation {
 		} catch (GeoreferencingException e) {
 			e.printStackTrace();
 		}
-		return m_PreprocessedDEM;
+		
+		
+		return geoRasterPreprocessedDEM;
 		
 	}
 	
@@ -225,40 +225,36 @@ public class FillSinks implements Operation {
 		int x, y, i, ix, iy;
 		float dValue;
 		
-		assignNoData(m_PreprocessedDEM);
+		assignNoData(geoRasterPreprocessedDEM);
 		
-		assignNoData(m_Border);
+		assignNoData(geoRasterBorder);
 		
 	
-		try {
-		
 		for(x=0; x<ncols; x++){
 			for(y=0; y<nrows; y++){
 				border = false;
-				dValue = imp.getPixelValue(x, y);
+				dValue = m_DEM.getPixelValue(x, y);
 				if(!Float.isNaN(dValue)){
 					for(i=0; i<8; i++){
 						ix	= x + m_iOffsetX[i];
 						iy	= y + m_iOffsetY[i];
-						dValue = imp.getPixelValue(ix, iy);
+						dValue = m_DEM.getPixelValue(ix, iy);
 						if(Float.isNaN(dValue)){
 							border = true;
 							break;
 						}
 					}
 					if(border){
-						m_BorderProcessor.putPixelValue(x, y, 1);
-						m_PreprocessedDEMProcessor.putPixelValue(x, y, imp.getPixelValue(x, y));
+						m_Border.putPixelValue(x, y, 1);
+						m_PreprocessedDEM.putPixelValue(x, y, m_DEM.getPixelValue(x, y));
 					}
+					
 					else{
-						m_PreprocessedDEMProcessor.putPixelValue(x, y, INIT_ELEVATION);
+						m_PreprocessedDEM.putPixelValue(x, y, INIT_ELEVATION);
 						
 					}
 				}
 			}
-		}
-		} catch (IOException e) {			
-			e.printStackTrace();
 		}
 		
 		
@@ -272,17 +268,15 @@ public class FillSinks implements Operation {
 	private void assignNoData(GeoRaster geoRaster) {
 	
 		try {
-			srcDemProcessor = geoRaster.getGrapImagePlus().getProcessor();
-		
 			
-				final float[] pixels = (float[]) srcDemProcessor.getPixels();
+			
+				final float[] pixels = new float[ncols*nrows];
 				
 				 for (int i=0; i<pixels.length; i++){
 				       pixels[i]=Float.NaN;
 				 }
-				 srcDemProcessor.setPixels(pixels);
+				 geoRaster.getGrapImagePlus().getProcessor().setPixels(pixels);
 				 
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -301,29 +295,24 @@ public class FillSinks implements Operation {
 
 		depth += 1;
 
-		try {
 		if( depth <= MAX_DEPTH ){
 			for(i=0; i<8; i++){
 				ix	= x + m_iOffsetX[i];
 				iy	= y + m_iOffsetY[i];
 				
-					zw = m_PreprocessedDEMProcessor.getPixelValue(ix, iy);
+					zw = m_PreprocessedDEM.getPixelValue(ix, iy);
 				
-				zn = imp.getPixelValue(ix, iy);
+				zn = m_DEM.getPixelValue(ix, iy);
 				if(!Float.isNaN(zn) && zw == INIT_ELEVATION){
-					zw = m_PreprocessedDEMProcessor.getPixelValue(x, y) + (float) dEpsilon[i];
+					zw = m_PreprocessedDEM.getPixelValue(x, y) + (float) dEpsilon[i];
 					if(zn  >= zw){
-						m_PreprocessedDEMProcessor.putPixelValue(ix, iy, zn);
+						m_PreprocessedDEM.putPixelValue(ix, iy, zn);
 						dryUpwardCell(ix, iy);
 					}
 				}
 			}
 		}
 		depth -= 1;
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 	}
 	
