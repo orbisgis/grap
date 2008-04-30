@@ -233,6 +233,36 @@ public class BasicTest extends GrapTest {
 		assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
 		assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
 	}
+	
+	
+	public void testGrid2Grid() throws Exception {
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "grid/sample.asc");
+		gr.open();
+		final RasterMetadata originalMetadata = gr.getMetadata();
+		final float[] pixels = gr.getGrapImagePlus().getFloatPixels();
+				
+		final File file2 = new File(tmpData + "1.asc");
+		gr.save(file2.getAbsolutePath());
+		gr = GeoRasterFactory.createGeoRaster(file2.getAbsolutePath());
+		gr.open();
+		gr.show();
+		
+		final float[] gridPixels = gr.getGrapImagePlus().getFloatPixels();
+		assertTrue(gridPixels.length == pixels.length);
+		equals(pixels, gridPixels);
+		final RasterMetadata newM = gr.getMetadata();
+
+		assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
+		assertTrue(newM.getNCols() == originalMetadata.getNCols());
+		assertTrue(newM.getNRows() == originalMetadata.getNRows());
+		assertTrue(newM.getPixelSize_X() == originalMetadata.getPixelSize_X());
+		assertTrue(newM.getPixelSize_Y() == originalMetadata.getPixelSize_Y());
+		assertTrue(newM.getRotation_X() == originalMetadata.getRotation_X());
+		assertTrue(newM.getRotation_Y() == originalMetadata.getRotation_Y());
+		assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
+		assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
+	}
 
 	public void testLoadSaveGrid() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
