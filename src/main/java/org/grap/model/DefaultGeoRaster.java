@@ -52,6 +52,7 @@ import java.awt.image.IndexColorModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.grap.io.EsriGRIDWriter;
 import org.grap.io.FileReader;
 import org.grap.io.FileReaderFactory;
 import org.grap.io.GeoreferencingException;
@@ -250,7 +251,13 @@ public class DefaultGeoRaster implements GeoRaster {
 		} else if (tmp.endsWith("bmp")) {
 			fileSaver.saveAsBmp(dest);
 			WorldFile.save(localFileNamePrefix + ".bpw", rasterMetadata);
-		} else {
+		} 
+		else if (tmp.endsWith("asc")) {
+				EsriGRIDWriter esriGRIDWriter = new EsriGRIDWriter(localFileNamePrefix + ".asc", getGrapImagePlus(), rasterMetadata);
+				esriGRIDWriter.save();
+			 }
+				
+		else {
 			throw new RuntimeException("Cannot write in format: "
 					+ localFileNameExtension);
 		}
