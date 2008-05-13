@@ -44,15 +44,15 @@ import junit.framework.TestSuite;
 
 import org.grap.io.BasicTest;
 import org.grap.io.GeoreferencingTest;
-import org.grap.processing.hydrology.AllOutletsTest;
-import org.grap.processing.hydrology.AllWatershedsTest;
-import org.grap.processing.hydrology.SlopesAccumulationsTest;
-import org.grap.processing.hydrology.StrahlerStreamOrderTest;
-import org.grap.processing.hydrology.WatershedFromOutletIndexTest;
-import org.grap.processing.hydrology.WatershedWithThresholdTest;
 import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
+import org.grap.processing.operation.hydrology.AllOutletsTest;
+import org.grap.processing.operation.hydrology.AllWatershedsTest;
+import org.grap.processing.operation.hydrology.SlopesAccumulationsTest;
+import org.grap.processing.operation.hydrology.StrahlerStreamOrderTest;
+import org.grap.processing.operation.hydrology.WatershedFromOutletIndexTest;
+import org.grap.processing.operation.hydrology.WatershedWithThresholdTest;
 
 public class AllTests extends TestSuite {
 
