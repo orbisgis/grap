@@ -2,12 +2,10 @@ package org.grap.utilities;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GrapImagePlus;
-import org.grap.model.GridCell;
 import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -183,37 +181,7 @@ public class PixelsUtil {
 		}
 	}
 	
-	public GridCell[] getSortedArrayOfCells(){
-		
-		int i;
-		int iX,iY;
-		int iNX =  rasterMedata.getNCols();
-		int iCells = rasterMedata.getNCols() * rasterMedata.getNRows();;
-		GridCell [] cells = null;
-		GridCell cell;
-		try {
-			
-		cells = new GridCell[iCells];
-		
-		for (i = 0; i < iCells; i++){
-			iX = i % iNX;
-			iY = i / iNX;
-			
-			cell = new GridCell(iX, iY, grapImagePlus.getPixelValue(iX, iY));
-			
-			cells[i] = cell;
-		}
-
-
-		Arrays.sort(cells);
-		
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return cells;
-		
-	}
+	
 	
 	
 	public int getDirToNextDownslopeCell(int x, int y){
