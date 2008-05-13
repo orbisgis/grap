@@ -39,8 +39,6 @@
  */
 package org.grap.processing.operation.manual.hydrology;
 
-import java.awt.Color;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
@@ -67,8 +65,6 @@ public class AllOutletsTest {
 		final Operation allOutlets = new AllOutlets();
 		final GeoRaster grAllOutlets = grSlopesDirections
 				.doOperation(allOutlets);
-		grAllOutlets.setRangeColors(new double[] { -0.5, 1.5 },
-				new Color[] { Color.blue });
 		grAllOutlets.show();
 		grAllOutlets.save("../../datas2tests/tmp/2.tif");
 	}

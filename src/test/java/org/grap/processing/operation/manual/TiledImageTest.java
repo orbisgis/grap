@@ -1,17 +1,12 @@
 package org.grap.processing.operation.manual;
 
-import java.awt.Rectangle;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.operation.Crop;
 import org.grap.utilities.EnvelopeUtil;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class TiledImageTest {
 

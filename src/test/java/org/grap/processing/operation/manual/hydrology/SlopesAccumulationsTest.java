@@ -67,7 +67,8 @@ public class SlopesAccumulationsTest {
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 
-		grSlopesAccumulations.setLUT(LutGenerator.colorModel("fire"));
+		grSlopesAccumulations.getGrapImagePlus().getProcessor().setColorModel(
+				LutGenerator.colorModel("fire"));
 		grSlopesAccumulations.show();
 		grSlopesAccumulations.save("../../datas2tests/tmp/2.tif");
 	}

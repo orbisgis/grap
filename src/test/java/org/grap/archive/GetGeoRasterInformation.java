@@ -11,7 +11,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
 /*
- * -Xmx3072m -XX:+AggressiveHeap 
+ * -Xmx3072m -XX:+AggressiveHeap
  */
 
 public class GetGeoRasterInformation {
@@ -23,11 +23,11 @@ public class GetGeoRasterInformation {
 			PREF + "orbisgis_tuto/raster/f018_024.tif", //
 			PREF + "orbisgis_tuto/raster/f018_025.tif", //
 			// IndexCM + GRAY32
-			PREF + "geotif/out.tif", // 
+			PREF + "geotif/out.tif", //
 			PREF + "geotif/3x3_origin.tif", //
-			PREF + "MNT_Nantes.tif",// 
+			PREF + "MNT_Nantes.tif",//
 			// DirectCM + COLOR_RGB
-			PREF + "geotif/LeHavre.tif", // 
+			PREF + "geotif/LeHavre.tif", //
 			// "/home/leduc/data/Nantes/Nantes_est.tif", //
 
 			// IndexCM + GRAY*
@@ -73,8 +73,6 @@ public class GetGeoRasterInformation {
 			}
 		}
 
-		System.out.printf("%s\n\t%s\n\t%s\n\n", object, gr.getColorModel(),
-				fromGeoRasterTypeToImagePlusTypeName(gr.getType()));
 	}
 
 	public static void main(String[] args) throws Exception {

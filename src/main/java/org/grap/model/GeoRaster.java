@@ -39,7 +39,6 @@
  */
 package org.grap.model;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
@@ -56,10 +55,6 @@ public interface GeoRaster {
 	public abstract void setRangeValues(final double min, final double max)
 			throws IOException, GeoreferencingException;
 
-	public abstract void setRangeColors(final double[] ranges,
-			final Color[] colors) throws OperationException, IOException,
-			GeoreferencingException;
-
 	public abstract void setNodataValue(final float value);
 
 	public abstract Point2D fromPixelGridCoordToRealWorldCoord(
@@ -73,19 +68,13 @@ public interface GeoRaster {
 
 	public abstract void show() throws IOException, GeoreferencingException;
 
-	public abstract void setLUT(final ColorModel colorModel)
-			throws IOException, GeoreferencingException;
-
-	public abstract void setLUT(final ColorModel colorModel, final byte opacity)
-			throws IOException, GeoreferencingException;
-
 	public abstract GeoRaster doOperation(final Operation operation)
 			throws OperationException, GeoreferencingException;
 
 	/**
 	 * @return ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, ImagePlus.GRAY8,
 	 *         ImagePlus.GRAY16, ImagePlus.GRAY32
-	 * 
+	 *
 	 * @throws IOException
 	 * @throws GeoreferencingException
 	 */
@@ -101,12 +90,19 @@ public interface GeoRaster {
 
 	public abstract int getHeight() throws IOException, GeoreferencingException;
 
-	public ColorModel getOriginalColorModel() throws IOException,
-			GeoreferencingException;
-
-	public abstract ColorModel getColorModel() throws IOException,
-			GeoreferencingException;
-
 	public GrapImagePlus getGrapImagePlus() throws IOException,
 			GeoreferencingException;
+
+	/**
+	 * Gets this raster default color model
+	 *
+	 * @return
+	 * @throws GeoreferencingException
+	 * @throws IOException
+	 */
+	public abstract ColorModel getDefaultColorModel() throws IOException,
+			GeoreferencingException;
+
+	public abstract double getNoDataValue();
+
 }

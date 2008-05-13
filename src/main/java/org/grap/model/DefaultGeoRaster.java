@@ -45,10 +45,8 @@ import ij.io.FileSaver;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -68,19 +66,18 @@ public class DefaultGeoRaster implements GeoRaster {
 	private RasterMetadata rasterMetadata;
 	private FileReader fileReader;
 	private CachedValues cachedValues;
-	private CachedValues originalCachedValues;
 	private GrapImagePlus cachedGrapImagePlus;
 
 	// internal class
 	private class CachedValues {
 		private Double maxThreshold;
 		private Double minThreshold;
-		private ColorModel colorModel;
 		private int type;
 		private double min;
 		private double max;
 		private int width;
 		private int height;
+		public ColorModel colorModel;
 	}
 
 	// constructors
@@ -126,94 +123,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		getCachedValues(null).maxThreshold = max;
 	}
 
-	private ColorModel setTransparency(final ColorModel colorModel) {
-		if (colorModel instanceof IndexColorModel) {
-			final IndexColorModel indexColorModel = (IndexColorModel) colorModel;
-			final int nbOfColors = indexColorModel.getMapSize();
-			final byte[] reds = new byte[nbOfColors];
-			final byte[] greens = new byte[nbOfColors];
-			final byte[] blues = new byte[nbOfColors];
-			final byte[] alphas = new byte[nbOfColors];
-
-			indexColorModel.getReds(reds);
-			indexColorModel.getGreens(greens);
-			indexColorModel.getBlues(blues);
-			indexColorModel.getAlphas(alphas);
-
-			// transparency for NaN pixels
-			alphas[0] = 0;
-
-			return new IndexColorModel(8, nbOfColors, reds, greens, blues,
-					alphas);
-		} else {
-			return colorModel;
-		}
-	}
-
-	private ColorModel setTransparency(final ColorModel colorModel,
-			final byte opacity) {
-		if (colorModel instanceof IndexColorModel) {
-			final IndexColorModel indexColorModel = (IndexColorModel) colorModel;
-			final int nbOfColors = indexColorModel.getMapSize();
-			final byte[] reds = new byte[nbOfColors];
-			final byte[] greens = new byte[nbOfColors];
-			final byte[] blues = new byte[nbOfColors];
-			final byte[] alphas = new byte[nbOfColors];
-
-			indexColorModel.getReds(reds);
-			indexColorModel.getGreens(greens);
-			indexColorModel.getBlues(blues);
-			indexColorModel.getAlphas(alphas);
-
-			for (int i = 1; i < nbOfColors; i++) {
-				alphas[i] = opacity;
-			}
-			// transparency for NaN pixels
-			alphas[0] = 0;
-
-			return new IndexColorModel(8, nbOfColors, reds, greens, blues,
-					alphas);
-		} else {
-			return colorModel;
-		}
-	}
-
-	public void setRangeColors(final double[] ranges, final Color[] colors)
-			throws OperationException, IOException, GeoreferencingException {
-		checkRangeColors(ranges, colors);
-
-		// TODO : is it really necessary ?
-		setRangeValues(ranges[0], ranges[ranges.length - 1]);
-
-		final int nbOfColors = 256;
-		final byte[] reds = new byte[nbOfColors];
-		final byte[] greens = new byte[nbOfColors];
-		final byte[] blues = new byte[nbOfColors];
-		final double delta = (ranges[ranges.length - 1] - ranges[0])
-				/ (nbOfColors - 1);
-		double x = ranges[0] + delta;
-
-		for (int i = 1, j = 0; i < nbOfColors; i++, x += delta) {
-			while (!((x >= ranges[j]) && (x < ranges[j + 1]))
-					&& (colors.length > j + 1)) {
-				j++;
-			}
-			reds[i] = (byte) colors[j].getRed();
-			greens[i] = (byte) colors[j].getGreen();
-			blues[i] = (byte) colors[j].getBlue();
-		}
-		// default color for NaN pixels :
-		reds[0] = (byte) Color.BLACK.getRed();
-		greens[0] = (byte) Color.BLACK.getGreen();
-		blues[0] = (byte) Color.BLACK.getBlue();
-
-		try {
-			setLUT(new IndexColorModel(8, nbOfColors, reds, greens, blues));
-		} catch (IOException e) {
-			throw new OperationException(e);
-		}
-	}
-
 	public void setNodataValue(final float value) {
 		rasterMetadata.setNoData(value);
 	}
@@ -251,12 +160,12 @@ public class DefaultGeoRaster implements GeoRaster {
 		} else if (tmp.endsWith("bmp")) {
 			fileSaver.saveAsBmp(dest);
 			WorldFile.save(localFileNamePrefix + ".bpw", rasterMetadata);
-		} 
+		}
 		else if (tmp.endsWith("asc")) {
 				EsriGRIDWriter esriGRIDWriter = new EsriGRIDWriter(localFileNamePrefix + ".asc", getGrapImagePlus(), rasterMetadata);
 				esriGRIDWriter.save();
 			 }
-				
+
 		else {
 			throw new RuntimeException("Cannot write in format: "
 					+ localFileNameExtension);
@@ -265,16 +174,6 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public void show() throws IOException, GeoreferencingException {
 		getGrapImagePlus().show();
-	}
-
-	public void setLUT(final ColorModel colorModel) throws IOException,
-			GeoreferencingException {
-		getCachedValues(null).colorModel = setTransparency(colorModel);
-	}
-
-	public void setLUT(final ColorModel colorModel, final byte opacity)
-			throws IOException, GeoreferencingException {
-		getCachedValues(null).colorModel = setTransparency(colorModel, opacity);
 	}
 
 	public GeoRaster doOperation(final Operation operation)
@@ -306,17 +205,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		return getCachedValues(null).width;
 	}
 
-	public ColorModel getOriginalColorModel() throws IOException,
-			GeoreferencingException {
-		getCachedValues(null);
-		return originalCachedValues.colorModel;
-	}
-
-	public ColorModel getColorModel() throws IOException,
-			GeoreferencingException {
-		return getCachedValues(null).colorModel;
-	}
-
 	public GrapImagePlus getGrapImagePlus() throws IOException,
 			GeoreferencingException {
 		final GrapImagePlus grapImagePlus = (null == cachedGrapImagePlus) ? fileReader
@@ -325,10 +213,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		getCachedValues(grapImagePlus);
 		if (null != rasterMetadata) {
 			grapImagePlus.setNoDataValue(rasterMetadata.getNoDataValue());
-		}
-		if (null != getCachedValues(null).colorModel) {
-			grapImagePlus.getProcessor().setColorModel(
-					getCachedValues(null).colorModel);
 		}
 		grapImagePlus.setGrapType(getCachedValues(null).type);
 
@@ -389,6 +273,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
+	public ColorModel getDefaultColorModel() throws IOException,
+			GeoreferencingException {
+		return getCachedValues(null).colorModel;
+	}
+
 	private CachedValues getCachedValues(ImagePlus img) throws IOException,
 			GeoreferencingException {
 		if (null == cachedValues) {
@@ -398,7 +287,6 @@ public class DefaultGeoRaster implements GeoRaster {
 				ip = getGrapImagePlus();
 			}
 			final ImageProcessor processor = ip.getProcessor();
-			cachedValues.colorModel = setTransparency(processor.getColorModel());
 			cachedValues.min = processor.getMin();
 			cachedValues.max = processor.getMax();
 			cachedValues.height = ip.getHeight();
@@ -406,38 +294,12 @@ public class DefaultGeoRaster implements GeoRaster {
 			cachedValues.type = ip.getType();
 			cachedValues.minThreshold = null;
 			cachedValues.maxThreshold = null;
-
-			if (null == originalCachedValues) {
-				originalCachedValues = new CachedValues();
-				originalCachedValues.colorModel = setTransparency(processor
-						.getColorModel());
-				originalCachedValues.min = processor.getMin();
-				originalCachedValues.max = processor.getMax();
-				originalCachedValues.height = ip.getHeight();
-				originalCachedValues.width = ip.getWidth();
-				originalCachedValues.type = ip.getType();
-				originalCachedValues.minThreshold = null;
-				originalCachedValues.maxThreshold = null;
-			}
+			cachedValues.colorModel = processor.getColorModel();
 		}
 		return cachedValues;
 	}
 
-	private void checkRangeColors(final double[] ranges, final Color[] colors)
-			throws OperationException {
-		if (ranges.length != colors.length + 1) {
-			throw new OperationException(
-					"Ranges.length not equal to Colors.length + 1 !");
-		}
-		for (int i = 1; i < ranges.length; i++) {
-			if (ranges[i - 1] > ranges[i]) {
-				throw new OperationException(
-						"Ranges array needs to be sorted !");
-			}
-		}
-		if (colors.length > 256) {
-			throw new OperationException(
-					"Colors.length must be less than 256 !");
-		}
+	public double getNoDataValue() {
+		return getMetadata().getNoDataValue();
 	}
 }

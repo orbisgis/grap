@@ -90,7 +90,8 @@ public class WatershedWithThresholdTest {
 		final GeoRaster grWatershedsWithThreshold = grSlopesAccumulations
 				.doOperation(watershedsWithThreshold);
 
-		grWatershedsWithThreshold.setLUT(LutGenerator.colorModel("fire"));
+		grWatershedsWithThreshold.getGrapImagePlus().getProcessor()
+				.setColorModel(LutGenerator.colorModel("fire"));
 		grWatershedsWithThreshold.show();
 		grWatershedsWithThreshold.save("../../datas2tests/tmp/2.tif");
 	}

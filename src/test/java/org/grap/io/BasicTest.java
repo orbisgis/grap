@@ -39,11 +39,11 @@
  */
 package org.grap.io;
 
-import java.awt.image.ColorModel;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.grap.TestUtils;
-import org.grap.lut.LutGenerator;
 import org.grap.model.GeoProcessorType;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -61,15 +61,15 @@ public class BasicTest extends GrapTest {
 		} catch (GeoreferencingException e) {
 		}
 	}
-	
-	public void testJPGReader()throws Exception{
-	
+
+	public void testJPGReader() throws Exception {
+
 		try {
-		final GeoRaster  gr = GeoRasterFactory
-		.createGeoRaster("../../datas2tests/geotif/bv_chezineLambert1.jpg");
-		
-		gr.open();
-		assertTrue(true);
+			final GeoRaster gr = GeoRasterFactory
+					.createGeoRaster("../../datas2tests/geotif/bv_chezineLambert1.jpg");
+
+			gr.open();
+			assertTrue(true);
 		} catch (GeoreferencingException e) {
 		}
 	}
@@ -161,30 +161,6 @@ public class BasicTest extends GrapTest {
 		assertFalse(someOne);
 	}
 
-	public void testSetLUT(GeoRaster gr) throws Exception {
-		final ColorModel originalCM = LutGenerator.colorModel("fire");
-		gr.setLUT(originalCM);
-		final ColorModel cm = gr.getColorModel();
-		final int[] componentSize = cm.getComponentSize();
-		for (int i = 0; i < componentSize.length; i++) {
-			assertTrue(cm.hasAlpha());
-			if (originalCM.hasAlpha()) {
-				assertFalse(cm.getAlpha(i) == originalCM.getAlpha(i));
-			}
-			assertTrue(cm.getRed(i) == originalCM.getRed(i));
-			assertTrue(cm.getGreen(i) == originalCM.getGreen(i));
-			assertTrue(cm.getBlue(i) == originalCM.getBlue(i));
-		}
-	}
-
-	public void testSetLUT() throws Exception {
-		testSetLUT(sampleRaster);
-		testSetLUT(GeoRasterFactory.createGeoRaster(externalData
-				+ "/geotif/440606.tif"));
-		testSetLUT(GeoRasterFactory.createGeoRaster(externalData
-				+ "/grid/sample.asc"));
-	}
-
 	public void testMemoryConsumption() throws Exception {
 		final String[] src = new String[] {
 				externalData + "/geotif/440606.tif",
@@ -233,21 +209,20 @@ public class BasicTest extends GrapTest {
 		assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
 		assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
 	}
-	
-	
+
 	public void testGrid2Grid() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
 		gr.open();
 		final RasterMetadata originalMetadata = gr.getMetadata();
 		final float[] pixels = gr.getGrapImagePlus().getFloatPixels();
-				
+
 		final File file2 = new File(tmpData + "1.asc");
 		gr.save(file2.getAbsolutePath());
 		gr = GeoRasterFactory.createGeoRaster(file2.getAbsolutePath());
 		gr.open();
 		gr.show();
-		
+
 		final float[] gridPixels = gr.getGrapImagePlus().getFloatPixels();
 		assertTrue(gridPixels.length == pixels.length);
 		equals(pixels, gridPixels);
@@ -285,5 +260,68 @@ public class BasicTest extends GrapTest {
 				previous = grapImagePlus.getPixelValue(x, y);
 			}
 		}
+	}
+
+	public void testSourceWithNDV() throws Exception {
+		testNDV(externalData + "grid/sample.asc", -9999.0f);
+	}
+
+	public void testSourceWithoutNDV() throws Exception {
+		testNDV(externalData + "geotif/440606.tif", Float.NaN);
+	}
+
+	private void testNDV(String source, float ndv)
+			throws FileNotFoundException, IOException, GeoreferencingException {
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(source);
+		gr.open();
+		if (!Float.isNaN(ndv)) {
+			assertTrue(gr.getMetadata().getNoDataValue() == ndv);
+		} else {
+			assertTrue(Float.isNaN(gr.getMetadata().getNoDataValue()));
+		}
+	}
+
+	public void testSetNDVToSourceWithout() throws Exception {
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "geotif/440606.tif");
+		gr.open();
+		gr.setNodataValue(4.3f);
+		assertTrue(gr.getMetadata().getNoDataValue() == 4.3f);
+	}
+
+	public void testNaN() throws Exception {
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "grid/sample.asc");
+		gr.open();
+		gr.setNodataValue((float) gr.getMin());
+		float[] pixels = gr.getGrapImagePlus().getFloatPixels();
+		int nanCount = containsNaNs(pixels);
+		pixels = (float[]) gr.getGrapImagePlus().getProcessor().getPixels();
+		assertTrue(nanCount == containsNaNs(pixels));
+
+	}
+
+	private int containsNaNs(float[] pixels) {
+		int nanCount = 0;
+		for (float f : pixels) {
+			if (Float.isNaN(f)) {
+				nanCount++;
+			}
+		}
+		return nanCount;
+	}
+
+	public void testMinMaxAndNDV() throws Exception {
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "grid/sample.asc");
+		gr.open();
+		float originalMin = (float) gr.getMin();
+		assertTrue(gr.getMetadata().getNoDataValue() == -9999);
+		assertTrue(gr.getMin() != gr.getNoDataValue());
+
+		// Change no data value to min
+		gr.setNodataValue(originalMin);
+		assertTrue(gr.getMetadata().getNoDataValue() == originalMin);
+		assertTrue(gr.getMin() != gr.getNoDataValue());
 	}
 }

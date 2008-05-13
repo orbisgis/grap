@@ -154,4 +154,12 @@ class NullGeoRaster implements GeoRaster {
 	public int getWidth() {
 		return 0;
 	}
+
+	public ColorModel getDefaultColorModel() {
+		return null;
+	}
+
+	public double getNoDataValue() {
+		return 0;
+	}
 }

@@ -56,7 +56,7 @@ public class StrahlerStreamOrderTest {
 		// load the DEM
 		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
 		grDEM.open();
-		
+
 		grDEM.show();
 
 		// compute the slopes directions
@@ -78,7 +78,8 @@ public class StrahlerStreamOrderTest {
 		final GeoRaster grStrahlerStreamOrder = grSlopesDirections
 				.doOperation(strahlerStreamOrder);
 
-		grStrahlerStreamOrder.setLUT(LutGenerator.colorModel("fire"));
+		grStrahlerStreamOrder.getGrapImagePlus().getProcessor().setColorModel(
+				LutGenerator.colorModel("fire"));
 		grStrahlerStreamOrder.show();
 		grStrahlerStreamOrder.save("../../datas2tests/tmp/2.tif");
 	}

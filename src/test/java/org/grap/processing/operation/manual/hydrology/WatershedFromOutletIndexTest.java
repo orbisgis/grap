@@ -39,8 +39,6 @@
  */
 package org.grap.processing.operation.manual.hydrology;
 
-import java.awt.Color;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
@@ -68,8 +66,6 @@ public class WatershedFromOutletIndexTest {
 				268 + 466 * 344);
 		final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 				.doOperation(watershedFromOutletIndex);
-		grWatershedFromOutletIndex.setRangeColors(new double[] { -0.5, 1.5 },
-				new Color[] { Color.blue });
 		grWatershedFromOutletIndex.show();
 		grWatershedFromOutletIndex.save("../../datas2tests/tmp/2.tif");
 	}

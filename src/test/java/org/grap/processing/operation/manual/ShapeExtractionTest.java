@@ -39,17 +39,14 @@
  */
 package org.grap.processing.operation.manual;
 
-import java.awt.geom.Point2D;
-import java.io.File;
-
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.Wand;
 
+import java.awt.geom.Point2D;
 
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
