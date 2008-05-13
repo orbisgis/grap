@@ -39,8 +39,6 @@
  */
 package org.grap.processing.operation.hydrology;
 
-import ij.ImagePlus;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.io.IOException;
@@ -48,7 +46,6 @@ import java.io.IOException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
@@ -66,8 +63,6 @@ public class FillSinks implements Operation {
 	private int[] dC = new int[8];
 	private int[] fR= new int [8];
 	private int[] fC = new int[8];
-	//private GeoRaster geoRasterPreprocessedDEM;
-	//private GeoRaster geoRasterBorder;
 	private int depth;
 	private int ncols;
 	private int nrows;
@@ -121,18 +116,6 @@ public class FillSinks implements Operation {
 		ncols = geoRaster.getMetadata().getNCols();
 		depth = 0;
 		 
-		
-		FloatProcessor floatProcessor = new FloatProcessor(ncols,nrows);
-		
-		//The new georaster filled.
-		//Step 1 : an empty georaster is created
-		//geoRasterPreprocessedDEM = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
-		
-		//A new georaster to deal with border
-		//geoRasterBorder = GeoRasterFactory.createGeoRaster(floatProcessor, geoRaster.getMetadata());
-		
-		//m_PreprocessedDEM = geoRasterPreprocessedDEM.getGrapImagePlus().getProcessor();
-		//m_Border = geoRasterBorder.getGrapImagePlus().getProcessor();
 		
 		
 		for(i=0; i<8; i++){
