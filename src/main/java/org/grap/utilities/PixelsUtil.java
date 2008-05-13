@@ -2,10 +2,13 @@ package org.grap.utilities;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GrapImagePlus;
+import org.grap.model.GridCell;
+import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -22,6 +25,8 @@ public class PixelsUtil {
 	private double _6DX;
 	private float _DX_2;
 	private double _4DX_2;
+	private RasterMetadata rasterMedata;
+	private float m_dDist[];
 
 	/* neighbor's address*/                        
 	private final static int m_iOffsetX []=        {  0,  1,  1,  1,  0, -1, -1, -1};
@@ -39,6 +44,9 @@ public class PixelsUtil {
 		this.geoRaster=geoRaster;
 		 try {
 			grapImagePlus = geoRaster.getGrapImagePlus();
+
+			rasterMedata = geoRaster.getMetadata();
+			setConstants();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (GeoreferencingException e) {
@@ -47,7 +55,7 @@ public class PixelsUtil {
 		
 	}
 	
-	public static LineString toPixel(final GeoRaster geoRaster, final LineString lineString) {
+	public  LineString toPixel(final LineString lineString) {
 		final Coordinate[] realWorldCoords = lineString.getCoordinates();
 		final Coordinate[] pixelGridCoords = new Coordinate[realWorldCoords.length];
 		for (int i = 0; i < pixelGridCoords.length; i++) {
@@ -58,13 +66,13 @@ public class PixelsUtil {
 		return new GeometryFactory().createLineString(pixelGridCoords);
 	}
 	
-	public static MultiLineString toPixel(final GeoRaster geoRaster, final MultiLineString mls) {
+	public  MultiLineString toPixel(final MultiLineString mls) {
 
 		LineString[] lineStrings = new LineString[mls.getNumGeometries()];
 		for (int k = 0; k < mls.getNumGeometries(); k++) {
 			LineString ls = (LineString) mls.getGeometryN(k);
 			
-			lineStrings[k] = toPixel(geoRaster, ls);
+			lineStrings[k] = toPixel(ls);
 		}
 		return new GeometryFactory().createMultiLineString(lineStrings);
 	}
@@ -75,7 +83,7 @@ public class PixelsUtil {
 	
 	private boolean getSubMatrix3x3(int x, int y, double SubMatrix[]){
 
-		setConstants();
+		
 		int	i;
 		int iDir;
 		float	z, z2;
@@ -122,10 +130,10 @@ public class PixelsUtil {
 		int i;
 		float dCellSize = geoRaster.getMetadata().getPixelSize_X();
 		
-		double[] m_dDist = new double[8];
+		 m_dDist = new float[8];
 		
 	    for (i = 0; i < 8; i++){
-	        m_dDist[i] = Math.sqrt ( m_iOffsetX[i] * dCellSize * m_iOffsetX[i] * dCellSize
+	        m_dDist[i] = (float) Math.sqrt ( m_iOffsetX[i] * dCellSize * m_iOffsetX[i] * dCellSize
 	                        + m_iOffsetY[i] * dCellSize * m_iOffsetY[i] * dCellSize );
 	    }
 	    
@@ -174,4 +182,90 @@ public class PixelsUtil {
 			return Double.NaN;
 		}
 	}
+	
+	public GridCell[] getSortedArrayOfCells(){
+		
+		int i;
+		int iX,iY;
+		int iNX =  rasterMedata.getNCols();
+		int iCells = rasterMedata.getNCols() * rasterMedata.getNRows();;
+		GridCell [] cells = null;
+		GridCell cell;
+		try {
+			
+		cells = new GridCell[iCells];
+		
+		for (i = 0; i < iCells; i++){
+			iX = i % iNX;
+			iY = i / iNX;
+			
+			cell = new GridCell(iX, iY, grapImagePlus.getPixelValue(iX, iY));
+			
+			cells[i] = cell;
+		}
+
+
+		Arrays.sort(cells);
+		
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return cells;
+		
+	}
+	
+	
+	public int getDirToNextDownslopeCell(int x, int y){
+		
+		int		i, iDir = 0;
+		double	 dSlope, dMaxSlope =0;
+		double z, z2;
+
+		try {
+			z = grapImagePlus.getPixelValue(x, y);
+		
+		if(Double.isNaN(z)){
+			return -1;
+		}
+		for(i=0; i<8; i++){
+			
+			int xi = x + m_iOffsetY[i];
+			int yi = y + m_iOffsetX[i];
+			
+			if ((xi<0)||(yi<0)){
+				z2 = Double.NaN;
+			}
+			else if ((xi>rasterMedata.getNCols()-1)||(yi>rasterMedata.getNRows()-1)){
+				z2 = Double.NaN;
+			}
+			else {
+				z2 = grapImagePlus.getPixelValue(xi, yi);
+			}
+			dSlope	= (z - z2) / getDistToNeighborInDir(i);
+				if( dSlope > dMaxSlope ){
+					iDir = i;
+					dMaxSlope = dSlope;
+				}
+		
+		
+		}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if (dMaxSlope>0){
+			return iDir;
+		}
+		
+		return -1;
+	
+	}
+	
+	public float getDistToNeighborInDir(int iDir){
+		
+		return m_dDist[iDir];
+		
+	}
+	
 }
