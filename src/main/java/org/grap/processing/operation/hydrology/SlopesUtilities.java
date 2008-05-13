@@ -45,6 +45,18 @@ import java.util.Set;
 
 import org.grap.model.GrapImagePlus;
 
+/**
+ * Implementation of some classical D8 analysis algorithms.
+ * 
+ * 32 | 64 | 128
+ * 
+ * 16 | xx | 01
+ * 
+ * 08 | 44 | 02
+ * 
+ * sink and flat areas pixels are equal to -1
+ */
+
 public class SlopesUtilities {
 	private final static short[] neighboursDirection = new short[] { 16, 32,
 			64, 128, 1, 2, 4, 8 };

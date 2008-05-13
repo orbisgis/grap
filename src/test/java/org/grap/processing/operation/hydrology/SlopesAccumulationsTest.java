@@ -62,6 +62,7 @@ public class SlopesAccumulationsTest extends GrapTest {
 		final GeoRaster grSlopesDirections = geoRasterSrc
 				.doOperation(slopesDirections);
 		// compare the computed directions with predefined ones
+		printGeoRasterAndArray(grSlopesDirections, slopesDirectionForDEM);
 		compareGeoRasterAndArray(grSlopesDirections, slopesDirectionForDEM);
 
 		// compute the slopes accumulations
