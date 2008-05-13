@@ -92,7 +92,7 @@ import org.grap.processing.OperationException;
 
 public class GridDirection implements Operation {
 	public final static short noDataValue = 0;
-	public final static short indecision = 255;
+	public final static short indecision = -1;
 	private final static float SQRT2 = (float) Math.sqrt(2d);
 	private GrapImagePlus ppDEM;
 	private short[] slopesDirections;
