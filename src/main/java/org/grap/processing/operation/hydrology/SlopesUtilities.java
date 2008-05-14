@@ -46,7 +46,8 @@ import java.util.Set;
 import org.grap.model.GrapImagePlus;
 
 /**
- * Implementation of some classical D8 analysis algorithms.
+ * Implementation of some classical D8 analysis algorithms. D8 stands for
+ * "Deterministic eight neighbour" method by Fairchild and Leymarie (1991).
  * 
  * 32 | 64 | 128
  * 
