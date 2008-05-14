@@ -288,42 +288,55 @@ public class BasicTest extends GrapTest {
 		gr.setNodataValue(4.3f);
 		assertTrue(gr.getMetadata().getNoDataValue() == 4.3f);
 	}
-//
-//	TODO Uncomment all after fixing
-//
-//	public void testNaN() throws Exception {
-//		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-//				+ "grid/sample.asc");
-//		gr.open();
-//		gr.setNodataValue((float) gr.getMin());
-//		float[] pixels = gr.getGrapImagePlus().getFloatPixels();
-//		int nanCount = containsNaNs(pixels);
-//		pixels = (float[]) gr.getGrapImagePlus().getProcessor().getPixels();
-//		assertTrue(nanCount == containsNaNs(pixels));
-//
-//	}
-//
-//	private int containsNaNs(float[] pixels) {
-//		int nanCount = 0;
-//		for (float f : pixels) {
-//			if (Float.isNaN(f)) {
-//				nanCount++;
-//			}
-//		}
-//		return nanCount;
-//	}
-//
-//	public void testMinMaxAndNDV() throws Exception {
-//		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-//				+ "grid/sample.asc");
-//		gr.open();
-//		float originalMin = (float) gr.getMin();
-//		assertTrue(gr.getMetadata().getNoDataValue() == -9999);
-//		assertTrue(gr.getMin() != gr.getNoDataValue());
-//
-//		// Change no data value to min
-//		gr.setNodataValue(originalMin);
-//		assertTrue(gr.getMetadata().getNoDataValue() == originalMin);
-//		assertTrue(gr.getMin() != gr.getNoDataValue());
-//	}
+
+	public void testNDVWithEsriGRIDReader() throws Exception {
+		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "grid/sample.asc");
+		gr.open();
+		float[] pixels = gr.getGrapImagePlus().getFloatPixels();
+		assertEquals(101817, containsNaNs(pixels));
+
+		gr.setNodataValue(Float.MAX_VALUE);
+		pixels = gr.getGrapImagePlus().getFloatPixels();
+		assertEquals(0, containsNaNs(pixels));
+	}
+
+	//
+	// TODO Uncomment all after fixing
+	//
+	// public void testNaN() throws Exception {
+	// GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+	// + "grid/sample.asc");
+	// gr.open();
+	// gr.setNodataValue((float) gr.getMin());
+	// float[] pixels = gr.getGrapImagePlus().getFloatPixels();
+	// int nanCount = containsNaNs(pixels);
+	// pixels = (float[]) gr.getGrapImagePlus().getProcessor().getPixels();
+	// assertTrue(nanCount == containsNaNs(pixels));
+	//
+	// }
+	//
+	private int containsNaNs(float[] pixels) {
+		int nanCount = 0;
+		for (float f : pixels) {
+			if (Float.isNaN(f)) {
+				nanCount++;
+			}
+		}
+		return nanCount;
+	}
+
+	// public void testMinMaxAndNDV() throws Exception {
+	// GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+	// + "grid/sample.asc");
+	// gr.open();
+	// float originalMin = (float) gr.getMin();
+	// assertTrue(gr.getMetadata().getNoDataValue() == -9999);
+	// assertTrue(gr.getMin() != gr.getNoDataValue());
+	//
+	// // Change no data value to min
+	// gr.setNodataValue(originalMin);
+	// assertTrue(gr.getMetadata().getNoDataValue() == originalMin);
+	// assertTrue(gr.getMin() != gr.getNoDataValue());
+	// }
 }
