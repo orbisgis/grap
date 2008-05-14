@@ -182,7 +182,6 @@ public class EsriGRIDReader implements FileReader {
 		final float[] fValues = new float[n];
 		for (int i = 0; i < n; i++) {
 			final float tmp = readFloat();
-			fValues[i] = tmp; // (noDataValue == tmp) ? Float.NaN : tmp;
 			fValues[i] = (noDataValue == tmp) ? Float.NaN : tmp;
 		}
 		return fValues;
