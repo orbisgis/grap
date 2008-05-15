@@ -40,7 +40,7 @@ public class PixelUtilitiesTest extends TestCase {
 
 				switch (j) {
 				case 0:
-					assertEquals(PixelUtilities.noDataValue, pixelUtilities
+					assertEquals(PixelUtilities.noDataValueForDirection, pixelUtilities
 							.getMaxSlopeDirection(1, 1));
 					break;
 				case 1:

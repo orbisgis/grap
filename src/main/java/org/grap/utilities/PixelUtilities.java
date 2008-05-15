@@ -6,7 +6,8 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 
 public class PixelUtilities {
-	public final static short noDataValue = Short.MIN_VALUE;
+	public final static short noDataValueForDirection = Short.MIN_VALUE;
+	public final static float noDataValueForAngle = Float.NaN;
 
 	public final static short indecisionDirection = -1;
 	public final static float indecisionAngle = 0;
@@ -60,12 +61,12 @@ public class PixelUtilities {
 	// index - ncols + 1 };
 	// }
 
-	private float[] getMaxSlopeDirectionAndAngleInRadians(final int x,
+	private float[] getMaxSlopeDirectionAndAngleInPercentage(final int x,
 			final int y) {
 		final float currentElevation = getPixelValue(x, y);
 
 		if (Float.isNaN(currentElevation)) {
-			return new float[] { Float.NaN, Float.NaN };
+			return new float[] { noDataValueForDirection, noDataValueForAngle };
 		} else {
 			final float[] ratios = new float[] {
 					(currentElevation - getPixelValue(x + 1, y))
@@ -88,27 +89,24 @@ public class PixelUtilities {
 			if (-1 == tmpIdx) {
 				return new float[] { indecisionDirection, indecisionAngle };
 			} else {
-				final float tmpDir = 1 << tmpIdx;
-				final float tmpAngle = (float) Math.atan(ratios[tmpIdx]);
-				return new float[] { tmpDir, tmpAngle };
+				return new float[] { 1 << tmpIdx, ratios[tmpIdx] };
 			}
 		}
 	}
 
 	public short getMaxSlopeDirection(final int x, final int y) {
-		float tmp = getMaxSlopeDirectionAndAngleInRadians(x, y)[0];
-		return Float.isNaN(tmp) ? noDataValue : (short) tmp;
+		return (short) getMaxSlopeDirectionAndAngleInPercentage(x, y)[0];
+	}
+
+	public float getMaxSlopeAngleInPercentage(final int x, final int y) {
+		return getMaxSlopeDirectionAndAngleInPercentage(x, y)[1];
 	}
 
 	public float getMaxSlopeAngleInRadians(final int x, final int y) {
-		return getMaxSlopeDirectionAndAngleInRadians(x, y)[1];
+		return (float) Math.atan(getMaxSlopeAngleInPercentage(x, y));
 	}
 
 	public float getMaxSlopeAngleInDegrees(final int x, final int y) {
 		return (float) ((180 * getMaxSlopeAngleInRadians(x, y)) / Math.PI);
 	}
-
-	// public float getMaxSlopeAngleInPercent(final int x, final int y) {
-	// return (float) ((400 * getMaxSlopeAngleInRadians(x, y)) / Math.PI);
-	// }
 }
