@@ -41,7 +41,6 @@ package org.grap.processing.operation;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
-import org.grap.processing.cellularAutomata.CASlopesInPercent;
 import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAFloat;
 import org.grap.processing.cellularAutomata.cam.ICAN;
@@ -74,7 +73,8 @@ public class CANImplementationsTest extends GrapTest {
 		final int ncols = 5;
 
 		compareParAndSeqImpl(new CASlopesDirections(DEM, nrows, ncols));
-		compareParAndSeqImpl(new CASlopesInPercent(DEM, nrows, ncols));
+		// TODO
+		// compareParAndSeqImpl(new CASlope(DEM, nrows, ncols));
 		compareParAndSeqImpl(new CASlopesAccumulation(slopesDirections, nrows,
 				ncols));
 		compareParAndSeqImpl(new CAGetAllSubWatershed(slopesDirections, nrows,

@@ -37,38 +37,37 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual.hydrology;
+package org.grap.processing.cellularAutomata;
 
-import org.grap.lut.LutGenerator;
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.AllWatersheds;
-import org.grap.processing.operation.hydrology.D8OpDirection;
+import org.grap.processing.cellularAutomata.cam.ICAFloat;
+import org.grap.utilities.PixelUtilities;
 
-public class AllWatershedsTest {
-	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/sample.asc";
-		// final String src = "../../datas2tests/grid/mntzee_500.asc";
-		// final String src = "../../datas2tests/grid/saipan-5.asc";
+public class CASlope implements ICAFloat {
+	private int nrows;
+	private int ncols;
+	private PixelUtilities pixelUtilities;
 
-		// load the DEM
-		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
-		grDEM.open();
+	public CASlope(final PixelUtilities pixelUtilities,
+			final int nrows, final int ncols) {
+		this.nrows = nrows;
+		this.ncols = ncols;
+		this.pixelUtilities = pixelUtilities;
+	}
 
-		// compute the slopes directions
-		final Operation slopesDirections = new D8OpDirection();
-		final GeoRaster grSlopesDirections = grDEM
-				.doOperation(slopesDirections);
-		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
+	public int getNCols() {
+		return ncols;
+	}
 
-		// compute all the watersheds
-		final Operation allWatersheds = new AllWatersheds();
-		final GeoRaster grAllWatersheds = grSlopesDirections
-				.doOperation(allWatersheds);
-		grAllWatersheds.getGrapImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
-		grAllWatersheds.show();
-		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
+	public int getNRows() {
+		return nrows;
+	}
+
+	public float init(int r, int c, int i) {
+		return pixelUtilities.getSlope(c, r);
+	}
+
+	public float localTransition(float[] rac, int r, int c, int i) {
+		/* remain unchanged : one step of computation (init) */
+		return rac[i];
 	}
 }

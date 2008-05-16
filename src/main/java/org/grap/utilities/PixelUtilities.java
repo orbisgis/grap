@@ -12,11 +12,25 @@ public class PixelUtilities {
 	public final static short indecisionDirection = -1;
 	public final static float indecisionAngle = 0;
 
+	private final static double FACTOR = 180 / Math.PI;
+
 	private float[] pixels;
 	private int ncols;
 	private int nrows;
 
 	private float[] invD8Distances;
+
+	/**
+	 * Implementation of some classical D8 analysis algorithms. D8 stands for
+	 * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
+	 * 
+	 * SAGA Manual : http://www.saga-gis.uni-goettingen.de/
+	 * 
+	 * 7 | 0 | 1 6 | x | 2 5 | 4 | 3
+	 * 
+	 * sink and flat areas pixels are equal to -1 nodataValue pixels are equal
+	 * to Short.MIN_VALUE
+	 */
 
 	public PixelUtilities(final GeoRaster dem) throws GeoreferencingException,
 			IOException {
@@ -61,13 +75,15 @@ public class PixelUtilities {
 	// index - ncols + 1 };
 	// }
 
-	private float[] getMaxSlopeDirectionAndAngleInPercentage(final int x,
-			final int y) {
+	private float[] getD8DirectionAndD8Slope(final int x, final int y) {
 		final float currentElevation = getPixelValue(x, y);
 
 		if (Float.isNaN(currentElevation)) {
 			return new float[] { noDataValueForDirection, noDataValueForAngle };
 		} else {
+			if ((1 == x) && (1 == y)) {
+				int zz =1;
+			}
 			final float[] ratios = new float[] {
 					(currentElevation - getPixelValue(x + 1, y))
 							* invD8Distances[0],
@@ -87,6 +103,7 @@ public class PixelUtilities {
 							* invD8Distances[7] };
 			final int tmpIdx = getIdxForMaxValue(ratios);
 			if (-1 == tmpIdx) {
+				// maybe an outlet or a sink
 				return new float[] { indecisionDirection, indecisionAngle };
 			} else {
 				return new float[] { 1 << tmpIdx, ratios[tmpIdx] };
@@ -94,19 +111,19 @@ public class PixelUtilities {
 		}
 	}
 
-	public short getMaxSlopeDirection(final int x, final int y) {
-		return (short) getMaxSlopeDirectionAndAngleInPercentage(x, y)[0];
+	public short getD8Direction(final int x, final int y) {
+		return (short) getD8DirectionAndD8Slope(x, y)[0];
 	}
 
-	public float getMaxSlopeAngleInPercentage(final int x, final int y) {
-		return getMaxSlopeDirectionAndAngleInPercentage(x, y)[1];
+	public float getSlope(final int x, final int y) {
+		return getD8DirectionAndD8Slope(x, y)[1];
 	}
 
-	public float getMaxSlopeAngleInRadians(final int x, final int y) {
-		return (float) Math.atan(getMaxSlopeAngleInPercentage(x, y));
+	public float getSlopeInRadians(final int x, final int y) {
+		return (float) Math.atan(getSlope(x, y));
 	}
 
-	public float getMaxSlopeAngleInDegrees(final int x, final int y) {
-		return (float) ((180 * getMaxSlopeAngleInRadians(x, y)) / Math.PI);
+	public float getSlopeInDegrees(final int x, final int y) {
+		return (float) (FACTOR * getSlopeInRadians(x, y));
 	}
 }

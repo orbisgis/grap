@@ -47,15 +47,16 @@ import org.grap.model.GrapImagePlus;
 
 /**
  * Implementation of some classical D8 analysis algorithms. D8 stands for
- * "Deterministic eight neighbour" method by Fairchild and Leymarie (1991).
+ * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
  * 
- * 32 | 64 | 128
+ * SAGA Manual : http://www.saga-gis.uni-goettingen.de/
  * 
- * 16 | xx | 01
- * 
- * 08 | 44 | 02
+ * 7 | 0 | 1
+ * 6 | x | 2
+ * 5 | 4 | 3
  * 
  * sink and flat areas pixels are equal to -1
+ * nodataValue pixels are equal to Short.MIN_VALUE 
  */
 
 public class SlopesUtilities {
@@ -68,6 +69,7 @@ public class SlopesUtilities {
 		final Set<Integer> contributiveArea = new HashSet<Integer>();
 		final int[] neighboursIndices = new int[] { 1, ncols + 1, ncols,
 				ncols - 1, -1, -ncols - 1, -ncols, -ncols + 1 };
+		
 
 		for (int i = 0; i < 8; i++) {
 			final Integer tmp = getCellIndex(ncols, nrows, cellIdx

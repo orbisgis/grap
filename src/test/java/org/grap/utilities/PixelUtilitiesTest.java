@@ -41,15 +41,15 @@ public class PixelUtilitiesTest extends TestCase {
 				switch (j) {
 				case 0:
 					assertEquals(PixelUtilities.noDataValueForDirection, pixelUtilities
-							.getMaxSlopeDirection(1, 1));
+							.getD8Direction(1, 1));
 					break;
 				case 1:
 					assertEquals(PixelUtilities.indecisionDirection,
-							pixelUtilities.getMaxSlopeDirection(1, 1));
+							pixelUtilities.getD8Direction(1, 1));
 					break;
 				case 2:
 				case 3:
-					assertEquals(16, pixelUtilities.getMaxSlopeDirection(1, 1));
+					assertEquals(16, pixelUtilities.getD8Direction(1, 1));
 					break;
 				default:
 					fail();
@@ -68,20 +68,20 @@ public class PixelUtilitiesTest extends TestCase {
 				switch (j) {
 				case 0:
 					assertTrue(Float.isNaN(pixelUtilities
-							.getMaxSlopeAngleInDegrees(1, 1)));
+							.getSlopeInDegrees(1, 1)));
 					break;
 				case 1:
 					assertEquals(
-							pixelUtilities.getMaxSlopeAngleInDegrees(1, 1), 0f);
+							pixelUtilities.getSlopeInDegrees(1, 1), 0f);
 					break;
 				case 2:
 				case 3:
 					if (0 == i) {
 						assertTrue(Math.abs(pixelUtilities
-								.getMaxSlopeAngleInDegrees(1, 1)
+								.getSlopeInDegrees(1, 1)
 								- 180 * Math.atan(5) / Math.PI) < EPSILON);
 					} else if (1 == i) {
-						assertEquals(pixelUtilities.getMaxSlopeAngleInDegrees(
+						assertEquals(pixelUtilities.getSlopeInDegrees(
 								1, 1), 45f);
 					}
 					break;

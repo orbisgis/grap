@@ -46,7 +46,7 @@ import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.AllOutlets;
 import org.grap.processing.operation.hydrology.AllWatersheds;
 import org.grap.processing.operation.hydrology.GridAccumulation;
-import org.grap.processing.operation.hydrology.GridDirection;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.WatershedsWithThreshold;
 
 public class WatershedWithThresholdTest {
@@ -60,7 +60,7 @@ public class WatershedWithThresholdTest {
 		grDEM.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new GridDirection();
+		final Operation slopesDirections = new D8OpDirection();
 		final GeoRaster grSlopesDirections = grDEM
 				.doOperation(slopesDirections);
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");

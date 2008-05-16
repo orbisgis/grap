@@ -49,6 +49,7 @@ import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
 import org.grap.processing.operation.hydrology.AllOutletsTest;
 import org.grap.processing.operation.hydrology.AllWatershedsTest;
+import org.grap.processing.operation.hydrology.D8OpSlopeTest;
 import org.grap.processing.operation.hydrology.SlopesAccumulationsTest;
 import org.grap.processing.operation.hydrology.StrahlerStreamOrderTest;
 import org.grap.processing.operation.hydrology.WatershedFromOutletIndexTest;
@@ -76,6 +77,8 @@ public class AllTests extends TestSuite {
 		suite.addTestSuite(WatershedFromOutletIndexTest.class);
 		suite.addTestSuite(WatershedWithThresholdTest.class);
 		suite.addTestSuite(StrahlerStreamOrderTest.class);
+		
+		suite.addTestSuite(D8OpSlopeTest.class);
 		
 		// $JUnit-END$
 		return suite;
