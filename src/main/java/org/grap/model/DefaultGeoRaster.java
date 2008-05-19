@@ -53,7 +53,6 @@ import java.io.IOException;
 import org.grap.io.EsriGRIDWriter;
 import org.grap.io.FileReader;
 import org.grap.io.FileReaderFactory;
-import org.grap.io.GeoreferencingException;
 import org.grap.io.WorldFile;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -105,7 +104,7 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	// public methods
-	public void open() throws GeoreferencingException, IOException {
+	public void open() throws IOException {
 		if (null != fileReader) {
 			rasterMetadata = fileReader.readRasterMetadata();
 		} else {
@@ -118,7 +117,7 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public void setRangeValues(final double min, final double max)
-			throws IOException, GeoreferencingException {
+			throws IOException {
 		getCachedValues(null).minThreshold = min;
 		getCachedValues(null).maxThreshold = max;
 	}
@@ -137,8 +136,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
 
-	public void save(final String dest) throws IOException,
-			GeoreferencingException {
+	public void save(final String dest) throws IOException {
 		final int dotIndex = dest.lastIndexOf('.');
 		final String localFileNamePrefix = dest.substring(0, dotIndex);
 		final String localFileNameExtension = dest.substring(dotIndex + 1);
@@ -160,11 +158,12 @@ public class DefaultGeoRaster implements GeoRaster {
 		} else if (tmp.endsWith("bmp")) {
 			fileSaver.saveAsBmp(dest);
 			WorldFile.save(localFileNamePrefix + ".bpw", rasterMetadata);
+		} else if (tmp.endsWith("asc")) {
+			EsriGRIDWriter esriGRIDWriter = new EsriGRIDWriter(
+					localFileNamePrefix + ".asc", getGrapImagePlus(),
+					rasterMetadata);
+			esriGRIDWriter.save();
 		}
-		else if (tmp.endsWith("asc")) {
-				EsriGRIDWriter esriGRIDWriter = new EsriGRIDWriter(localFileNamePrefix + ".asc", getGrapImagePlus(), rasterMetadata);
-				esriGRIDWriter.save();
-			 }
 
 		else {
 			throw new RuntimeException("Cannot write in format: "
@@ -172,16 +171,16 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public void show() throws IOException, GeoreferencingException {
+	public void show() throws IOException {
 		getGrapImagePlus().show();
 	}
 
 	public GeoRaster doOperation(final Operation operation)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		return operation.execute(this);
 	}
 
-	public int getType() throws IOException, GeoreferencingException {
+	public int getType() throws IOException {
 		return getCachedValues(null).type;
 	}
 
@@ -189,24 +188,23 @@ public class DefaultGeoRaster implements GeoRaster {
 		return false;
 	}
 
-	public double getMax() throws IOException, GeoreferencingException {
+	public double getMax() throws IOException {
 		return getCachedValues(null).max;
 	}
 
-	public double getMin() throws IOException, GeoreferencingException {
+	public double getMin() throws IOException {
 		return getCachedValues(null).min;
 	}
 
-	public int getHeight() throws IOException, GeoreferencingException {
+	public int getHeight() throws IOException {
 		return getCachedValues(null).height;
 	}
 
-	public int getWidth() throws IOException, GeoreferencingException {
+	public int getWidth() throws IOException {
 		return getCachedValues(null).width;
 	}
 
-	public GrapImagePlus getGrapImagePlus() throws IOException,
-			GeoreferencingException {
+	public GrapImagePlus getGrapImagePlus() throws IOException {
 		final GrapImagePlus grapImagePlus = (null == cachedGrapImagePlus) ? fileReader
 				.readGrapImagePlus()
 				: cachedGrapImagePlus;
@@ -273,13 +271,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	public ColorModel getDefaultColorModel() throws IOException,
-			GeoreferencingException {
+	public ColorModel getDefaultColorModel() throws IOException {
 		return getCachedValues(null).colorModel;
 	}
 
-	private CachedValues getCachedValues(ImagePlus img) throws IOException,
-			GeoreferencingException {
+	private CachedValues getCachedValues(ImagePlus img) throws IOException {
 		if (null == cachedValues) {
 			cachedValues = new CachedValues();
 			ImagePlus ip = img;

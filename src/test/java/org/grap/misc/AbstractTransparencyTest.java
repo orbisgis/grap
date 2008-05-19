@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 
@@ -13,7 +12,7 @@ abstract public class AbstractTransparencyTest extends GrapTest {
 	final static int RED = Color.RED.getRGB();
 
 	BufferedImage overlapRedBackGroundWithAGeoRaster(final GeoRaster geoRaster)
-			throws IOException, GeoreferencingException {
+			throws IOException {
 		final BufferedImage redImage = new BufferedImage(geoRaster.getWidth(),
 				geoRaster.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		final Graphics graphics = redImage.getGraphics();

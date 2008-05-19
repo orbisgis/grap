@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
@@ -84,8 +83,7 @@ public class GeoRasterCalculator implements Operation {
 		this.method = method;
 	}
 
-	public GeoRaster execute(final GeoRaster gr1) throws OperationException,
-			GeoreferencingException {
+	public GeoRaster execute(final GeoRaster gr1) throws OperationException {
 		try {
 			final GrapImagePlus img1 = gr1.getGrapImagePlus();
 			final GrapImagePlus img2 = gr2.getGrapImagePlus();

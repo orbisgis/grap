@@ -41,7 +41,6 @@ package org.grap.processing.operation;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -54,7 +53,7 @@ import org.grap.processing.cellularAutomata.cam.ICAN;
 
 public class Identity implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			final int nrows = rasterMetadata.getNRows();

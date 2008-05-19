@@ -43,7 +43,6 @@ import ij.process.ImageProcessor;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
@@ -76,13 +75,13 @@ public class FillSinks implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 
 		return processAlgorithm(geoRaster, minSlope);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param geoRaster
 	 *            the DEM to be processed.
 	 * @param dMinSlope
@@ -229,8 +228,6 @@ public class FillSinks implements Operation {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (GeoreferencingException e) {
-			e.printStackTrace();
 		}
 
 		return GeoRasterFactory.createGeoRaster(m_PreprocessedDEM, geoRaster
@@ -329,7 +326,7 @@ public class FillSinks implements Operation {
 	/**
 	 * TODO : This method must be extracted into a global class. It is used to
 	 * calculate the distance for each pixels around a 3X3 matrix.
-	 * 
+	 *
 	 * @param iDir
 	 * @return
 	 */

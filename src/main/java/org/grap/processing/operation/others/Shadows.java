@@ -41,7 +41,6 @@ package org.grap.processing.operation.others;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
@@ -56,7 +55,7 @@ public class Shadows implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			geoRaster.open();
 			final GrapImagePlus imagePlus = geoRaster.getGrapImagePlus();

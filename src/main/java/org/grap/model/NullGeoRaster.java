@@ -44,7 +44,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.processing.Operation;
 
 class NullGeoRaster implements GeoRaster {
@@ -130,8 +129,7 @@ class NullGeoRaster implements GeoRaster {
 		return instance;
 	}
 
-	public ColorModel getOriginalColorModel() throws IOException,
-			GeoreferencingException {
+	public ColorModel getOriginalColorModel() throws IOException {
 		return null;
 	}
 

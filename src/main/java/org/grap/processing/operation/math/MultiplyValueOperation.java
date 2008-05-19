@@ -44,7 +44,6 @@ import ij.ImagePlus;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
@@ -58,7 +57,7 @@ public class MultiplyValueOperation implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			geoRaster.open();
 			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();

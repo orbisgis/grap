@@ -43,7 +43,6 @@ import ij.process.ImageProcessor;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
@@ -54,8 +53,8 @@ import org.grap.processing.OperationException;
 
 
 public class WetnessIndex implements Operation {
-	
-	
+
+
 	private int ncols;
 	private int nrows;
 	private ImageProcessor m_Slope;
@@ -64,51 +63,51 @@ public class WetnessIndex implements Operation {
 	private ImageProcessor m_WetnessIndex;
 	private ImageProcessor m_accFlow;
 	private float cellSize;
-	
+
 	private static final double ALMOST_ZERO = 0.0011;
-	
+
 	public WetnessIndex(final GeoRaster accFlow){
 		this.accFlow=accFlow;
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
-	
+			throws OperationException {
+
 		return processAlgorithm(geoRaster);
 	}
-	
-	
-	
+
+
+
 	public GeoRaster processAlgorithm(final GeoRaster geoRaster){
-		
-		
-		
+
+
+
 		try {
 			m_Slope = geoRaster.getGrapImagePlus().getProcessor();
 			m_accFlow = accFlow.getGrapImagePlus().getProcessor();
-			
-			
-			
+
+
+
 			nrows = geoRaster.getMetadata().getNRows() ;
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
-			
+
 			m_WetnessIndex =   m_Slope.duplicate();
-			
+
 			m_WetnessIndex.multiply(0);
-			
-			
+
+
 			int x,y;
 
 			for(y = 0; y<ncols; y++){
 				for(x = 0; x < nrows; x++){
-					
+
 					float dSlope = m_Slope.getPixelValue(x, y);
 					float dAccFlow = m_accFlow.getPixelValue(x, y);
 
 					if (((Float.isNaN(dSlope))||(Float.isNaN(dAccFlow)))){
 						m_WetnessIndex.putPixelValue(x, y, Float.NaN);
-						
+
 					}
 					else {
 						dAccFlow /= cellSize;
@@ -117,23 +116,21 @@ public class WetnessIndex implements Operation {
 					}
 				}
 			}
-			
-			
+
+
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (GeoreferencingException e) {
-			e.printStackTrace();
 		}
-	
-		
-		
-		
-		
+
+
+
+
+
 		return GeoRasterFactory.createGeoRaster(m_WetnessIndex, geoRaster.getMetadata());
-		
+
 	}
-	
-	
-	
+
+
+
 
 }

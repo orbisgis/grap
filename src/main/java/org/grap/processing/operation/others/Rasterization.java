@@ -47,7 +47,6 @@ import ij.process.ImageProcessor;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
@@ -76,7 +75,7 @@ public class Rasterization implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			geoRaster.open();
 			final int width = geoRaster.getMetadata().getNCols();

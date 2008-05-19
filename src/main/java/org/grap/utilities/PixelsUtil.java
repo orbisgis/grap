@@ -3,7 +3,6 @@ package org.grap.utilities;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
@@ -15,8 +14,8 @@ import com.vividsolutions.jts.geom.MultiLineString;
 
 public class PixelsUtil {
 
-	
-    
+
+
 	private GeoRaster geoRaster;
 	private GrapImagePlus grapImagePlus;
 	private double _2DX;
@@ -26,18 +25,18 @@ public class PixelsUtil {
 	private RasterMetadata rasterMedata;
 	private float m_dDist[];
 
-	/* neighbor's address*/                        
+	/* neighbor's address*/
 	private final static int m_iOffsetX []=        {  0,  1,  1,  1,  0, -1, -1, -1};
 	private final static int m_iOffsetY []=        {  1,  1,  0, -1, -1, -1,  0,  1};
-	
-	
+
+
 
 	public final static double DEG_45_IN_RAD = Math.PI / 180. * 45.;
     public final static double DEG_90_IN_RAD = Math.PI / 180. * 90.;
     public final static double DEG_180_IN_RAD = Math.PI ;
     public final static double DEG_270_IN_RAD = Math.PI / 180. * 270.;
     public final static double DEG_360_IN_RAD = Math.PI * 2.;
-	
+
 	public PixelsUtil(final GeoRaster geoRaster){
 		this.geoRaster=geoRaster;
 		 try {
@@ -47,12 +46,10 @@ public class PixelsUtil {
 			setConstants();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (GeoreferencingException e) {
-			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	public  LineString toPixel(final LineString lineString) {
 		final Coordinate[] realWorldCoords = lineString.getCoordinates();
 		final Coordinate[] pixelGridCoords = new Coordinate[realWorldCoords.length];
@@ -63,25 +60,25 @@ public class PixelsUtil {
 		}
 		return new GeometryFactory().createLineString(pixelGridCoords);
 	}
-	
+
 	public  MultiLineString toPixel(final MultiLineString mls) {
 
 		LineString[] lineStrings = new LineString[mls.getNumGeometries()];
 		for (int k = 0; k < mls.getNumGeometries(); k++) {
 			LineString ls = (LineString) mls.getGeometryN(k);
-			
+
 			lineStrings[k] = toPixel(ls);
 		}
 		return new GeometryFactory().createMultiLineString(lineStrings);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	private boolean getSubMatrix3x3(int x, int y, double SubMatrix[]){
 
-		
+
 		int	i;
 		int iDir;
 		float	z, z2;
@@ -89,14 +86,14 @@ public class PixelsUtil {
 		boolean result = false;
 		try {
 			z = grapImagePlus.getPixelValue(x, y);
-		
+
 
 		if(Float.isNaN(z)){
 		}
 		else{
 			//SubMatrix[4]	= 0.0;
 			for(i=0; i<4; i++){
-				
+
 				iDir = 2 * i;
 				z2 = grapImagePlus.getPixelValue(x + m_iOffsetX[iDir], y + m_iOffsetY[iDir]);
 				if( !Float.isNaN(z2)){
@@ -112,43 +109,43 @@ public class PixelsUtil {
 					}
 				}
 			}
-		
+
 
 			result= true;
 		}
-		} catch (IOException e) {			
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return result;
-		
+
 	}
-	
+
 	private void setConstants(){
-		
+
 		int i;
 		float dCellSize = geoRaster.getMetadata().getPixelSize_X();
-		
+
 		 m_dDist = new float[8];
-		
+
 	    for (i = 0; i < 8; i++){
 	        m_dDist[i] = (float) Math.sqrt ( m_iOffsetX[i] * dCellSize * m_iOffsetX[i] * dCellSize
 	                        + m_iOffsetY[i] * dCellSize * m_iOffsetY[i] * dCellSize );
 	    }
-	    
+
 	    _2DX =  dCellSize * 2.0;
 	    _6DX = dCellSize * 6.0;
 		_DX_2 = dCellSize * dCellSize;
 		_4DX_2 = 4.0 * _DX_2;
 
 	}
-	
+
 	public double getSlope(int x, int y){
 
-		
+
 		double	zm[], G, H;
 
 		zm = new double[4];
-		
+
 		if( getSubMatrix3x3(x, y, zm) ){
 			G	=  (zm[0] - zm[2]) / _2DX;
 	        H	=  (zm[1] - zm[3]) / _2DX;
@@ -158,13 +155,13 @@ public class PixelsUtil {
 			return Double.NaN;
 		}
 	}
-	
+
 	public double getAspect(int x, int y){
-		
+
 		double	zm[], G, H, dAspect;
 
 		zm = new double[4];
-		
+
 		if( getSubMatrix3x3(x, y, zm) ){
 			G	=  (zm[0] - zm[2]) / _2DX;
 	        H	=  (zm[1] - zm[3]) / _2DX;
@@ -180,27 +177,27 @@ public class PixelsUtil {
 			return Double.NaN;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	public int getDirToNextDownslopeCell(int x, int y){
-		
+
 		int		i, iDir = 0;
 		double	 dSlope, dMaxSlope =0;
 		double z, z2;
 
 		try {
 			z = grapImagePlus.getPixelValue(x, y);
-		
+
 		if(Double.isNaN(z)){
 			return -1;
 		}
 		for(i=0; i<8; i++){
-			
+
 			int xi = x + m_iOffsetY[i];
 			int yi = y + m_iOffsetX[i];
-			
+
 			if ((xi<0)||(yi<0)){
 				z2 = Double.NaN;
 			}
@@ -215,25 +212,25 @@ public class PixelsUtil {
 					iDir = i;
 					dMaxSlope = dSlope;
 				}
-		
-		
+
+
 		}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (dMaxSlope>0){
 			return iDir;
 		}
-		
+
 		return -1;
-	
+
 	}
-	
+
 	public float getDistToNeighborInDir(int iDir){
-		
+
 		return m_dDist[iDir];
-		
+
 	}
-	
+
 }

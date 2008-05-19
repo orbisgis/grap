@@ -82,7 +82,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
@@ -97,7 +96,7 @@ public class AllWatersheds implements Operation {
 	private int nrows;
 
 	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final long startTime = System.currentTimeMillis();
 			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();

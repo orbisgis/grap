@@ -80,7 +80,6 @@ package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -97,7 +96,7 @@ public class D8OpDirection extends D8Operation implements Operation {
 
 	@Override
 	public GeoRaster evaluateResult(GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		if (PARALLEL) {
 			return parallel(geoRaster);
 		} else {
@@ -106,7 +105,7 @@ public class D8OpDirection extends D8Operation implements Operation {
 	}
 
 	public GeoRaster sequential(final GeoRaster grDEM)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final PixelUtilities pixelUtilities = new PixelUtilities(grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
@@ -132,7 +131,7 @@ public class D8OpDirection extends D8Operation implements Operation {
 	}
 
 	private GeoRaster parallel(final GeoRaster grDEM)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final PixelUtilities pixelUtilities = new PixelUtilities(grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();

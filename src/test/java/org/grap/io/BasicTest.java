@@ -58,7 +58,7 @@ public class BasicTest extends GrapTest {
 					+ "grid/ij3x3.asc");
 			gr.open();
 			assertTrue(false);
-		} catch (GeoreferencingException e) {
+		} catch (IOException e) {
 		}
 	}
 
@@ -70,7 +70,7 @@ public class BasicTest extends GrapTest {
 
 			gr.open();
 			assertTrue(true);
-		} catch (GeoreferencingException e) {
+		} catch (IOException e) {
 		}
 	}
 
@@ -84,7 +84,7 @@ public class BasicTest extends GrapTest {
 			gr.show();
 			gr.save(tmpData + "xyzdem.tif");
 
-		} catch (GeoreferencingException e) {
+		} catch (IOException e) {
 		}
 	}
 
@@ -95,7 +95,7 @@ public class BasicTest extends GrapTest {
 			gr.open();
 			gr.getType();
 			assertTrue(false);
-		} catch (GeoreferencingException e) {
+		} catch (IOException e) {
 		}
 	}
 
@@ -271,7 +271,7 @@ public class BasicTest extends GrapTest {
 	}
 
 	private void testNDV(String source, float ndv)
-			throws FileNotFoundException, IOException, GeoreferencingException {
+			throws FileNotFoundException, IOException {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(source);
 		gr.open();
 		if (!Float.isNaN(ndv)) {

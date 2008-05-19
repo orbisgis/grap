@@ -45,9 +45,7 @@ import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public interface FileReader {
-	public RasterMetadata readRasterMetadata() throws IOException,
-			GeoreferencingException;
+	public RasterMetadata readRasterMetadata() throws IOException;
 
-	public GrapImagePlus readGrapImagePlus() throws IOException,
-			GeoreferencingException;
+	public GrapImagePlus readGrapImagePlus() throws IOException;
 }

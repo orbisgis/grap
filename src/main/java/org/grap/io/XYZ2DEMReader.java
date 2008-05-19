@@ -67,13 +67,11 @@ public class XYZ2DEMReader implements FileReader {
 		xyzImporter = new XYZ2DEM_Importer(fileName, pixelsize, false);
 	}
 
-	public GrapImagePlus readGrapImagePlus() throws IOException,
-			GeoreferencingException {
+	public GrapImagePlus readGrapImagePlus() throws IOException {
 		return new GrapImagePlus("", xyzImporter.ip);
 	}
 
-	public RasterMetadata readRasterMetadata() throws IOException,
-			GeoreferencingException {
+	public RasterMetadata readRasterMetadata() throws IOException {
 		return xyzImporter.rastermetadata;
 	}
 }

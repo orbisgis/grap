@@ -5,7 +5,6 @@ import ij.ImagePlus;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -54,7 +53,7 @@ public class GetGeoRasterInformation {
 	}
 
 	public GetGeoRasterInformation(final Object object)
-			throws FileNotFoundException, IOException, GeoreferencingException {
+			throws FileNotFoundException, IOException {
 		GeoRaster gr = null;
 
 		if (object instanceof String) {

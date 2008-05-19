@@ -82,7 +82,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
@@ -103,7 +102,7 @@ public class WatershedsWithThreshold implements Operation {
 
 	public WatershedsWithThreshold(final GeoRaster grAllWatersheds,
 			final GeoRaster grAllOutlets, final int threshold)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			gipAllWatersheds = grAllWatersheds.getGrapImagePlus();
 			gipAllOutlets = grAllOutlets.getGrapImagePlus();
@@ -114,7 +113,7 @@ public class WatershedsWithThreshold implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster grSlopesAccumulations)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final long startTime = System.currentTimeMillis();
 			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();

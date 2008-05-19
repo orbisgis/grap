@@ -43,17 +43,16 @@ import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public interface GeoRaster {
-	public abstract void open() throws GeoreferencingException, IOException;
+	public abstract void open() throws IOException;
 
 	public abstract RasterMetadata getMetadata();
 
 	public abstract void setRangeValues(final double min, final double max)
-			throws IOException, GeoreferencingException;
+			throws IOException;
 
 	public abstract void setNodataValue(final float value);
 
@@ -63,45 +62,42 @@ public interface GeoRaster {
 	public abstract Point2D fromRealWorldCoordToPixelGridCoord(
 			final double mouseX, final double mouseY);
 
-	public abstract void save(final String dest) throws IOException,
-			GeoreferencingException;
+	public abstract void save(final String dest) throws IOException;
 
-	public abstract void show() throws IOException, GeoreferencingException;
+	public abstract void show() throws IOException;
 
 	public abstract GeoRaster doOperation(final Operation operation)
-			throws OperationException, GeoreferencingException;
+			throws OperationException;
 
 	/**
 	 * @return ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, ImagePlus.GRAY8,
 	 *         ImagePlus.GRAY16, ImagePlus.GRAY32
 	 *
 	 * @throws IOException
-	 * @throws GeoreferencingException
+	 * @throws
 	 */
-	public abstract int getType() throws IOException, GeoreferencingException;
+	public abstract int getType() throws IOException;
 
 	public abstract boolean isEmpty();
 
-	public abstract double getMin() throws IOException, GeoreferencingException;
+	public abstract double getMin() throws IOException;
 
-	public abstract double getMax() throws IOException, GeoreferencingException;
+	public abstract double getMax() throws IOException;
 
-	public abstract int getWidth() throws IOException, GeoreferencingException;
+	public abstract int getWidth() throws IOException;
 
-	public abstract int getHeight() throws IOException, GeoreferencingException;
+	public abstract int getHeight() throws IOException;
 
-	public GrapImagePlus getGrapImagePlus() throws IOException,
-			GeoreferencingException;
+	public GrapImagePlus getGrapImagePlus() throws IOException;
 
 	/**
 	 * Gets this raster default color model
 	 *
 	 * @return
-	 * @throws GeoreferencingException
+	 * @throws
 	 * @throws IOException
 	 */
-	public abstract ColorModel getDefaultColorModel() throws IOException,
-			GeoreferencingException;
+	public abstract ColorModel getDefaultColorModel() throws IOException;
 
 	public abstract double getNoDataValue();
 

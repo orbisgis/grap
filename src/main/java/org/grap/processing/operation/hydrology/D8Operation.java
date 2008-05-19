@@ -1,17 +1,16 @@
 package org.grap.processing.operation.hydrology;
 
-import java.io.IOException;
-
 import ij.ImagePlus;
 
-import org.grap.io.GeoreferencingException;
+import java.io.IOException;
+
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public abstract class D8Operation implements Operation {
 	public final GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		final long startTime = System.currentTimeMillis();
 		try {
 			if (ImagePlus.COLOR_RGB == geoRaster.getType()) {
@@ -29,5 +28,5 @@ public abstract class D8Operation implements Operation {
 	}
 
 	public abstract GeoRaster evaluateResult(GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException;
+			throws OperationException;
 }

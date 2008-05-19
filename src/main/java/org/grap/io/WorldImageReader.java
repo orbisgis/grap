@@ -101,8 +101,8 @@ public class WorldImageReader implements FileReader {
 
 		if (fileNameExtension.equals("tif") || fileNameExtension.equals("tiff")) {
 			isTiff = true;
-		}
-		else if (fileNameExtension.equals("jpg")|| fileNameExtension.equals("jpeg")){
+		} else if (fileNameExtension.equals("jpg")
+				|| fileNameExtension.equals("jpeg")) {
 			isJpg = true;
 		}
 	}
@@ -126,11 +126,10 @@ public class WorldImageReader implements FileReader {
 	}
 
 	// public methods
-	public RasterMetadata readRasterMetadata() throws IOException,
-			GeoreferencingException {
+	public RasterMetadata readRasterMetadata() throws IOException {
 		final File file = new File(fileName);
-		InputStream inputStream = new BufferedInputStream(
-				new FileInputStream(file));
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(
+				file));
 
 		// read image's dimensions
 		int ncols;
@@ -141,18 +140,17 @@ public class WorldImageReader implements FileReader {
 			final FileInfo[] fileInfo = tiffDecoder.getTiffInfo();
 			ncols = fileInfo[0].width;
 			nrows = fileInfo[0].height;
-			
-		} 
-		else if (isJpg){
-			
+
+		} else if (isJpg) {
+
 			jpgDecoder = JPEGCodec.createJPEGDecoder(inputStream);
-			
+
 			bufJpg = jpgDecoder.decodeAsBufferedImage();
-			ncols =  bufJpg.getWidth();
+			ncols = bufJpg.getWidth();
 			nrows = bufJpg.getHeight();
-			
+
 		}
-		
+
 		else {
 			final ImageInfo imageInfo = new ImageInfo();
 			imageInfo.setInput(inputStream);
@@ -163,7 +161,7 @@ public class WorldImageReader implements FileReader {
 				throw new RuntimeException("Unsupported image file format.");
 			}
 		}
-		
+
 		inputStream.close();
 
 		// read other image's metadata
@@ -180,28 +178,26 @@ public class WorldImageReader implements FileReader {
 			return new RasterMetadata(upperLeftX, upperLeftY, pixelSize_X,
 					pixelSize_Y, ncols, nrows, xRotation, yRotation);
 		} else {
-			throw new GeoreferencingException("Could not find world file for "
-					+ fileName);
+			throw new IOException("Could not find world file for " + fileName);
 		}
 	}
 
 	public GrapImagePlus readGrapImagePlus() throws IOException {
 		// return new Opener().openImage(fileName);
-		
-		ImagePlus imagePlus ;
+
+		ImagePlus imagePlus;
 		final ImageProcessor imageProcessor;
-		if(isJpg){
-			
+		if (isJpg) {
+
 			imagePlus = new ImagePlus("jpg", bufJpg);
 			imageProcessor = imagePlus.getProcessor();
+		} else {
+
+			imagePlus = new Opener().openImage(fileName);
+			imageProcessor = imagePlus.getProcessor();
+			imagePlus = null;
 		}
-		else {
-		
-		imagePlus = new Opener().openImage(fileName);
-		imageProcessor = imagePlus.getProcessor();
-		imagePlus = null;
-		}
-		
+
 		return new GrapImagePlus("", imageProcessor);
 	}
 }

@@ -84,7 +84,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
@@ -104,8 +103,7 @@ public class StrahlerStreamOrder implements Operation {
 	private int nrows;
 
 	public StrahlerStreamOrder(final GeoRaster grSlopesAccumulations,
-			final int riverThreshold) throws OperationException,
-			GeoreferencingException {
+			final int riverThreshold) throws OperationException {
 		try {
 			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
 		} catch (IOException e) {
@@ -115,7 +113,7 @@ public class StrahlerStreamOrder implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster grSlopesDirections)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final long startTime = System.currentTimeMillis();
 			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();

@@ -1,12 +1,11 @@
 package org.grap.processing.operation.extract;
 
-import java.io.IOException;
-
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ColorProcessor;
 
-import org.grap.io.GeoreferencingException;
+import java.io.IOException;
+
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
@@ -49,8 +48,6 @@ public class ExtractRGBBand {
 				}
 			}
 		} catch (IOException e) {
-			throw new OperationException(e);
-		} catch (GeoreferencingException e) {
 			throw new OperationException(e);
 		}
 	}

@@ -2,7 +2,6 @@ package org.grap.utilities;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 
 public class PixelUtilities {
@@ -23,17 +22,16 @@ public class PixelUtilities {
 	/**
 	 * Implementation of some classical D8 analysis algorithms. D8 stands for
 	 * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
-	 * 
+	 *
 	 * SAGA Manual : http://www.saga-gis.uni-goettingen.de/
-	 * 
+	 *
 	 * 7 | 0 | 1 6 | x | 2 5 | 4 | 3
-	 * 
+	 *
 	 * sink and flat areas pixels are equal to -1 nodataValue pixels are equal
 	 * to Short.MIN_VALUE
 	 */
 
-	public PixelUtilities(final GeoRaster dem) throws GeoreferencingException,
-			IOException {
+	public PixelUtilities(final GeoRaster dem) throws IOException {
 		dem.open();
 		ncols = dem.getMetadata().getNCols();
 		nrows = dem.getMetadata().getNRows();
@@ -82,7 +80,7 @@ public class PixelUtilities {
 			return new float[] { noDataValueForDirection, noDataValueForAngle };
 		} else {
 			if ((1 == x) && (1 == y)) {
-				int zz =1;
+				int zz = 1;
 			}
 			final float[] ratios = new float[] {
 					(currentElevation - getPixelValue(x + 1, y))

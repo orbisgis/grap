@@ -47,7 +47,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -84,7 +83,7 @@ public class Crop implements Operation {
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		if (null != ring) {
 			return execute(geoRaster, ring);
 		} else if (null != rectangle) {
@@ -96,7 +95,7 @@ public class Crop implements Operation {
 	}
 
 	private GeoRaster execute(final GeoRaster geoRaster, final LinearRing ring)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final Geometry rasterEnvelope = new GeometryFactory()
 					.createPolygon((LinearRing) EnvelopeUtil
@@ -135,7 +134,7 @@ public class Crop implements Operation {
 	}
 
 	private GeoRaster execute(final GeoRaster geoRaster, final Rectangle2D roi)
-			throws OperationException, GeoreferencingException {
+			throws OperationException {
 		try {
 			final Envelope roiEnv = new Envelope(new Coordinate(roi.getMinX(),
 					roi.getMinY()),
