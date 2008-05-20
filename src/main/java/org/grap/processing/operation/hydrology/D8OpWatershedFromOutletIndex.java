@@ -79,59 +79,69 @@
 package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.cellularAutomata.CAD8Direction;
-import org.grap.processing.cellularAutomata.cam.CANFactory;
-import org.grap.processing.cellularAutomata.cam.ICA;
-import org.grap.processing.cellularAutomata.cam.ICAN;
 
-public class D8OpDirection extends D8OpAbstractMultiThreads implements
-		Operation {
-	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
+public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operation {
+	public final static byte noDataValue = 0;
+	public final static byte belongsToTheWatershed = 1;
+
+	private GrapImagePlus ppSlopesDirections;
+	private byte[] sameWatershed;
+	private int ncols;
+	private int nrows;
+
+	private int outletIdx;
+
+	public D8OpWatershedFromOutletIndex(final int outletIdx) {
+		this.outletIdx = outletIdx;
+	}
+
+	@Override
+	public GeoRaster evaluateResult(GeoRaster geoRaster)
+			throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
-			final float[] slopesDirections = new float[nrows * ncols];
-			int i = 0;
-			for (int r = 0; r < nrows; r++) {
-				for (int c = 0; c < ncols; c++, i++) {
-					slopesDirections[i] = pixelUtilities.getD8Direction(c, r);
-				}
-			}
-
-			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections, ncols, nrows,
-							rasterMetadata);
-			grSlopesDirections
-					.setNodataValue(HydrologyUtilities.noDataValueForDirection);
-			return grSlopesDirections;
+			ppSlopesDirections = geoRaster.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			nrows = rasterMetadata.getNRows();
+			ncols = rasterMetadata.getNCols();
+			computeSameWatershed();
+			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
+					sameWatershed, ncols, nrows, rasterMetadata);
+			grAllOutlets.setNodataValue(noDataValue);
+			System.out.printf("Watershed for (%d,%d)\n", outletIdx % ncols,
+					outletIdx / ncols);
+			return grAllOutlets;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	GeoRaster parallel(final GeoRaster grDEM) throws OperationException {
-		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
+	private void computeSameWatershed() throws IOException {
+		sameWatershed = new byte[nrows * ncols];
+		Set<Integer> parentsCell = new HashSet<Integer>();
+		parentsCell.add(outletIdx);
+		do {
+			parentsCell = computeSameWatershed(parentsCell);
+		} while (0 < parentsCell.size());
+	}
 
-			final ICA ca = new CAD8Direction(pixelUtilities, nrows, ncols);
-			final ICAN ccan = CANFactory.createCAN(ca);
-			ccan.getStableState();
-
-			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
-		} catch (IOException e) {
-			throw new OperationException(e);
+	private Set<Integer> computeSameWatershed(final Set<Integer> sonsCell)
+			throws IOException {
+		final Set<Integer> parentsCell = new HashSet<Integer>();
+		for (int sonIdx : sonsCell) {
+			sameWatershed[sonIdx] = belongsToTheWatershed;
+			parentsCell.addAll(SlopesUtilities
+					.fromCellSlopeDirectionIdxToContributiveArea(
+							ppSlopesDirections, ncols, nrows, sonIdx));
 		}
+		return parentsCell;
 	}
 }

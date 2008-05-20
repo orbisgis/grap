@@ -79,59 +79,93 @@
 package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.cellularAutomata.CAD8Direction;
-import org.grap.processing.cellularAutomata.cam.CANFactory;
-import org.grap.processing.cellularAutomata.cam.ICA;
-import org.grap.processing.cellularAutomata.cam.ICAN;
 
-public class D8OpDirection extends D8OpAbstractMultiThreads implements
+public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		Operation {
-	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
-		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
-			final float[] slopesDirections = new float[nrows * ncols];
-			int i = 0;
-			for (int r = 0; r < nrows; r++) {
-				for (int c = 0; c < ncols; c++, i++) {
-					slopesDirections[i] = pixelUtilities.getD8Direction(c, r);
-				}
-			}
+	public final static short noDataValue = (short) Float.NaN;
 
-			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections, ncols, nrows,
+	private GrapImagePlus gipAllWatersheds;
+	private GrapImagePlus gipAllOutlets;
+	private GrapImagePlus gipSlopesAccumulations;
+	private short[] watershedsWithThreshold;
+	private int threshold;
+	private int ncols;
+	private int nrows;
+
+	public D8OpWatershedsWithThreshold(final GeoRaster grAllWatersheds,
+			final GeoRaster grAllOutlets, final int threshold)
+			throws OperationException {
+		try {
+			gipAllWatersheds = grAllWatersheds.getGrapImagePlus();
+			gipAllOutlets = grAllOutlets.getGrapImagePlus();
+		} catch (IOException e) {
+			throw new OperationException(e);
+		}
+		this.threshold = threshold;
+	}
+
+	@Override
+	public GeoRaster evaluateResult(GeoRaster grSlopesAccumulations)
+			throws OperationException {
+		try {
+			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = grSlopesAccumulations
+					.getMetadata();
+			nrows = rasterMetadata.getNRows();
+			ncols = rasterMetadata.getNCols();
+			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold();
+			final GeoRaster grWatershedsWithThreshold = GeoRasterFactory
+					.createGeoRaster(watershedsWithThreshold, ncols, nrows,
 							rasterMetadata);
-			grSlopesDirections
-					.setNodataValue(HydrologyUtilities.noDataValueForDirection);
-			return grSlopesDirections;
+			grWatershedsWithThreshold.setNodataValue(noDataValue);
+			System.out.printf("%d watersheds (outlet's threshold = %d)\n",
+					nbOfWatershedsWithThreshold, threshold);
+			return grWatershedsWithThreshold;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	GeoRaster parallel(final GeoRaster grDEM) throws OperationException {
-		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
+	private int computeAllwatershedsWithThreshold() throws IOException {
+		short nbOfWatershedsWithThreshold = 0;
+		final Map<Float, Short> mapOfBigOutlets = new HashMap<Float, Short>();
 
-			final ICA ca = new CAD8Direction(pixelUtilities, nrows, ncols);
-			final ICAN ccan = CANFactory.createCAN(ca);
-			ccan.getStableState();
-
-			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
-		} catch (IOException e) {
-			throw new OperationException(e);
+		// 1st step: identify the "good" outlets...
+		int i = 0;
+		for (int r = 0; r < nrows; r++) {
+			for (int c = 0; c < ncols; c++, i++) {
+				if ((!Float.isNaN(gipAllOutlets.getPixelValue(c, r)))
+						&& (gipSlopesAccumulations.getPixelValue(c, r) >= threshold)) {
+					// current cell is an outlet. It's slopes accumulation value
+					// is greater or equal to the threshold value.
+					System.out.printf("(%d, %d) : %.0f\n", c, r,
+							gipSlopesAccumulations.getPixelValue(c, r));
+					nbOfWatershedsWithThreshold++;
+					mapOfBigOutlets.put(gipAllWatersheds.getPixelValue(c, r),
+							nbOfWatershedsWithThreshold);
+				}
+			}
 		}
+		// 2nd step:
+		watershedsWithThreshold = new short[nrows * ncols];
+		i = 0;
+		for (int r = 0; r < nrows; r++) {
+			for (int c = 0; c < ncols; c++, i++) {
+				final float tmp = gipAllWatersheds.getPixelValue(c, r);
+				watershedsWithThreshold[i] = mapOfBigOutlets.containsKey(tmp) ? mapOfBigOutlets
+						.get(tmp)
+						: noDataValue;
+			}
+		}
+		return nbOfWatershedsWithThreshold;
 	}
 }

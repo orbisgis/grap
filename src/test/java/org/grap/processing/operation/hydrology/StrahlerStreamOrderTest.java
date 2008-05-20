@@ -44,8 +44,8 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.GridAccumulation;
-import org.grap.processing.operation.hydrology.StrahlerStreamOrder;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
+import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class StrahlerStreamOrderTest extends GrapTest {
 	private RasterMetadata rasterMetadata = new RasterMetadata(0, 15, 1, -1,
@@ -59,7 +59,7 @@ public class StrahlerStreamOrderTest extends GrapTest {
 		super.setUp();
 
 		slopesDirections[0] = new short[] {//
-		2, 0, 0, 0, 0, 0, 0, 4, 0, 8,//
+				2, 0, 0, 0, 0, 0, 0, 4, 0, 8,//
 				0, 2, 0, 0, 0, 0, 0, 4, 8, 0,//
 				0, 0, 2, 0, 0, 0, 0, 8, 16, 16,//
 				1, 1, 1, 2, 0, 0, 8, 0, 0, 0,//
@@ -171,14 +171,14 @@ public class StrahlerStreamOrderTest extends GrapTest {
 							rasterMetadata);
 
 			// compute the slopes accumulations
-			final Operation slopesAccumulations = new GridAccumulation();
+			final Operation slopesAccumulations = new D8OpAccumulation();
 			final GeoRaster grSlopesAccumulations = grSlopesDirections
 					.doOperation(slopesAccumulations);
 			printGeoRasterAndArray(grSlopesAccumulations, slopesDirections[i]);
 
 			// compute the Strahler stream orders
 			final int riverThreshold = 1;
-			final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
+			final Operation opeStrahlerStreamOrder = new D8OpStrahlerStreamOrder(
 					grSlopesAccumulations, riverThreshold);
 			final GeoRaster grStrahlerStreamOrder = grSlopesDirections
 					.doOperation(opeStrahlerStreamOrder);

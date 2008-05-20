@@ -82,56 +82,101 @@ import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.cellularAutomata.CAD8Direction;
-import org.grap.processing.cellularAutomata.cam.CANFactory;
-import org.grap.processing.cellularAutomata.cam.ICA;
-import org.grap.processing.cellularAutomata.cam.ICAN;
 
-public class D8OpDirection extends D8OpAbstractMultiThreads implements
-		Operation {
-	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
+public class D8OpAccumulation extends D8OpAbstract implements Operation {
+	public static final float noDataValue = Float.NaN;
+
+	private GrapImagePlus gipDirection;
+	private float[] d8Accumulation;
+	private int ncols;
+	private int nrows;
+
+	@Override
+	public GeoRaster evaluateResult(GeoRaster geoRaster)
+			throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
-			final float[] slopesDirections = new float[nrows * ncols];
-			int i = 0;
-			for (int r = 0; r < nrows; r++) {
-				for (int c = 0; c < ncols; c++, i++) {
-					slopesDirections[i] = pixelUtilities.getD8Direction(c, r);
-				}
-			}
-
-			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections, ncols, nrows,
-							rasterMetadata);
-			grSlopesDirections
-					.setNodataValue(HydrologyUtilities.noDataValueForDirection);
-			return grSlopesDirections;
+			gipDirection = geoRaster.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			nrows = rasterMetadata.getNRows();
+			ncols = rasterMetadata.getNCols();
+			int nbOfOutlets = accumulateSlopes();
+			final GeoRaster grAccumulation = GeoRasterFactory.createGeoRaster(
+					d8Accumulation, ncols, nrows, rasterMetadata);
+			grAccumulation.setNodataValue(noDataValue);
+			System.out.printf("%d outlet(s)\n", nbOfOutlets);
+			return grAccumulation;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	GeoRaster parallel(final GeoRaster grDEM) throws OperationException {
-		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
-			final RasterMetadata rasterMetadata = grDEM.getMetadata();
-			final int nrows = rasterMetadata.getNRows();
-			final int ncols = rasterMetadata.getNCols();
+	private int accumulateSlopes() throws IOException {
+		// slopes accumulations' array initialization
+		d8Accumulation = new float[nrows * ncols];
 
-			final ICA ca = new CAD8Direction(pixelUtilities, nrows, ncols);
-			final ICAN ccan = CANFactory.createCAN(ca);
-			ccan.getStableState();
+		int nbOfOutlets = 0;
+		int i = 0;
 
-			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
-		} catch (IOException e) {
-			throw new OperationException(e);
+		for (int r = 0; r < nrows; r++) {
+			for (int c = 0; c < ncols; c++, i++) {
+				if ((0 == r) || (nrows == r + 1) || (0 == c)
+						|| (ncols == c + 1)) {
+					d8Accumulation[i] = noDataValue;
+				} else if (Float.isNaN(gipDirection.getPixelValue(c, r))) {
+					d8Accumulation[i] = noDataValue;
+				} else if (0 == d8Accumulation[i]) {
+					// current cell value has not been yet modified...
+					nbOfOutlets += findOutletAndAccumulateSlopes(i);
+				}
+				// print();
+			}
 		}
+		return nbOfOutlets;
+	}
+
+	private int findOutletAndAccumulateSlopes(final int i) throws IOException {
+		boolean isProbablyANewOutlet = true;
+		Integer curCellIdx = i;
+		float acc = 0;
+
+		do {
+			final int r = curCellIdx / ncols;
+			final int c = curCellIdx % ncols;
+
+			if (Float.isNaN(gipDirection.getPixelValue(c, r))) {
+				return isProbablyANewOutlet ? 1 : 0;
+			} else {
+				if (0 == d8Accumulation[curCellIdx]) {
+					// current cell value has not been yet modified...
+					d8Accumulation[curCellIdx] = 1 + acc;
+					acc++;
+				} else {
+					// join an already identified river...
+					if (isProbablyANewOutlet) {
+						// junction point
+						isProbablyANewOutlet = false;
+					}
+					d8Accumulation[curCellIdx] += acc;
+				}
+				curCellIdx = SlopesUtilities
+						.fromCellSlopeDirectionToNextCellIndex(gipDirection,
+								ncols, nrows, curCellIdx, c, r);
+			}
+		} while (null != curCellIdx);
+		return isProbablyANewOutlet ? 1 : 0;
+	}
+
+	void print() {
+		for (int r = 0; r < nrows; r++) {
+			for (int c = 0; c < ncols; c++) {
+				System.out.printf("%3.0f ", d8Accumulation[r * ncols + c]);
+			}
+			System.out.println();
+		}
+		System.out.println("= = = = ");
 	}
 }

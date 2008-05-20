@@ -43,7 +43,7 @@ import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.WatershedFromOutletIndex;
+import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
 
 public class WatershedFromOutletIndexTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
@@ -63,7 +63,7 @@ public class WatershedFromOutletIndexTest extends GrapTest {
 				.doOperation(slopesDirections);
 
 		// find the good outlet
-		final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+		final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
 				92);
 		final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 				.doOperation(watershedFromOutletIndex);

@@ -49,27 +49,31 @@ import org.grap.model.GrapImagePlus;
  * Implementation of some classical D8 analysis algorithms. D8 stands for
  * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
  * 
- * SAGA Manual : http://www.saga-gis.uni-goettingen.de/
+ * The standard we have decided to implement is the one explained by David G.
+ * Tarboton (Utah State University, May, 2005) in the "Terrain Analysis Using
+ * Digital Elevation Models" (TauDEM) method.
  * 
- * 7 | 0 | 1
- * 6 | x | 2
- * 5 | 4 | 3
+ * 4 | 3 | 2
+ * 
+ * 5 | X | 1
+ * 
+ * 6 | 7 | 8
  * 
  * sink and flat areas pixels are equal to -1
- * nodataValue pixels are equal to Short.MIN_VALUE 
+ * 
+ * nodataValue pixels are equal to Short.MIN_VALUE
  */
 
 public class SlopesUtilities {
-	private final static short[] neighboursDirection = new short[] { 16, 32,
-			64, 128, 1, 2, 4, 8 };
+	private final static short[] neighboursDirection = new short[] { 5, 6, 7,
+			8, 1, 2, 3, 4 };
 
 	public static Set<Integer> fromCellSlopeDirectionIdxToContributiveArea(
 			final GrapImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int cellIdx) throws IOException {
 		final Set<Integer> contributiveArea = new HashSet<Integer>();
-		final int[] neighboursIndices = new int[] { 1, ncols + 1, ncols,
-				ncols - 1, -1, -ncols - 1, -ncols, -ncols + 1 };
-		
+		final int[] neighboursIndices = new int[] { 1, -ncols + 1, -ncols,
+				-ncols - 1, -1, ncols - 1, ncols, ncols + 1 };
 
 		for (int i = 0; i < 8; i++) {
 			final Integer tmp = getCellIndex(ncols, nrows, cellIdx
@@ -103,19 +107,19 @@ public class SlopesUtilities {
 		case 1:
 			return getCellIndex(ncols, nrows, i + 1, c + 1, r);
 		case 2:
-			return getCellIndex(ncols, nrows, i + ncols + 1, c + 1, r + 1);
+			return getCellIndex(ncols, nrows, i - ncols + 1, c + 1, r - 1);
+		case 3:
+			return getCellIndex(ncols, nrows, i - ncols, c, r - 1);
 		case 4:
+			return getCellIndex(ncols, nrows, i - ncols - 1, c - 1, r - 1);
+		case 5:
+			return getCellIndex(ncols, nrows, i - 1, c - 1, r);
+		case 6:
+			return getCellIndex(ncols, nrows, i + ncols - 1, c - 1, r + 1);
+		case 7:
 			return getCellIndex(ncols, nrows, i + ncols, c, r + 1);
 		case 8:
-			return getCellIndex(ncols, nrows, i + ncols - 1, c - 1, r + 1);
-		case 16:
-			return getCellIndex(ncols, nrows, i - 1, c - 1, r);
-		case 32:
-			return getCellIndex(ncols, nrows, i - ncols - 1, c - 1, r - 1);
-		case 64:
-			return getCellIndex(ncols, nrows, i - ncols, c, r - 1);
-		case 128:
-			return getCellIndex(ncols, nrows, i - ncols + 1, c + 1, r - 1);
+			return getCellIndex(ncols, nrows, i + ncols + 1, c + 1, r + 1);
 		}
 		return null;
 	}

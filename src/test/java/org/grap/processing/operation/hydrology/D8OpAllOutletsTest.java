@@ -42,10 +42,10 @@ package org.grap.processing.operation.hydrology;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.GridAccumulation;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 
-public class SlopesAccumulationsTest extends GrapTest {
+public class D8OpAllOutletsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
 
 	protected void setUp() throws Exception {
@@ -53,25 +53,23 @@ public class SlopesAccumulationsTest extends GrapTest {
 		geoRasterSrc = sampleDEM;
 	}
 
-	public void testSlopesAccumulations() throws Exception {
+	public void testAllOutlets() throws Exception {
 		// load the DEM
 		geoRasterSrc.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new D8OpDirection();
-		final GeoRaster grSlopesDirections = geoRasterSrc
-				.doOperation(slopesDirections);
-		// compare the computed directions with predefined ones
-		printGeoRasterAndArray(grSlopesDirections, slopesDirectionForDEM);
-		compareGeoRasterAndArray(grSlopesDirections, slopesDirectionForDEM);
+		final Operation d8Direction = new D8OpDirection();
+		final GeoRaster grD8Direction = geoRasterSrc
+				.doOperation(d8Direction);
 
-		// compute the slopes accumulations
-		final Operation slopesAccumulations = new GridAccumulation();
-		final GeoRaster grSlopesAccumulations = grSlopesDirections
-				.doOperation(slopesAccumulations);
+		// find all outlets
+		final Operation d8AllOutlets = new D8OpAllOutlets();
+		final GeoRaster grD8AllOutlets = grD8Direction
+				.doOperation(d8AllOutlets);
 
-		// compare the computed accumulations with predefined ones
-		compareGeoRasterAndArray(grSlopesAccumulations,
-				slopesAccumulationForDEM);
+		// compare the computed watersheds with previous ones
+		grD8AllOutlets.setNodataValue(1.234f);
+		// printGeoRasterAndArray(grAllOutlets, allOutletsForDEM);
+		compareGeoRasterAndArray(grD8AllOutlets, allOutletsForDEM);
 	}
 }

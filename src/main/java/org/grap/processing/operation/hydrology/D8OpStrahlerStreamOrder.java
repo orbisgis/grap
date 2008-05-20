@@ -91,18 +91,18 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class StrahlerStreamOrder implements Operation {
+public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	public final static short noDataValue = (short) Float.NaN;
 	public final static short riversStartValue = Short.MAX_VALUE;
 
-	private GrapImagePlus gipSlopesDirections;
+	private GrapImagePlus gipDirection;
 	private GrapImagePlus gipSlopesAccumulations;
 	private short[] strahlerStreamOrder;
 	private int riverThreshold;
 	private int ncols;
 	private int nrows;
 
-	public StrahlerStreamOrder(final GeoRaster grSlopesAccumulations,
+	public D8OpStrahlerStreamOrder(final GeoRaster grSlopesAccumulations,
 			final int riverThreshold) throws OperationException {
 		try {
 			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
@@ -112,13 +112,12 @@ public class StrahlerStreamOrder implements Operation {
 		this.riverThreshold = riverThreshold;
 	}
 
-	public GeoRaster execute(final GeoRaster grSlopesDirections)
+	@Override
+	public GeoRaster evaluateResult(GeoRaster geoRaster)
 			throws OperationException {
 		try {
-			final long startTime = System.currentTimeMillis();
-			gipSlopesDirections = grSlopesDirections.getGrapImagePlus();
-			final RasterMetadata rasterMetadata = grSlopesDirections
-					.getMetadata();
+			gipDirection = geoRaster.getGrapImagePlus();
+			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
 			int maxStrahlerStreamOrder = computeStrahlerStreamOrders();
@@ -128,10 +127,8 @@ public class StrahlerStreamOrder implements Operation {
 			grStrahlerStreamOrder.setNodataValue(noDataValue);
 			System.out
 					.printf(
-							"Strahler stream order (max value = %d, river threshold = %d) in %d ms\n",
-							maxStrahlerStreamOrder, riverThreshold, System
-									.currentTimeMillis()
-									- startTime);
+							"Strahler stream order (max value = %d, river threshold = %d)\n",
+							maxStrahlerStreamOrder, riverThreshold);
 			return grStrahlerStreamOrder;
 		} catch (IOException e) {
 			throw new OperationException(e);
@@ -148,7 +145,7 @@ public class StrahlerStreamOrder implements Operation {
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
 				if (SlopesUtilities.isARiverStart(gipSlopesAccumulations,
-						gipSlopesDirections, riverThreshold, ncols, nrows, i)) {
+						gipDirection, riverThreshold, ncols, nrows, i)) {
 					strahlerStreamOrder[i] = riversStartValue;
 					junctionsStack.add(i);
 				} else {
@@ -210,12 +207,12 @@ public class StrahlerStreamOrder implements Operation {
 			final int rIdx, final Set<Integer> nextJunctionsStack)
 			throws IOException {
 		final Integer next = SlopesUtilities
-				.fromCellSlopeDirectionToNextCellIndex(gipSlopesDirections,
+				.fromCellSlopeDirectionToNextCellIndex(gipDirection,
 						ncols, nrows, idx, cIdx, rIdx);
 		if (null != next) {
 			final Set<Integer> contributiveArea = SlopesUtilities
 					.fromCellSlopeDirectionIdxToContributiveArea(
-							gipSlopesDirections, ncols, nrows, next);
+							gipDirection, ncols, nrows, next);
 			contributiveArea.remove(idx);
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
@@ -237,7 +234,7 @@ public class StrahlerStreamOrder implements Operation {
 		} else {
 			final Set<Integer> contributiveArea = SlopesUtilities
 					.fromCellSlopeDirectionIdxToContributiveArea(
-							gipSlopesDirections, ncols, nrows, idx);
+							gipDirection, ncols, nrows, idx);
 			final SortedMap<Short, Short> tm = new TreeMap<Short, Short>();
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;

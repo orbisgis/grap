@@ -68,6 +68,7 @@ public class AllWatershedsTest extends GrapTest {
 				.doOperation(allWatersheds);
 
 		// compare the computed watersheds with previous ones
+		printGeoRasterAndArray(grAllWatersheds, allWatershedsForDEM);
 		compareGeoRasterAndArray(grAllWatersheds, allWatershedsForDEM);
 	}
 }

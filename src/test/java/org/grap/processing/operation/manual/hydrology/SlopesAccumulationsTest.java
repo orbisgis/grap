@@ -43,7 +43,7 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.GridAccumulation;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 
 public class SlopesAccumulationsTest {
@@ -63,7 +63,7 @@ public class SlopesAccumulationsTest {
 		grSlopesDirections.save("/tmp/nousdir.asc");
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new GridAccumulation();
+		final Operation slopesAccumulations = new D8OpAccumulation();
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 

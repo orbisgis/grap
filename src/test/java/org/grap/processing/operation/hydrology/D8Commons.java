@@ -10,7 +10,6 @@ public class D8Commons extends TestCase {
 	public static String rep = "../../datatestjunit/hydrology/";
 
 	private static final double EPSILON = 1E-6;
-	private static int BORDER_WIDTH = 1;
 
 	public static boolean equals(final GeoRaster gr1, final GeoRaster gr2)
 			throws Exception {
@@ -38,9 +37,8 @@ public class D8Commons extends TestCase {
 			GrapImagePlus ip2 = gr2.getGrapImagePlus();
 
 			int cpt = 0;
-			for (int x = 0 + BORDER_WIDTH; x < gr1.getWidth() - BORDER_WIDTH; x++) {
-				for (int y = 0 + BORDER_WIDTH; y < gr1.getHeight()
-						- BORDER_WIDTH; y++) {
+			for (int x = 0; x < gr1.getWidth(); x++) {
+				for (int y = 0; y < gr1.getHeight(); y++) {
 					if (!floatingPointNumbersEquality(ip1.getPixelValue(x, y),
 							ip2.getPixelValue(x, y))) {
 						cpt++;
@@ -50,17 +48,13 @@ public class D8Commons extends TestCase {
 									x, y, ip1.getPixelValue(x, y), ip2
 											.getPixelValue(x, y), cpt);
 						}
-						if (100 == cpt) {
-							fail();
-						}
-						// return false;
 					}
 				}
 			}
 			System.out.printf("%d inegalites sur %d * %d = %d\n", cpt, rmd1
 					.getNRows(), rmd1.getNCols(), rmd1.getNRows()
 					* rmd1.getNCols());
-			return true;
+			return (cpt > 0) ? false : true;
 		}
 		return false;
 	}

@@ -43,7 +43,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.WatershedFromOutletIndex;
+import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
 
 public class WatershedFromOutletIndexTest {
 	public static void main(String[] args) throws Exception {
@@ -62,7 +62,7 @@ public class WatershedFromOutletIndexTest {
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// find the good outlet
-		final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+		final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
 				268 + 466 * 344);
 		final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 				.doOperation(watershedFromOutletIndex);

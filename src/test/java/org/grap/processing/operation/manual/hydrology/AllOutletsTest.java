@@ -42,7 +42,7 @@ package org.grap.processing.operation.manual.hydrology;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.AllOutlets;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 
 public class AllOutletsTest {
@@ -62,7 +62,7 @@ public class AllOutletsTest {
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// find all the outlets
-		final Operation allOutlets = new AllOutlets();
+		final Operation allOutlets = new D8OpAllOutlets();
 		final GeoRaster grAllOutlets = grSlopesDirections
 				.doOperation(allOutlets);
 		grAllOutlets.show();

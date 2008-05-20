@@ -1,10 +1,11 @@
-package org.grap.utilities;
+package org.grap.processing.operation.hydrology;
 
 import junit.framework.TestCase;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
+import org.grap.processing.operation.hydrology.HydrologyUtilities;
 
 public class PixelUtilitiesTest extends TestCase {
 	private static final double EPSILON = 1.0E-5;
@@ -36,20 +37,20 @@ public class PixelUtilitiesTest extends TestCase {
 			for (int j = 0; j < arrayOfDEMs.length; j++) {
 				GeoRaster grDEM = GeoRasterFactory.createGeoRaster(
 						arrayOfDEMs[j], 3, 3, arrayOfRMDs[i]);
-				PixelUtilities pixelUtilities = new PixelUtilities(grDEM);
+				HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(grDEM);
 
 				switch (j) {
 				case 0:
-					assertEquals(PixelUtilities.noDataValueForDirection, pixelUtilities
+					assertEquals(HydrologyUtilities.noDataValueForDirection, hydrologyUtilities
 							.getD8Direction(1, 1));
 					break;
 				case 1:
-					assertEquals(PixelUtilities.indecisionDirection,
-							pixelUtilities.getD8Direction(1, 1));
+					assertEquals(HydrologyUtilities.indecisionDirection,
+							hydrologyUtilities.getD8Direction(1, 1));
 					break;
 				case 2:
 				case 3:
-					assertEquals(16, pixelUtilities.getD8Direction(1, 1));
+					assertEquals(16, hydrologyUtilities.getD8Direction(1, 1));
 					break;
 				default:
 					fail();
@@ -63,25 +64,25 @@ public class PixelUtilitiesTest extends TestCase {
 			for (int j = 0; j < arrayOfDEMs.length; j++) {
 				GeoRaster grDEM = GeoRasterFactory.createGeoRaster(
 						arrayOfDEMs[j], 3, 3, arrayOfRMDs[i]);
-				PixelUtilities pixelUtilities = new PixelUtilities(grDEM);
+				HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(grDEM);
 
 				switch (j) {
 				case 0:
-					assertTrue(Float.isNaN(pixelUtilities
+					assertTrue(Float.isNaN(hydrologyUtilities
 							.getSlopeInDegrees(1, 1)));
 					break;
 				case 1:
 					assertEquals(
-							pixelUtilities.getSlopeInDegrees(1, 1), 0f);
+							hydrologyUtilities.getSlopeInDegrees(1, 1), 0f);
 					break;
 				case 2:
 				case 3:
 					if (0 == i) {
-						assertTrue(Math.abs(pixelUtilities
+						assertTrue(Math.abs(hydrologyUtilities
 								.getSlopeInDegrees(1, 1)
 								- 180 * Math.atan(5) / Math.PI) < EPSILON);
 					} else if (1 == i) {
-						assertEquals(pixelUtilities.getSlopeInDegrees(
+						assertEquals(hydrologyUtilities.getSlopeInDegrees(
 								1, 1), 45f);
 					}
 					break;

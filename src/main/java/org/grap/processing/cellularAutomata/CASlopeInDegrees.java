@@ -40,14 +40,14 @@
 package org.grap.processing.cellularAutomata;
 
 import org.grap.processing.cellularAutomata.cam.ICAFloat;
-import org.grap.utilities.PixelUtilities;
+import org.grap.processing.operation.hydrology.HydrologyUtilities;
 
 public class CASlopeInDegrees implements ICAFloat {
 	private int nrows;
 	private int ncols;
-	private PixelUtilities pixelUtilities;
+	private HydrologyUtilities pixelUtilities;
 
-	public CASlopeInDegrees(final PixelUtilities pixelUtilities,
+	public CASlopeInDegrees(final HydrologyUtilities pixelUtilities,
 			final int nrows, final int ncols) {
 		this.nrows = nrows;
 		this.ncols = ncols;

@@ -58,7 +58,7 @@ public class GrapTest extends TestCase {
 	public static short[] slopesAccumulationForDEM;
 	public static short[] allWatershedsForDEM;
 	public static short[] otherAllWatershedsForDEM;
-	public static short[] slopesDirectionForDEM;
+	public static float[] slopesDirectionForDEM;
 	public static short[] allOutletsForDEM;
 	public static short[] watershedFromOutletIndexForDEM;
 
@@ -88,18 +88,18 @@ public class GrapTest extends TestCase {
 
 		sampleDEM = GeoRasterFactory.createGeoRaster(DEM, ncols, nrows,
 				LutGenerator.colorModel("fire"), rmd);
-
-		slopesDirectionForDEM = new short[] {//
-		2, 4, 4, 4, 8, 2, 1, -1, 16, 8,// 
-				2, 4, 4, 4, 8, 1, 128, 64, 32, 16,// 
-				1, 2, 4, 8, 16, 1, 1, 64, 16, 16,// 
-				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
-				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
-				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
-				1, 1, 4, 16, 16, 1, 1, 64, 16, 16,// 
-				1, 1, 4, 16, 16, 1, 128, 64, 32, 16,// 
-				1, 2, 4, 8, 16, 128, 64, 64, 64, 32,// 
-				128, 1, -1, 16, 32, 128, 64, 64, 64, 32,// 
+		float N = Float.NaN;
+		slopesDirectionForDEM = new float[] {//
+		N, N, N, N, N, N, N, N, N, N,// 
+				N, 7, 7, 7, 6, 1, 2, 3, 4, N,// 
+				N, 8, 7, 6, 5, 1, 1, 3, 5, N,// 
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
+				N, 1, 7, 5, 5, 1, 2, 3, 4, N,// 
+				N, 8, 7, 6, 5, 2, 3, 3, 3, N,// 
+				N, N, N, N, N, N, N, N, N, N,// 
 		};
 
 		slopesAccumulationForDEM = new short[] {//
@@ -178,6 +178,21 @@ public class GrapTest extends TestCase {
 						* ncols + c]);
 			}
 		}
+
+	}
+
+	public static void compareGeoRasterAndArray(final GeoRaster geoRaster,
+			final float[] sArray) throws Exception {
+		assertTrue(geoRaster.getWidth() * geoRaster.getHeight() == sArray.length);
+		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
+		for (int r = 0; r < geoRaster.getHeight(); r++) {
+			for (int c = 0; c < geoRaster.getWidth(); c++) {
+				assertTrue((grapImagePlus.getPixelValue(c, r) == sArray[r
+						* ncols + c])
+						|| (Float.isNaN(grapImagePlus.getPixelValue(c, r)) && Float
+								.isNaN(sArray[r * ncols + c])));
+			}
+		}
 	}
 
 	public static void printGeoRasterAndArray(final GeoRaster geoRaster,
@@ -191,6 +206,22 @@ public class GrapTest extends TestCase {
 			System.out.printf("\t");
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
 				System.out.printf("%4d", sArray[r * ncols + c]);
+			}
+			System.out.println();
+		}
+	}
+
+	public static void printGeoRasterAndArray(final GeoRaster geoRaster,
+			final float[] sArray) throws Exception {
+		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
+		for (int r = 0; r < geoRaster.getHeight(); r++) {
+			System.out.printf("raw %d\t", r);
+			for (int c = 0; c < geoRaster.getWidth(); c++) {
+				System.out.printf("%4.0f", grapImagePlus.getPixelValue(c, r));
+			}
+			System.out.printf("\t");
+			for (int c = 0; c < geoRaster.getWidth(); c++) {
+				System.out.printf("%4.0f", sArray[r * ncols + c]);
 			}
 			System.out.println();
 		}

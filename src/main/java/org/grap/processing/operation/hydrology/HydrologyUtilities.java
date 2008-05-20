@@ -1,14 +1,14 @@
-package org.grap.utilities;
+package org.grap.processing.operation.hydrology;
 
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 
-public class PixelUtilities {
-	public final static short noDataValueForDirection = Short.MIN_VALUE;
+public class HydrologyUtilities {
+	public final static float noDataValueForDirection = Byte.MIN_VALUE;
 	public final static float noDataValueForAngle = Float.NaN;
 
-	public final static short indecisionDirection = -1;
+	public final static float indecisionDirection = -1;
 	public final static float indecisionAngle = 0;
 
 	private final static double FACTOR = 180 / Math.PI;
@@ -22,17 +22,24 @@ public class PixelUtilities {
 	/**
 	 * Implementation of some classical D8 analysis algorithms. D8 stands for
 	 * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
-	 *
-	 * SAGA Manual : http://www.saga-gis.uni-goettingen.de/
-	 *
-	 * 7 | 0 | 1 6 | x | 2 5 | 4 | 3
-	 *
-	 * sink and flat areas pixels are equal to -1 nodataValue pixels are equal
-	 * to Short.MIN_VALUE
+	 * 
+	 * The standard we have decided to implement is the one explained by David
+	 * G. Tarboton (Utah State University, May, 2005) in the "Terrain Analysis
+	 * Using Digital Elevation Models" (TauDEM) method.
+	 * 
+	 * 4 | 3 | 2
+	 * 
+	 * 5 | X | 1
+	 * 
+	 * 6 | 7 | 8
+	 * 
+	 * sink and flat areas pixels are equal to -1
+	 * 
+	 * nodataValue pixels are equal to Short.MIN_VALUE
 	 */
 
-	public PixelUtilities(final GeoRaster dem) throws IOException {
-		dem.open();
+	public HydrologyUtilities(final GeoRaster dem)
+			throws IOException {
 		ncols = dem.getMetadata().getNCols();
 		nrows = dem.getMetadata().getNRows();
 		pixels = dem.getGrapImagePlus().getFloatPixels();
@@ -67,50 +74,43 @@ public class PixelUtilities {
 		return result;
 	}
 
-	// private int[] neighbouringCellsIndexes(final int index) {
-	// return new int[] { index + 1, index + ncols + 1, index + ncols,
-	// index + ncols - 1, index - 1, index - ncols - 1, index - ncols,
-	// index - ncols + 1 };
-	// }
-
 	private float[] getD8DirectionAndD8Slope(final int x, final int y) {
 		final float currentElevation = getPixelValue(x, y);
 
-		if (Float.isNaN(currentElevation)) {
+		if (Float.isNaN(currentElevation)
+				|| ((0 == y) || (nrows == y + 1) || (0 == x) || (ncols == x + 1))) {
 			return new float[] { noDataValueForDirection, noDataValueForAngle };
 		} else {
-			if ((1 == x) && (1 == y)) {
-				int zz = 1;
-			}
 			final float[] ratios = new float[] {
 					(currentElevation - getPixelValue(x + 1, y))
 							* invD8Distances[0],
-					(currentElevation - getPixelValue(x + 1, y + 1))
+					(currentElevation - getPixelValue(x + 1, y - 1))
 							* invD8Distances[1],
-					(currentElevation - getPixelValue(x, y + 1))
+					(currentElevation - getPixelValue(x, y - 1))
 							* invD8Distances[2],
-					(currentElevation - getPixelValue(x - 1, y + 1))
+					(currentElevation - getPixelValue(x - 1, y - 1))
 							* invD8Distances[3],
 					(currentElevation - getPixelValue(x - 1, y))
 							* invD8Distances[4],
-					(currentElevation - getPixelValue(x - 1, y - 1))
+					(currentElevation - getPixelValue(x - 1, y + 1))
 							* invD8Distances[5],
-					(currentElevation - getPixelValue(x, y - 1))
+					(currentElevation - getPixelValue(x, y + 1))
 							* invD8Distances[6],
-					(currentElevation - getPixelValue(x + 1, y - 1))
+					(currentElevation - getPixelValue(x + 1, y + 1))
 							* invD8Distances[7] };
 			final int tmpIdx = getIdxForMaxValue(ratios);
 			if (-1 == tmpIdx) {
 				// maybe an outlet or a sink
 				return new float[] { indecisionDirection, indecisionAngle };
 			} else {
-				return new float[] { 1 << tmpIdx, ratios[tmpIdx] };
+				return new float[] { 1 + tmpIdx, ratios[tmpIdx] };
+				// return new float[] { 1 << tmpIdx, ratios[tmpIdx] };
 			}
 		}
 	}
 
-	public short getD8Direction(final int x, final int y) {
-		return (short) getD8DirectionAndD8Slope(x, y)[0];
+	public float getD8Direction(final int x, final int y) {
+		return getD8DirectionAndD8Slope(x, y)[0];
 	}
 
 	public float getSlope(final int x, final int y) {

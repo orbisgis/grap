@@ -8,7 +8,7 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public abstract class D8Operation implements Operation {
+public abstract class D8OpAbstract implements Operation {
 	public final GeoRaster execute(final GeoRaster geoRaster)
 			throws OperationException {
 		final long startTime = System.currentTimeMillis();
@@ -17,6 +17,7 @@ public abstract class D8Operation implements Operation {
 				throw new OperationException(
 						"D8Operation only handle a GRAY{8, 16 or 32} or a COLOR_256 GeoRaster image !");
 			}
+			geoRaster.open();
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}

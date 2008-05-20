@@ -43,11 +43,11 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.AllOutlets;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.AllWatersheds;
-import org.grap.processing.operation.hydrology.GridAccumulation;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.WatershedsWithThreshold;
+import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 
 public class WatershedWithThresholdTest {
 	public static void main(String[] args) throws Exception {
@@ -66,13 +66,13 @@ public class WatershedWithThresholdTest {
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new GridAccumulation();
+		final Operation slopesAccumulations = new D8OpAccumulation();
 		final GeoRaster grSlopesAccumulations = grSlopesDirections
 				.doOperation(slopesAccumulations);
 		grSlopesAccumulations.save("../../datas2tests/tmp/11.tif");
 
 		// find all the outlets
-		final Operation allOutlets = new AllOutlets();
+		final Operation allOutlets = new D8OpAllOutlets();
 		final GeoRaster grAllOutlets = grSlopesDirections
 				.doOperation(allOutlets);
 		grAllOutlets.save("../../datas2tests/tmp/111.tif");
@@ -85,7 +85,7 @@ public class WatershedWithThresholdTest {
 
 		// extract some "big" watersheds
 		final int threshold = 100;
-		final Operation watershedsWithThreshold = new WatershedsWithThreshold(
+		final Operation watershedsWithThreshold = new D8OpWatershedsWithThreshold(
 				grAllWatersheds, grAllOutlets, threshold);
 		final GeoRaster grWatershedsWithThreshold = grSlopesAccumulations
 				.doOperation(watershedsWithThreshold);

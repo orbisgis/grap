@@ -47,39 +47,40 @@ import org.grap.io.GeoreferencingTest;
 import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
-import org.grap.processing.operation.hydrology.AllOutletsTest;
-import org.grap.processing.operation.hydrology.AllWatershedsTest;
+import org.grap.processing.operation.hydrology.D8OpAccumulationTest;
+import org.grap.processing.operation.hydrology.D8OpAllOutletsTest;
+import org.grap.processing.operation.hydrology.D8OpDirectionTest;
 import org.grap.processing.operation.hydrology.D8OpSlopeTest;
-import org.grap.processing.operation.hydrology.SlopesAccumulationsTest;
-import org.grap.processing.operation.hydrology.StrahlerStreamOrderTest;
-import org.grap.processing.operation.hydrology.WatershedFromOutletIndexTest;
-import org.grap.processing.operation.hydrology.WatershedWithThresholdTest;
 
 public class AllTests extends TestSuite {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for grap");
 		// $JUnit-BEGIN$
+
 		suite.addTestSuite(BasicTest.class);
 		suite.addTestSuite(GeoreferencingTest.class);
 
-		// Solve bug ticket #3736 before un-commenting following instruction :
+		// Solve bug ticket #3736 before un-commenting following instruction
+		// :
 		// suite.addTestSuite(TransparencyTest.class);
 
 		// suite.addTestSuite(SetRangeValuesTest.class);
 
-		suite.addTestSuite(AllOutletsTest.class);
-		suite.addTestSuite(AllWatershedsTest.class);
-		suite.addTestSuite(CANImplementationsTest.class);
 		suite.addTestSuite(CropTest.class);
 		suite.addTestSuite(IdentityTest.class);
-		suite.addTestSuite(SlopesAccumulationsTest.class);
-		suite.addTestSuite(WatershedFromOutletIndexTest.class);
-		suite.addTestSuite(WatershedWithThresholdTest.class);
-		suite.addTestSuite(StrahlerStreamOrderTest.class);
-		
+
+		// suite.addTestSuite(D8OpAllOutletsTest.class);
+		suite.addTestSuite(CANImplementationsTest.class);
+		// suite.addTestSuite(AllWatershedsTest.class);
+		// suite.addTestSuite(WatershedFromOutletIndexTest.class);
+		// suite.addTestSuite(WatershedWithThresholdTest.class);
+		// suite.addTestSuite(StrahlerStreamOrderTest.class);
+
 		suite.addTestSuite(D8OpSlopeTest.class);
-		
+		suite.addTestSuite(D8OpDirectionTest.class);
+		suite.addTestSuite(D8OpAccumulationTest.class);
+
 		// $JUnit-END$
 		return suite;
 	}

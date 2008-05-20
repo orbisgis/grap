@@ -50,25 +50,13 @@ import org.grap.processing.cellularAutomata.CASlopeInRadians;
 import org.grap.processing.cellularAutomata.cam.CANFactory;
 import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAN;
-import org.grap.utilities.PixelUtilities;
 
-public class D8OpSlopeInRadians extends D8Operation implements Operation {
-	private static final boolean PARALLEL = true;
-
-	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
-			throws OperationException {
-		if (PARALLEL) {
-			return parallel(geoRaster);
-		} else {
-			return sequential(geoRaster);
-		}
-	}
-
-	private GeoRaster sequential(final GeoRaster grDEM)
-			throws OperationException {
+public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
+		Operation {
+	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
 		try {
-			final PixelUtilities pixelUtilities = new PixelUtilities(grDEM);
+			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
@@ -82,17 +70,18 @@ public class D8OpSlopeInRadians extends D8Operation implements Operation {
 
 			final GeoRaster grSlopeInRadians = GeoRasterFactory
 					.createGeoRaster(slopes, ncols, nrows, rasterMetadata);
-			grSlopeInRadians.setNodataValue(PixelUtilities.noDataValueForAngle);
+			grSlopeInRadians
+					.setNodataValue(HydrologyUtilities.noDataValueForAngle);
 			return grSlopeInRadians;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 	}
 
-	private GeoRaster parallel(final GeoRaster grDEM)
-			throws OperationException {
+	GeoRaster parallel(final GeoRaster grDEM) throws OperationException {
 		try {
-			final PixelUtilities pixelUtilities = new PixelUtilities(grDEM);
+			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
@@ -101,8 +90,12 @@ public class D8OpSlopeInRadians extends D8Operation implements Operation {
 			final ICAN ccan = CANFactory.createCAN(ca);
 			ccan.getStableState();
 
-			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
+			final GeoRaster grSlopeInRadians = GeoRasterFactory
+					.createGeoRaster((float[]) ccan.getCANValues(), ncols,
+							nrows, rasterMetadata);
+			grSlopeInRadians
+					.setNodataValue(HydrologyUtilities.noDataValueForAngle);
+			return grSlopeInRadians;
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
