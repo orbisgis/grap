@@ -42,7 +42,7 @@ package org.grap.processing.operation.hydrology;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.AllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 
 public class AllWatershedsTest extends GrapTest {
@@ -63,7 +63,7 @@ public class AllWatershedsTest extends GrapTest {
 				.doOperation(slopesDirections);
 
 		// compute all watersheds
-		final Operation allWatersheds = new AllWatersheds();
+		final Operation allWatersheds = new D8OpAllWatersheds();
 		final GeoRaster grAllWatersheds = grSlopesDirections
 				.doOperation(allWatersheds);
 

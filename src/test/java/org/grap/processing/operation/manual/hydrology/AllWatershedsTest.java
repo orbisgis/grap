@@ -43,7 +43,7 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.AllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 
 public class AllWatershedsTest {
@@ -63,7 +63,7 @@ public class AllWatershedsTest {
 		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
 
 		// compute all the watersheds
-		final Operation allWatersheds = new AllWatersheds();
+		final Operation allWatersheds = new D8OpAllWatersheds();
 		final GeoRaster grAllWatersheds = grSlopesDirections
 				.doOperation(allWatersheds);
 		grAllWatersheds.getGrapImagePlus().getProcessor().setColorModel(

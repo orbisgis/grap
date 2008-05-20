@@ -44,7 +44,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpAllOutlets;
-import org.grap.processing.operation.hydrology.AllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
 import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
@@ -78,7 +78,7 @@ public class WatershedWithThresholdTest {
 		grAllOutlets.save("../../datas2tests/tmp/111.tif");
 
 		// compute all the watersheds
-		final Operation allWatersheds = new AllWatersheds();
+		final Operation allWatersheds = new D8OpAllWatersheds();
 		final GeoRaster grAllWatersheds = grSlopesDirections
 				.doOperation(allWatersheds);
 		grAllWatersheds.save("../../datas2tests/tmp/1111.tif");

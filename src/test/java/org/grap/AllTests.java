@@ -48,7 +48,6 @@ import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
 import org.grap.processing.operation.hydrology.D8OpAccumulationTest;
-import org.grap.processing.operation.hydrology.D8OpAllOutletsTest;
 import org.grap.processing.operation.hydrology.D8OpDirectionTest;
 import org.grap.processing.operation.hydrology.D8OpSlopeTest;
 
