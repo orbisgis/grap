@@ -46,6 +46,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Shadows implements Operation {
 	private Orientations orientation;
@@ -54,7 +55,7 @@ public class Shadows implements Operation {
 		this.orientation = orientation;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster)
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			geoRaster.open();

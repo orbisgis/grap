@@ -48,6 +48,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class DivideValueOperation implements Operation {
 	private double valueToDivideBy;
@@ -56,7 +57,7 @@ public class DivideValueOperation implements Operation {
 		this.valueToDivideBy = valueToDivideBy;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster)
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			geoRaster.open();

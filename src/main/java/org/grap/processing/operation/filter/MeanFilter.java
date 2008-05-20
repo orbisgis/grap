@@ -47,6 +47,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class MeanFilter implements Operation {
 	private final static float[] KERNEL = new float[] {//
@@ -55,7 +56,7 @@ public class MeanFilter implements Operation {
 			1, 1, 1 //
 	};
 
-	public GeoRaster execute(final GeoRaster geoRaster)
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			geoRaster.open();

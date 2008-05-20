@@ -40,8 +40,20 @@
 package org.grap.processing;
 
 import org.grap.model.GeoRaster;
+import org.orbisgis.progress.IProgressMonitor;
 
 public interface Operation {
-	public GeoRaster execute(final GeoRaster geoRaster)
+	/**
+	 * Executes this operation on the specified raster
+	 *
+	 * @param geoRaster
+	 *            raster to be 'operated'
+	 * @param pm
+	 *            instance to report progress
+	 * @return The georaster result
+	 * @throws OperationException
+	 *             If the operation couldn't be executed
+	 */
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException;
 }

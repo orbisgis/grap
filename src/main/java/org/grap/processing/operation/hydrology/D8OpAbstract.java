@@ -7,9 +7,10 @@ import java.io.IOException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public abstract class D8OpAbstract implements Operation {
-	public final GeoRaster execute(final GeoRaster geoRaster)
+	public final GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		final long startTime = System.currentTimeMillis();
 		try {

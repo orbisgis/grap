@@ -53,6 +53,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class GeoRasterCalculator implements Operation {
 	public static final int ADD = 3, SUBSTRACT = 4, MULTIPLY = 5, DIVIDE = 6,
@@ -83,7 +84,7 @@ public class GeoRasterCalculator implements Operation {
 		this.method = method;
 	}
 
-	public GeoRaster execute(final GeoRaster gr1) throws OperationException {
+	public GeoRaster execute(final GeoRaster gr1, IProgressMonitor pm) throws OperationException {
 		try {
 			final GrapImagePlus img1 = gr1.getGrapImagePlus();
 			final GrapImagePlus img2 = gr2.getGrapImagePlus();

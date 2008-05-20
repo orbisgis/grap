@@ -47,6 +47,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class FillSinks implements Operation {
 
@@ -74,7 +75,7 @@ public class FillSinks implements Operation {
 		this.minSlope = minSlope;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster)
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 
 		return processAlgorithm(geoRaster, minSlope);

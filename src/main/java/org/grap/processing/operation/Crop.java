@@ -54,6 +54,7 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.utilities.EnvelopeUtil;
 import org.grap.utilities.JTSConverter;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -82,7 +83,7 @@ public class Crop implements Operation {
 		this.rectangle = rectangle;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster)
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		if (null != ring) {
 			return execute(geoRaster, ring);

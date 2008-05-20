@@ -51,6 +51,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Rasterization implements Operation {
 	private RasteringMode rasteringMode;
@@ -74,7 +75,7 @@ public class Rasterization implements Operation {
 		this.rois = rois;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster)
+	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			geoRaster.open();

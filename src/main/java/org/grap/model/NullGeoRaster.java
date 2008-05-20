@@ -45,6 +45,8 @@ import java.awt.image.ColorModel;
 import java.io.IOException;
 
 import org.grap.processing.Operation;
+import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 class NullGeoRaster implements GeoRaster {
 	static GeoRaster instance = new NullGeoRaster();
@@ -53,6 +55,11 @@ class NullGeoRaster implements GeoRaster {
 	 * We don't want instances of this class to be created by the user
 	 */
 	private NullGeoRaster() {
+	}
+
+	public GeoRaster doOperation(Operation operation, IProgressMonitor pm)
+			throws OperationException {
+		return instance;
 	}
 
 	public GeoRaster doOperation(Operation operation) {

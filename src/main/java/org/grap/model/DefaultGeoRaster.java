@@ -56,6 +56,8 @@ import org.grap.io.FileReaderFactory;
 import org.grap.io.WorldFile;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  * A GeoRaster object is composed of an ImageJ ImagePlus object and some spatial
@@ -177,7 +179,12 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public GeoRaster doOperation(final Operation operation)
 			throws OperationException {
-		return operation.execute(this);
+		return operation.execute(this, new NullProgressMonitor());
+	}
+
+	public GeoRaster doOperation(final Operation operation, IProgressMonitor pm)
+			throws OperationException {
+		return operation.execute(this, pm);
 	}
 
 	public int getType() throws IOException {

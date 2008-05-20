@@ -88,6 +88,7 @@ import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class AllWatersheds implements Operation {
 	private GrapImagePlus gipSlopesDirections;
@@ -95,7 +96,7 @@ public class AllWatersheds implements Operation {
 	private int ncols;
 	private int nrows;
 
-	public GeoRaster execute(final GeoRaster grSlopesDirections)
+	public GeoRaster execute(final GeoRaster grSlopesDirections, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			final long startTime = System.currentTimeMillis();
