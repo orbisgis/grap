@@ -106,7 +106,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 			ncols = rasterMetadata.getNCols();
 			int nbOfOutlets = accumulateSlopes();
 			final GeoRaster grAccumulation = GeoRasterFactory.createGeoRaster(
-					d8Accumulation, ncols, nrows, rasterMetadata);
+					d8Accumulation, rasterMetadata);
 			grAccumulation.setNodataValue(noDataValue);
 			System.out.printf("%d outlet(s)\n", nbOfOutlets);
 			return grAccumulation;
@@ -127,7 +127,8 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 				if ((0 == r) || (nrows == r + 1) || (0 == c)
 						|| (ncols == c + 1)) {
 					d8Accumulation[i] = noDataValue;
-				} else if (Float.isNaN(gipDirection.getProcessor().getPixelValue(c, r))) {
+				} else if (Float.isNaN(gipDirection.getProcessor()
+						.getPixelValue(c, r))) {
 					d8Accumulation[i] = noDataValue;
 				} else if (0 == d8Accumulation[i]) {
 					// current cell value has not been yet modified...

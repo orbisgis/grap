@@ -69,7 +69,7 @@ public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 			}
 
 			final GeoRaster grSlopeInRadians = GeoRasterFactory
-					.createGeoRaster(slopes, ncols, nrows, rasterMetadata);
+					.createGeoRaster(slopes, rasterMetadata);
 			grSlopeInRadians
 					.setNodataValue(HydrologyUtilities.noDataValueForAngle);
 			return grSlopeInRadians;
@@ -91,8 +91,8 @@ public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 			ccan.getStableState();
 
 			final GeoRaster grSlopeInRadians = GeoRasterFactory
-					.createGeoRaster((float[]) ccan.getCANValues(), ncols,
-							nrows, rasterMetadata);
+					.createGeoRaster((float[]) ccan.getCANValues(),
+							rasterMetadata);
 			grSlopeInRadians
 					.setNodataValue(HydrologyUtilities.noDataValueForAngle);
 			return grSlopeInRadians;

@@ -94,7 +94,8 @@ public class D8OpDirection extends D8OpAbstractMultiThreads implements
 		Operation {
 	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
+			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
@@ -107,8 +108,7 @@ public class D8OpDirection extends D8OpAbstractMultiThreads implements
 			}
 
 			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections, ncols, nrows,
-							rasterMetadata);
+					.createGeoRaster(slopesDirections, rasterMetadata);
 			grSlopesDirections
 					.setNodataValue(HydrologyUtilities.noDataValueForDirection);
 			return grSlopesDirections;
@@ -119,7 +119,8 @@ public class D8OpDirection extends D8OpAbstractMultiThreads implements
 
 	GeoRaster parallel(final GeoRaster grDEM) throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(grDEM);
+			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
@@ -129,7 +130,7 @@ public class D8OpDirection extends D8OpAbstractMultiThreads implements
 			ccan.getStableState();
 
 			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
+					.getCANValues(), rasterMetadata);
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}

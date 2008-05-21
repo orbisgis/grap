@@ -125,8 +125,7 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 			ncols = rasterMetadata.getNCols();
 			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold();
 			final GeoRaster grWatershedsWithThreshold = GeoRasterFactory
-					.createGeoRaster(watershedsWithThreshold, ncols, nrows,
-							rasterMetadata);
+					.createGeoRaster(watershedsWithThreshold, rasterMetadata);
 			grWatershedsWithThreshold.setNodataValue(noDataValue);
 			System.out.printf("%d watersheds (outlet's threshold = %d)\n",
 					nbOfWatershedsWithThreshold, threshold);

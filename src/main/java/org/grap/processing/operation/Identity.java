@@ -66,7 +66,7 @@ public class Identity implements Operation {
 			ccan.getStableState();
 
 			return GeoRasterFactory.createGeoRaster((float[]) ccan
-					.getCANValues(), ncols, nrows, rasterMetadata);
+					.getCANValues(), rasterMetadata);
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}

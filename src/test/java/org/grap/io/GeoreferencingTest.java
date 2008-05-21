@@ -65,8 +65,7 @@ public class GeoreferencingTest extends TestCase {
 
 		final RasterMetadata rmd = new RasterMetadata(upperLeftX, upperLeftY,
 				pixelSize_X, pixelSize_Y, ncols, nrows);
-		sampleRaster = GeoRasterFactory.createGeoRaster(values, ncols, nrows,
-				rmd);
+		sampleRaster = GeoRasterFactory.createGeoRaster(values, rmd);
 	}
 
 	public void testToPixel() throws Exception {
@@ -83,9 +82,8 @@ public class GeoreferencingTest extends TestCase {
 				final double x = md.getXulcorner() + c * md.getPixelSize_X();
 				for (float aleaR = -halfPixelSize_Y + deltaX; aleaR <= halfPixelSize_Y; aleaR += deltaX) {
 					for (float aleaC = -halfPixelSize_X + deltaY; aleaC < halfPixelSize_X; aleaC += deltaY) {
-						final Point2D p = sampleRaster
-								.fromRealWorldToPixel(x + aleaC,
-										y + aleaR);
+						final Point2D p = sampleRaster.fromRealWorldToPixel(x
+								+ aleaC, y + aleaR);
 						assertTrue(c == p.getX());
 						assertTrue(r == p.getY());
 					}
@@ -101,8 +99,7 @@ public class GeoreferencingTest extends TestCase {
 			final double y = md.getYulcorner() + r * md.getPixelSize_Y();
 			for (int c = 0; c < md.getNCols(); c++) {
 				final double x = md.getXulcorner() + c * md.getPixelSize_X();
-				final Point2D p = sampleRaster
-						.fromPixelToRealWorld(c, r);
+				final Point2D p = sampleRaster.fromPixelToRealWorld(c, r);
 				assertTrue(x == p.getX());
 				assertTrue(y == p.getY());
 			}

@@ -108,7 +108,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 			ncols = rasterMetadata.getNCols();
 			int nbOfOutlets = computeAllOutlets();
 			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
-					outlets, ncols, nrows, rasterMetadata);
+					outlets, rasterMetadata);
 			grAllOutlets.setNodataValue(noDataValue);
 			System.out.printf("%d outlets\n", nbOfOutlets);
 			return grAllOutlets;

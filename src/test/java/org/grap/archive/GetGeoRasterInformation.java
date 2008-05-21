@@ -61,13 +61,13 @@ public class GetGeoRasterInformation {
 		} else {
 			final String className = object.getClass().getSimpleName();
 			if (className.equals("byte[]")) {
-				gr = GeoRasterFactory.createGeoRaster((byte[]) object, 0, 0,
+				gr = GeoRasterFactory.createGeoRaster((byte[]) object,
 						new RasterMetadata(0.5, 0.5, 1, -1, 0, 0));
 			} else if (className.equals("short[]")) {
-				gr = GeoRasterFactory.createGeoRaster((short[]) object, 0, 0,
+				gr = GeoRasterFactory.createGeoRaster((short[]) object,
 						new RasterMetadata(0.5, 0.5, 1, -1, 0, 0));
 			} else if (className.equals("float[]")) {
-				gr = GeoRasterFactory.createGeoRaster((float[]) object, 0, 0,
+				gr = GeoRasterFactory.createGeoRaster((float[]) object,
 						new RasterMetadata(0.5, 0.5, 1, -1, 0, 0));
 			}
 		}

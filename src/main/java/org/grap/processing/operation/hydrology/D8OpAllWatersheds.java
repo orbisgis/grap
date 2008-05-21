@@ -106,7 +106,7 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 			ncols = rasterMetadata.getNCols();
 			int nbOfWatersheds = computeAllWatersheds();
 			final GeoRaster grAllWatersheds = GeoRasterFactory.createGeoRaster(
-					watersheds, ncols, nrows, rasterMetadata);
+					watersheds, rasterMetadata);
 			grAllWatersheds.setNodataValue(Float.NaN);
 			return grAllWatersheds;
 		} catch (IOException e) {

@@ -123,8 +123,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 			ncols = rasterMetadata.getNCols();
 			int maxStrahlerStreamOrder = computeStrahlerStreamOrders();
 			final GeoRaster grStrahlerStreamOrder = GeoRasterFactory
-					.createGeoRaster(strahlerStreamOrder, ncols, nrows,
-							rasterMetadata);
+					.createGeoRaster(strahlerStreamOrder, rasterMetadata);
 			grStrahlerStreamOrder.setNodataValue(noDataValue);
 			System.out
 					.printf(

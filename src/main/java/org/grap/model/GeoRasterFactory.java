@@ -63,9 +63,9 @@ public class GeoRasterFactory {
 	}
 
 	public static GeoRaster createGeoRaster(final String fileName,
-			final GeoProcessorType geoProcessorType, float pixelsize) throws FileNotFoundException, IOException {
-		return new DefaultGeoRaster(fileName, geoProcessorType,
-				pixelsize);
+			final GeoProcessorType geoProcessorType, float pixelsize)
+			throws FileNotFoundException, IOException {
+		return new DefaultGeoRaster(fileName, geoProcessorType, pixelsize);
 	}
 
 	public static GeoRaster createNullGeoRaster() {
@@ -73,23 +73,23 @@ public class GeoRasterFactory {
 	}
 
 	public static GeoRaster createGeoRaster(final byte[] pixels,
-			final int ncols, final int nrows, final ColorModel cm,
-			final RasterMetadata rasterMetadata) {
-		final ImageProcessor ip = new ByteProcessor(ncols, nrows, pixels, cm);
+			final ColorModel cm, final RasterMetadata rasterMetadata) {
+		final ImageProcessor ip = new ByteProcessor(rasterMetadata.getNCols(),
+				rasterMetadata.getNRows(), pixels, cm);
 		return createGeoRaster(ip, rasterMetadata);
 	}
 
 	public static GeoRaster createGeoRaster(final float[] pixels,
-			final int ncols, final int nrows, final ColorModel cm,
-			final RasterMetadata rasterMetadata) {
-		final ImageProcessor ip = new FloatProcessor(ncols, nrows, pixels, cm);
+			final ColorModel cm, final RasterMetadata rasterMetadata) {
+		final ImageProcessor ip = new FloatProcessor(rasterMetadata.getNCols(),
+				rasterMetadata.getNRows(), pixels, cm);
 		return createGeoRaster(ip, rasterMetadata);
 	}
 
 	public static GeoRaster createGeoRaster(final short[] pixels,
-			final int ncols, final int nrows, final ColorModel cm,
-			final RasterMetadata rasterMetadata) {
-		final ImageProcessor ip = new ShortProcessor(ncols, nrows, pixels, cm);
+			final ColorModel cm, final RasterMetadata rasterMetadata) {
+		final ImageProcessor ip = new ShortProcessor(rasterMetadata.getNCols(),
+				rasterMetadata.getNRows(), pixels, cm);
 		return createGeoRaster(ip, rasterMetadata);
 	}
 
@@ -106,20 +106,17 @@ public class GeoRasterFactory {
 	}
 
 	public static GeoRaster createGeoRaster(final byte[] pixels,
-			final int ncols, final int nrows,
 			final RasterMetadata rasterMetadata) {
-		return createGeoRaster(pixels, ncols, nrows, null, rasterMetadata);
+		return createGeoRaster(pixels, null, rasterMetadata);
 	}
 
 	public static GeoRaster createGeoRaster(final short[] pixels,
-			final int ncols, final int nrows,
 			final RasterMetadata rasterMetadata) {
-		return createGeoRaster(pixels, ncols, nrows, null, rasterMetadata);
+		return createGeoRaster(pixels, null, rasterMetadata);
 	}
 
 	public static GeoRaster createGeoRaster(final float[] pixels,
-			final int ncols, final int nrows,
 			final RasterMetadata rasterMetadata) {
-		return createGeoRaster(pixels, ncols, nrows, null, rasterMetadata);
+		return createGeoRaster(pixels, null, rasterMetadata);
 	}
 }

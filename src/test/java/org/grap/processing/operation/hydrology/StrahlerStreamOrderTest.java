@@ -57,7 +57,7 @@ public class StrahlerStreamOrderTest extends GrapTest {
 		super.setUp();
 
 		slopesDirections[0] = new short[] {//
-				2, 0, 0, 0, 0, 0, 0, 4, 0, 8,//
+		2, 0, 0, 0, 0, 0, 0, 4, 0, 8,//
 				0, 2, 0, 0, 0, 0, 0, 4, 8, 0,//
 				0, 0, 2, 0, 0, 0, 0, 8, 16, 16,//
 				1, 1, 1, 2, 0, 0, 8, 0, 0, 0,//
@@ -165,8 +165,7 @@ public class StrahlerStreamOrderTest extends GrapTest {
 	public void testStrahlerStreamOrder() throws Exception {
 		for (int i = 0; i < strahlerStreamOrder.length; i++) {
 			final GeoRaster grSlopesDirections = GeoRasterFactory
-					.createGeoRaster(slopesDirections[i], ncols, nrows,
-							rasterMetadata);
+					.createGeoRaster(slopesDirections[i], rasterMetadata);
 
 			// compute the slopes accumulations
 			final Operation slopesAccumulations = new D8OpAccumulation();

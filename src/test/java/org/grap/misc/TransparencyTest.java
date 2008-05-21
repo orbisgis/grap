@@ -44,8 +44,8 @@ public class TransparencyTest extends AbstractTransparencyTest {
 		final int nrows = 3;
 		final float noDataValue = Float.NaN;
 		final GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] {
-				noDataValue, 1, -2, 3, -4, 5, -6, 7, -8 }, ncols, nrows,
-				new RasterMetadata(0.5, 0.5, 1, -1, ncols, nrows));
+				noDataValue, 1, -2, 3, -4, 5, -6, 7, -8 }, new RasterMetadata(
+				0.5, 0.5, 1, -1, ncols, nrows));
 		gr.open();
 
 		final int width = gr.getWidth();
@@ -76,8 +76,8 @@ public class TransparencyTest extends AbstractTransparencyTest {
 
 		for (float noDataValue : new float[] { Float.NaN, -9999, 0, 9999 }) {
 			final GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] {
-					noDataValue, 143 }, ncols, nrows, new RasterMetadata(0.5,
-					0.5, 1, -1, ncols, nrows));
+					noDataValue, 143 }, new RasterMetadata(0.5, 0.5, 1, -1,
+					ncols, nrows));
 			gr.open();
 			gr.setNodataValue(noDataValue);
 

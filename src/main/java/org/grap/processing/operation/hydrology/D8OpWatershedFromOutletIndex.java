@@ -115,7 +115,7 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operat
 			ncols = rasterMetadata.getNCols();
 			computeSameWatershed();
 			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
-					sameWatershed, ncols, nrows, rasterMetadata);
+					sameWatershed, rasterMetadata);
 			grAllOutlets.setNodataValue(noDataValue);
 			System.out.printf("Watershed for (%d,%d)\n", outletIdx % ncols,
 					outletIdx / ncols);
