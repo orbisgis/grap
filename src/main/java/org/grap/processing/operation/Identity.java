@@ -59,8 +59,7 @@ public class Identity implements Operation {
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
-			final float[] pixels = geoRaster.getGrapImagePlus()
-					.getFloatPixels();
+			final float[] pixels = geoRaster.getFloatPixels();
 
 			final ICA ca = new CAFIdentity(pixels, nrows, ncols);
 			final ICAN ccan = CANFactory.createCAN(ca);

@@ -18,7 +18,7 @@ public class TransparencyTest extends AbstractTransparencyTest {
 
 		// new ImagePlus("", bi).show();
 
-		final float[] pixels = (float[]) gr.getGrapImagePlus().getPixels();
+		final float[] pixels = gr.getFloatPixels();
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (Float.isNaN(pixels[i])) {
@@ -54,8 +54,8 @@ public class TransparencyTest extends AbstractTransparencyTest {
 
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
-				final float pixelValue = gr.getGrapImagePlus().getPixelValue(x,
-						y);
+				final float pixelValue = gr.getImagePlus().getProcessor()
+						.getPixelValue(x, y);
 				final int pixelColor = bi.getRGB(x, y);
 				System.out.printf("%x (%g) ", pixelColor, pixelValue);
 				if (Float.isNaN(pixelValue)) {
@@ -82,7 +82,8 @@ public class TransparencyTest extends AbstractTransparencyTest {
 			gr.setNodataValue(noDataValue);
 
 			final BufferedImage bi = overlapRedBackGroundWithAGeoRaster(gr);
-			final float pixelValue = gr.getGrapImagePlus().getPixelValue(0, 0);
+			final float pixelValue = gr.getImagePlus().getProcessor()
+					.getPixelValue(0, 0);
 			final int pixelColor = bi.getRGB(0, 0);
 			System.out.printf("%x (%g)\n", pixelColor, pixelValue);
 			assertTrue(Float.isNaN(pixelValue));

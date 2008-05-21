@@ -62,7 +62,7 @@ public class ContrastFilter implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 			imagePlus.getProcessor().convolve(KERNEL, 5, 5);
 
 			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster

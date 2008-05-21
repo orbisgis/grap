@@ -24,7 +24,7 @@ public class ExtractRGBBand {
 	public void extractBands() throws OperationException {
 		try {
 			if (geoRaster.getType() == ImagePlus.COLOR_RGB) {
-				final ImageStack rgb = geoRaster.getGrapImagePlus().getStack();
+				final ImageStack rgb = geoRaster.getImagePlus().getStack();
 				final int w = rgb.getWidth();
 				final int h = rgb.getHeight();
 				red = new ImageStack(w, h);

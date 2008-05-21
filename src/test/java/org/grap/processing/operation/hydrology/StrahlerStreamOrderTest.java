@@ -44,8 +44,6 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.D8OpAccumulation;
-import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class StrahlerStreamOrderTest extends GrapTest {
 	private RasterMetadata rasterMetadata = new RasterMetadata(0, 15, 1, -1,

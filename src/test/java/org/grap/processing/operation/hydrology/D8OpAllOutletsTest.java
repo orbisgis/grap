@@ -42,8 +42,6 @@ package org.grap.processing.operation.hydrology;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.D8OpAllOutlets;
-import org.grap.processing.operation.hydrology.D8OpDirection;
 
 public class D8OpAllOutletsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;

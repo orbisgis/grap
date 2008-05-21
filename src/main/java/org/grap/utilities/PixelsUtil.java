@@ -1,10 +1,11 @@
 package org.grap.utilities;
 
+import ij.ImagePlus;
+
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -15,7 +16,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 public class PixelsUtil {
 
 	private GeoRaster geoRaster;
-	private GrapImagePlus grapImagePlus;
+	private ImagePlus grapImagePlus;
 	private double _2DX;
 	private double _6DX;
 	private float _DX_2;
@@ -35,7 +36,7 @@ public class PixelsUtil {
 
 	public PixelsUtil(final GeoRaster geoRaster) throws IOException {
 		this.geoRaster = geoRaster;
-		grapImagePlus = geoRaster.getGrapImagePlus();
+		grapImagePlus = geoRaster.getImagePlus();
 
 		rasterMedata = geoRaster.getMetadata();
 		setConstants();
@@ -45,7 +46,7 @@ public class PixelsUtil {
 		final Coordinate[] realWorldCoords = lineString.getCoordinates();
 		final Coordinate[] pixelGridCoords = new Coordinate[realWorldCoords.length];
 		for (int i = 0; i < pixelGridCoords.length; i++) {
-			final Point2D p = geoRaster.fromRealWorldCoordToPixelGridCoord(
+			final Point2D p = geoRaster.fromRealWorldToPixel(
 					realWorldCoords[i].x, realWorldCoords[i].y);
 			pixelGridCoords[i] = new Coordinate(p.getX(), p.getY());
 		}
@@ -70,35 +71,31 @@ public class PixelsUtil {
 		float z, z2;
 
 		boolean result = false;
-		try {
-			z = grapImagePlus.getPixelValue(x, y);
+		z = grapImagePlus.getProcessor().getPixelValue(x, y);
 
-			if (Float.isNaN(z)) {
-			} else {
-				// SubMatrix[4] = 0.0;
-				for (i = 0; i < 4; i++) {
+		if (Float.isNaN(z)) {
+		} else {
+			// SubMatrix[4] = 0.0;
+			for (i = 0; i < 4; i++) {
 
-					iDir = 2 * i;
-					z2 = grapImagePlus.getPixelValue(x + m_iOffsetX[iDir], y
-							+ m_iOffsetY[iDir]);
+				iDir = 2 * i;
+				z2 = grapImagePlus.getProcessor().getPixelValue(
+						x + m_iOffsetX[iDir], y + m_iOffsetY[iDir]);
+				if (!Float.isNaN(z2)) {
+					SubMatrix[i] = z2 - z;
+				} else {
+					z2 = grapImagePlus.getProcessor().getPixelValue(
+							x + m_iOffsetX[(iDir + 4) % 8],
+							y + m_iOffsetY[(iDir + 4) % 8]);
 					if (!Float.isNaN(z2)) {
-						SubMatrix[i] = z2 - z;
+						SubMatrix[i] = z - z2;
 					} else {
-						z2 = grapImagePlus.getPixelValue(x
-								+ m_iOffsetX[(iDir + 4) % 8], y
-								+ m_iOffsetY[(iDir + 4) % 8]);
-						if (!Float.isNaN(z2)) {
-							SubMatrix[i] = z - z2;
-						} else {
-							SubMatrix[i] = 0.0;
-						}
+						SubMatrix[i] = 0.0;
 					}
 				}
-
-				result = true;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+
+			result = true;
 		}
 		return result;
 
@@ -166,34 +163,30 @@ public class PixelsUtil {
 		double dSlope, dMaxSlope = 0;
 		double z, z2;
 
-		try {
-			z = grapImagePlus.getPixelValue(x, y);
+		z = grapImagePlus.getProcessor().getPixelValue(x, y);
 
-			if (Double.isNaN(z)) {
-				return -1;
+		if (Double.isNaN(z)) {
+			return -1;
+		}
+		for (i = 0; i < 8; i++) {
+
+			int xi = x + m_iOffsetY[i];
+			int yi = y + m_iOffsetX[i];
+
+			if ((xi < 0) || (yi < 0)) {
+				z2 = Double.NaN;
+			} else if ((xi > rasterMedata.getNCols() - 1)
+					|| (yi > rasterMedata.getNRows() - 1)) {
+				z2 = Double.NaN;
+			} else {
+				z2 = grapImagePlus.getProcessor().getPixelValue(xi, yi);
 			}
-			for (i = 0; i < 8; i++) {
-
-				int xi = x + m_iOffsetY[i];
-				int yi = y + m_iOffsetX[i];
-
-				if ((xi < 0) || (yi < 0)) {
-					z2 = Double.NaN;
-				} else if ((xi > rasterMedata.getNCols() - 1)
-						|| (yi > rasterMedata.getNRows() - 1)) {
-					z2 = Double.NaN;
-				} else {
-					z2 = grapImagePlus.getPixelValue(xi, yi);
-				}
-				dSlope = (z - z2) / getDistToNeighborInDir(i);
-				if (dSlope > dMaxSlope) {
-					iDir = i;
-					dMaxSlope = dSlope;
-				}
-
+			dSlope = (z - z2) / getDistToNeighborInDir(i);
+			if (dSlope > dMaxSlope) {
+				iDir = i;
+				dMaxSlope = dSlope;
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 
 		if (dMaxSlope > 0) {

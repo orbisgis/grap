@@ -23,7 +23,7 @@ public class SetRangeValuesTest extends AbstractTransparencyTest {
 
 		new ImagePlus("", bi).show();
 
-		final float[] pixels = (float[]) gr.getGrapImagePlus().getPixels();
+		final float[] pixels = gr.getFloatPixels();
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (Float.isNaN(pixels[i]) || (pixels[i] < min)
@@ -56,7 +56,7 @@ public class SetRangeValuesTest extends AbstractTransparencyTest {
 
 		new ImagePlus("", bi).show();
 
-		final byte[] pixels = (byte[]) gr.getGrapImagePlus().getPixels();
+		final byte[] pixels = gr.getBytePixels();
 		for (int y = 0, i = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				if (Float.isNaN(pixels[i]) || (pixels[i] < min)

@@ -78,13 +78,14 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -93,7 +94,7 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operat
 	public final static byte noDataValue = 0;
 	public final static byte belongsToTheWatershed = 1;
 
-	private GrapImagePlus ppSlopesDirections;
+	private ImagePlus ppSlopesDirections;
 	private byte[] sameWatershed;
 	private int ncols;
 	private int nrows;
@@ -108,7 +109,7 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operat
 	public GeoRaster evaluateResult(GeoRaster geoRaster)
 			throws OperationException {
 		try {
-			ppSlopesDirections = geoRaster.getGrapImagePlus();
+			ppSlopesDirections = geoRaster.getImagePlus();
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();

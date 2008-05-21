@@ -39,6 +39,8 @@
  */
 package org.grap.processing.operation;
 
+import ij.ImagePlus;
+
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
@@ -46,7 +48,6 @@ import java.io.IOException;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.utilities.EnvelopeUtil;
 
@@ -83,10 +84,10 @@ public class CropTest extends GrapTest {
 		assertTrue(geoRasterDst.getWidth() > 0);
 		assertTrue(geoRasterDst.getHeight() > 0);
 
-		final GrapImagePlus srcGrapImagePlus = geoRasterSrc.getGrapImagePlus();
-		final GrapImagePlus dstGrapImagePlus = geoRasterDst.getGrapImagePlus();
-		checkCrop(geoRasterDst.getMetadata().getEnvelope(), srcGrapImagePlus,
-				dstGrapImagePlus);
+		final ImagePlus srcImagePlus = geoRasterSrc.getImagePlus();
+		final ImagePlus dstImagePlus = geoRasterDst.getImagePlus();
+		checkCrop(geoRasterDst.getMetadata().getEnvelope(), srcImagePlus,
+				dstImagePlus);
 	}
 
 	public void testCropPolygonOutside() throws Exception {
@@ -135,8 +136,8 @@ public class CropTest extends GrapTest {
 		assertTrue(geoRasterDst.getWidth() > 0);
 		assertTrue(geoRasterDst.getHeight() > 0);
 
-		final GrapImagePlus srcGrapImagePlus = geoRasterSrc.getGrapImagePlus();
-		final GrapImagePlus dstGrapImagePlus = geoRasterDst.getGrapImagePlus();
+		final ImagePlus srcImagePlus = geoRasterSrc.getImagePlus();
+		final ImagePlus dstImagePlus = geoRasterDst.getImagePlus();
 		RasterMetadata dstMetadata = geoRasterDst.getMetadata();
 		RasterMetadata srcMetadata = geoRasterSrc.getMetadata();
 		assertTrue(dstMetadata.getEnvelope().getMinX() < cropRectangle
@@ -149,13 +150,13 @@ public class CropTest extends GrapTest {
 				.getMaxY());
 		assertTrue(dstMetadata.getEnvelope().getWidth() < srcMetadata
 				.getEnvelope().getWidth());
-		checkCrop(geoRasterDst.getMetadata().getEnvelope(), srcGrapImagePlus,
-				dstGrapImagePlus);
+		checkCrop(geoRasterDst.getMetadata().getEnvelope(), srcImagePlus,
+				dstImagePlus);
 	}
 
 	private void checkCrop(final Envelope envelope,
-			final GrapImagePlus srcPixelProvider,
-			final GrapImagePlus dstPixelProvider) throws IOException {
+			final ImagePlus srcPixelProvider, final ImagePlus dstPixelProvider)
+			throws IOException {
 		// check metadata
 		final RasterMetadata dstMetadata = geoRasterDst.getMetadata();
 		final float pixelSize_X = dstMetadata.getPixelSize_X();
@@ -184,13 +185,15 @@ public class CropTest extends GrapTest {
 			for (double x = envelope.getMinX() + halfPixelSize_X; x < envelope
 					.getMaxX(); x = x + 1) {
 				final Point2D srcPixel = geoRasterSrc
-						.fromRealWorldCoordToPixelGridCoord(x, y);
+						.fromRealWorldToPixel(x, y);
 				final Point2D dstPixel = geoRasterDst
-						.fromRealWorldCoordToPixelGridCoord(x, y);
-				final float srcPixelValue = srcPixelProvider.getPixelValue(
-						(int) srcPixel.getX(), (int) srcPixel.getY());
-				final float dstPixelValue = dstPixelProvider.getPixelValue(
-						(int) dstPixel.getX(), (int) dstPixel.getY());
+						.fromRealWorldToPixel(x, y);
+				final float srcPixelValue = srcPixelProvider.getProcessor()
+						.getPixelValue((int) srcPixel.getX(),
+								(int) srcPixel.getY());
+				final float dstPixelValue = dstPixelProvider.getProcessor()
+						.getPixelValue((int) dstPixel.getX(),
+								(int) dstPixel.getY());
 				if (Float.isNaN(srcPixelValue)) {
 					assertTrue(Float.isNaN(dstPixelValue));
 				} else {

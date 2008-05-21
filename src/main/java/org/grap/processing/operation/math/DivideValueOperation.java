@@ -61,7 +61,7 @@ public class DivideValueOperation implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 			imagePlus.getProcessor().multiply(1.0 / valueToDivideBy);
 
 			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster

@@ -78,7 +78,7 @@ public class StrahlerStreamOrderTest {
 		final GeoRaster grStrahlerStreamOrder = grSlopesDirections
 				.doOperation(strahlerStreamOrder);
 
-		grStrahlerStreamOrder.getGrapImagePlus().getProcessor().setColorModel(
+		grStrahlerStreamOrder.getImagePlus().getProcessor().setColorModel(
 				LutGenerator.colorModel("fire"));
 		grStrahlerStreamOrder.show();
 		grStrahlerStreamOrder.save("../../datas2tests/tmp/2.tif");

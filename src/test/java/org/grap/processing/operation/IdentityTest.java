@@ -53,9 +53,9 @@ public class IdentityTest extends GrapTest {
 
 		final Operation identity = new Identity();
 		final GeoRaster identityResult = geoRasterSrc.doOperation(identity);
-		float[] pixels = geoRasterSrc.getGrapImagePlus().getFloatPixels();
+		float[] pixels = geoRasterSrc.getFloatPixels();
 		identityResult.setNodataValue(0);
-		float[] pixels2 = identityResult.getGrapImagePlus().getFloatPixels();
+		float[] pixels2 = identityResult.getFloatPixels();
 		assertTrue(equals(pixels, pixels2));
 	}
 }

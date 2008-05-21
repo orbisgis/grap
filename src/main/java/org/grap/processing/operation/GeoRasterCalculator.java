@@ -50,7 +50,6 @@ import java.util.Map;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
@@ -86,8 +85,8 @@ public class GeoRasterCalculator implements Operation {
 
 	public GeoRaster execute(final GeoRaster gr1, IProgressMonitor pm) throws OperationException {
 		try {
-			final GrapImagePlus img1 = gr1.getGrapImagePlus();
-			final GrapImagePlus img2 = gr2.getGrapImagePlus();
+			final ImagePlus img1 = gr1.getImagePlus();
+			final ImagePlus img2 = gr2.getImagePlus();
 
 			if (gr1.getMetadata().getEnvelope().equals(
 					gr2.getMetadata().getEnvelope())) {

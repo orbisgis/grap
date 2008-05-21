@@ -1,9 +1,9 @@
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
 import junit.framework.TestCase;
 
 import org.grap.model.GeoRaster;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public class D8Commons extends TestCase {
@@ -33,20 +33,24 @@ public class D8Commons extends TestCase {
 				&& (rmd1.getRotation_Y() == rmd2.getRotation_Y())
 		// && (rmd1.getNoDataValue() == rmd2.getNoDataValue())
 		) {
-			GrapImagePlus ip1 = gr1.getGrapImagePlus();
-			GrapImagePlus ip2 = gr2.getGrapImagePlus();
+			ImagePlus ip1 = gr1.getImagePlus();
+			ImagePlus ip2 = gr2.getImagePlus();
 
 			int cpt = 0;
 			for (int x = 0; x < gr1.getWidth(); x++) {
 				for (int y = 0; y < gr1.getHeight(); y++) {
-					if (!floatingPointNumbersEquality(ip1.getPixelValue(x, y),
-							ip2.getPixelValue(x, y))) {
+					if (!floatingPointNumbersEquality(ip1.getProcessor()
+							.getPixelValue(x, y), ip2.getProcessor()
+							.getPixelValue(x, y))) {
 						cpt++;
 						if (flag) {
-							System.out.printf(
-									"[x = %d, y = %d] %g != %g (cpt = %d)\n",
-									x, y, ip1.getPixelValue(x, y), ip2
-											.getPixelValue(x, y), cpt);
+							System.out
+									.printf(
+											"[x = %d, y = %d] %g != %g (cpt = %d)\n",
+											x, y, ip1.getProcessor()
+													.getPixelValue(x, y), ip2
+													.getProcessor()
+													.getPixelValue(x, y), cpt);
 						}
 					}
 				}

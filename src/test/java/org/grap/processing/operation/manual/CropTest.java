@@ -62,7 +62,7 @@ public class CropTest {
 
 		System.out.println("Cropping envelope : " + polygon.toText());
 
-		geoRaster.getGrapImagePlus().setRoi(new Rectangle(1000, 1000));
+		geoRaster.getImagePlus().setRoi(new Rectangle(1000, 1000));
 
 		Crop crop = new Crop((LinearRing) polygon);
 		GeoRaster result = geoRaster.doOperation(crop);

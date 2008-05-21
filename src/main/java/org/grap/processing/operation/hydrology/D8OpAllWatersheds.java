@@ -78,19 +78,20 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
-	private GrapImagePlus gipSlopesDirections;
+	private ImagePlus gipSlopesDirections;
 	private float[] watersheds;
 	private int ncols;
 	private int nrows;
@@ -99,7 +100,7 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 	public GeoRaster evaluateResult(GeoRaster geoRaster)
 			throws OperationException {
 		try {
-			gipSlopesDirections = geoRaster.getGrapImagePlus();
+			gipSlopesDirections = geoRaster.getImagePlus();
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
@@ -120,7 +121,8 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
+				if (Float.isNaN(gipSlopesDirections.getProcessor()
+						.getPixelValue(c, r))) {
 					watersheds[i] = Float.NaN;
 				} else if (0 == watersheds[i]) {
 					// current cell value has not been yet modified...
@@ -145,7 +147,8 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
-			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
+			if (Float.isNaN(gipSlopesDirections.getProcessor().getPixelValue(c,
+					r))) {
 				return null;
 			} else {
 				if (0 == watersheds[curCellIdx]) {

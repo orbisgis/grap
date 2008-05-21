@@ -40,16 +40,18 @@
 package org.grap.model;
 
 import ij.ImagePlus;
-import ij.WindowManager;
 import ij.io.FileSaver;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.MemoryImageSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.grap.io.EsriGRIDWriter;
 import org.grap.io.FileReader;
 import org.grap.io.FileReaderFactory;
@@ -64,22 +66,29 @@ import org.orbisgis.progress.NullProgressMonitor;
  * fields such as : a projection system, an envelop, a pixel size...
  */
 public class DefaultGeoRaster implements GeoRaster {
+
+	private static Logger logger = Logger.getLogger(DefaultGeoRaster.class
+			.getName());
+
 	private RasterMetadata rasterMetadata;
 	private FileReader fileReader;
-	private CachedValues cachedValues;
-	private GrapImagePlus cachedGrapImagePlus;
+	private ImagePlus cachedImagePlus;
+	private double maxThreshold = Double.NaN;
+	private double minThreshold = Double.NaN;
+	private float noDataValue = Float.NaN;
 
-	// internal class
-	private class CachedValues {
-		private Double maxThreshold;
-		private Double minThreshold;
-		private int type;
-		private double min;
-		private double max;
-		private int width;
-		private int height;
-		public ColorModel colorModel;
-	}
+	private Integer cachedType = null;
+	/**
+	 * Minimum valid value (inclusive)
+	 */
+	private Double cachedMin = null;
+	/**
+	 * Maximum valid value (inclusive)
+	 */
+	private Double cachedMax = null;
+	private Integer cachedWidth = null;
+	private Integer cachedHeight = null;
+	private ColorModel cachedColorModel = null;
 
 	// constructors
 	DefaultGeoRaster(final String fileName) throws FileNotFoundException,
@@ -101,14 +110,16 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	DefaultGeoRaster(final ImagePlus imagePlus, final RasterMetadata metadata) {
-		cachedGrapImagePlus = new GrapImagePlus("", imagePlus.getProcessor());
+		cachedImagePlus = imagePlus;
 		this.rasterMetadata = metadata;
 	}
 
 	// public methods
 	public void open() throws IOException {
+		logger.debug("Opening raster");
 		if (null != fileReader) {
 			rasterMetadata = fileReader.readRasterMetadata();
+			noDataValue = getMetadata().getNoDataValue();
 		} else {
 			// Ignore open for results in memory
 		}
@@ -120,20 +131,22 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public void setRangeValues(final double min, final double max)
 			throws IOException {
-		getCachedValues(null).minThreshold = min;
-		getCachedValues(null).maxThreshold = max;
+		minThreshold = min;
+		maxThreshold = max;
+		resetMinAndMax();
 	}
 
-	public void setNodataValue(final float value) {
-		rasterMetadata.setNoData(value);
+	public void setNodataValue(final float value) throws IOException {
+		noDataValue = value;
+		resetMinAndMax();
 	}
 
-	public Point2D fromPixelGridCoordToRealWorldCoord(final int xpixel,
+	public Point2D fromPixelToRealWorld(final int xpixel,
 			final int ypixel) {
 		return rasterMetadata.toWorld(xpixel, ypixel);
 	}
 
-	public Point2D fromRealWorldCoordToPixelGridCoord(final double mouseX,
+	public Point2D fromRealWorldToPixel(final double mouseX,
 			final double mouseY) {
 		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
@@ -142,7 +155,8 @@ public class DefaultGeoRaster implements GeoRaster {
 		final int dotIndex = dest.lastIndexOf('.');
 		final String localFileNamePrefix = dest.substring(0, dotIndex);
 		final String localFileNameExtension = dest.substring(dotIndex + 1);
-		final FileSaver fileSaver = new FileSaver(getGrapImagePlus());
+		ImagePlus imagePlus = getImagePlus();
+		final FileSaver fileSaver = new FileSaver(imagePlus);
 
 		final String tmp = localFileNameExtension.toLowerCase();
 		if (tmp.endsWith("tif") || (tmp.endsWith("tiff"))) {
@@ -162,8 +176,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			WorldFile.save(localFileNamePrefix + ".bpw", rasterMetadata);
 		} else if (tmp.endsWith("asc")) {
 			EsriGRIDWriter esriGRIDWriter = new EsriGRIDWriter(
-					localFileNamePrefix + ".asc", getGrapImagePlus(),
-					rasterMetadata);
+					localFileNamePrefix + ".asc", imagePlus, rasterMetadata);
 			esriGRIDWriter.save();
 		}
 
@@ -174,7 +187,7 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public void show() throws IOException {
-		getGrapImagePlus().show();
+		getImagePlus().show();
 	}
 
 	public GeoRaster doOperation(final Operation operation)
@@ -188,7 +201,116 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public int getType() throws IOException {
-		return getCachedValues(null).type;
+		if (cachedType == null) {
+			updateCachedValues();
+		}
+		return cachedType.intValue();
+	}
+
+	private void updateCachedValues() throws IOException {
+		ImagePlus imagePlus = getImagePlus();
+		cachedType = imagePlus.getType();
+		cachedWidth = imagePlus.getWidth();
+		cachedHeight = imagePlus.getHeight();
+		cachedColorModel = imagePlus.getProcessor().getColorModel();
+
+		if ((cachedMin == null) || (cachedMax == null)) {
+			resetMinAndMax();
+		}
+
+	}
+
+	private void resetMinAndMax() throws IOException {
+		logger.debug("Recalculating min and max");
+		ImagePlus imagePlus = getImagePlus();
+		if (noDataSpecified()) {
+			switch (imagePlus.getType()) {
+			case ImagePlus.COLOR_256:
+			case ImagePlus.GRAY8:
+				resetMinAndMaxByte((byte[]) imagePlus.getProcessor()
+						.getPixels());
+				break;
+			case ImagePlus.GRAY16:
+				resetMinAndMaxShort((short[]) imagePlus.getProcessor()
+						.getPixels());
+				break;
+			case ImagePlus.GRAY32:
+				resetMinAndMaxFloat((float[]) imagePlus.getProcessor()
+						.getPixels());
+				break;
+			case ImagePlus.COLOR_RGB:
+				resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
+				break;
+			}
+		} else {
+			cachedMin = imagePlus.getProcessor().getMin();
+			cachedMax = imagePlus.getProcessor().getMax();
+		}
+	}
+
+	private boolean noDataSpecified() {
+		return !Double.isNaN(getNoDataValue()) || !Double.isNaN(minThreshold)
+				|| !Double.isNaN(maxThreshold);
+	}
+
+	private void resetMinAndMaxInt(int[] pixels) {
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
+		for (int pixel : pixels) {
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
+			}
+		}
+		cachedMin = new Double(min);
+		cachedMax = new Double(max);
+	}
+
+	private void resetMinAndMaxFloat(float[] pixels) {
+		float min = Float.MAX_VALUE;
+		float max = Float.MIN_VALUE;
+		for (float pixel : pixels) {
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
+			}
+		}
+		cachedMin = new Double(min);
+		cachedMax = new Double(max);
+	}
+
+	private void resetMinAndMaxShort(short[] pixels) {
+		short min = Short.MAX_VALUE;
+		short max = Short.MIN_VALUE;
+		for (short pixel : pixels) {
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
+			}
+		}
+		cachedMin = new Double(min);
+		cachedMax = new Double(max);
+	}
+
+	private void resetMinAndMaxByte(byte[] pixels) {
+		byte min = Byte.MAX_VALUE;
+		byte max = Byte.MIN_VALUE;
+		for (byte pixel : pixels) {
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
+			}
+		}
+		cachedMin = new Double(min);
+		cachedMax = new Double(max);
 	}
 
 	public boolean isEmpty() {
@@ -196,113 +318,331 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	public double getMax() throws IOException {
-		return getCachedValues(null).max;
+		if (cachedMax == null) {
+			updateCachedValues();
+		}
+		return cachedMax.doubleValue();
 	}
 
 	public double getMin() throws IOException {
-		return getCachedValues(null).min;
+		if (cachedMin == null) {
+			updateCachedValues();
+		}
+		return cachedMin.doubleValue();
 	}
 
 	public int getHeight() throws IOException {
-		return getCachedValues(null).height;
+		if (cachedHeight == null) {
+			updateCachedValues();
+		}
+		return cachedHeight.intValue();
 	}
 
 	public int getWidth() throws IOException {
-		return getCachedValues(null).width;
+		if (cachedWidth == null) {
+			updateCachedValues();
+		}
+		return cachedWidth.intValue();
 	}
 
-	public GrapImagePlus getGrapImagePlus() throws IOException {
-		final GrapImagePlus grapImagePlus = (null == cachedGrapImagePlus) ? fileReader
-				.readGrapImagePlus()
-				: cachedGrapImagePlus;
-		getCachedValues(grapImagePlus);
-		if (null != rasterMetadata) {
-			grapImagePlus.setNoDataValue(rasterMetadata.getNoDataValue());
-		}
-		grapImagePlus.setGrapType(getCachedValues(null).type);
+	public ImagePlus getImagePlus() throws IOException {
+		logger.debug("Getting ImagePlus");
+		final ImagePlus grapImagePlus = (null == cachedImagePlus) ? fileReader
+				.readImagePlus() : cachedImagePlus;
 
-		if ((ImagePlus.COLOR_RGB != getType())
-				&& (null != getCachedValues(null).minThreshold)
-				&& (null != getCachedValues(null).maxThreshold)) {
-			grapImagePlus.getProcessor().setThreshold(
-					getCachedValues(null).minThreshold,
-					getCachedValues(null).maxThreshold,
-					// ImageProcessor.NO_LUT_UPDATE);
-					ImageProcessor.BLACK_AND_WHITE_LUT);
-			// Makes the specified image temporarily the active image. Allows
-			// use of IJ.run() commands on images that are not displayed in a
-			// window. Call again with a null argument to revert to the previous
-			// active image.
-			// TODO: is following instruction really usefull ?
-			WindowManager.setTempCurrentImage(grapImagePlus);
+		setNaNValues(grapImagePlus);
 
-			// Sets non-thresholded pixels in 32-bit float images to the NaN
-			// (Not a Number) value. For float images, the "Apply" option in
-			// Image/Adjust Threshold runs this command. Pixels with a value of
-			// Float.NaN (0f/0f), Float.POSITIVE_INFINITY (1f/0f) or
-			// Float.NEGATIVE_INFINITY (-1f/0f) are ignored when making
-			// measurements on 32-bit float images.
-			//
-			// IJ.run("NaN Background");
-			setBackgroundToNaN(grapImagePlus.getProcessor());
-
-			// TODO: is following instruction really usefull ?
-			grapImagePlus.updateImage();
-		}
 		return grapImagePlus;
 	}
 
-	// private methods
-	private static void setBackgroundToNaN(ImageProcessor ip) {
-		// copy & paste from ImageMath.setBackgroundToNaN(ImageProcessor ip)
-		// Set non-thresholded pixels in a float image to NaN
-		final double lower = ip.getMinThreshold();
-		final double upper = ip.getMaxThreshold();
-		if ((lower != ImageProcessor.NO_THRESHOLD)
-				&& (ip instanceof FloatProcessor)) {
-			final float[] pixels = (float[]) ip.getPixels();
-			final int width = ip.getWidth();
-			final int height = ip.getHeight();
-			double v;
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < width; x++) {
-					v = pixels[y * width + x];
-					if (v < lower || v > upper)
-						pixels[y * width + x] = Float.NaN;
-				}
+	private void setNaNValues(ImagePlus grapImagePlus) throws IOException {
+		if (noDataSpecified()) {
+			logger.debug("setting ndv pixels");
+			switch (grapImagePlus.getType()) {
+			case ImagePlus.COLOR_256:
+			case ImagePlus.GRAY8:
+				setNaNValuesByte(grapImagePlus);
+				break;
+			case ImagePlus.GRAY16:
+				setNaNValuesShort(grapImagePlus);
+				break;
+			case ImagePlus.GRAY32:
+				setNaNValuesFloat(grapImagePlus);
+				break;
+			case ImagePlus.COLOR_RGB:
+				setNaNValuesInt(grapImagePlus);
+				break;
 			}
-			ip.resetMinAndMax();
 		} else {
-			System.out
-					.println("setBackgroundToNaN : Thresholded 32-bit float image required");
+			logger.debug("No ndv specified");
+		}
+	}
+
+	private void setNaNValuesInt(ImagePlus grapImagePlus) throws IOException {
+		int nan = (int) getNoDataValue();
+		int min = (int) minThreshold;
+		int max = (int) minThreshold;
+		int[] pixels = (int[]) grapImagePlus.getProcessor().getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i] < min) {
+				pixels[i] = INT_NAN_VALUE;
+			} else if (pixels[i] > max) {
+				pixels[i] = INT_NAN_VALUE;
+			} else if (pixels[i] == nan) {
+				pixels[i] = INT_NAN_VALUE;
+			}
+		}
+	}
+
+	private void setNaNValuesFloat(ImagePlus grapImagePlus) throws IOException {
+		float nan = (float) getNoDataValue();
+		float min = (float) minThreshold;
+		float max = (float) minThreshold;
+		float[] pixels = (float[]) grapImagePlus.getProcessor().getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i] < min) {
+				pixels[i] = FLOAT_NAN_VALUE;
+			} else if (pixels[i] > max) {
+				pixels[i] = FLOAT_NAN_VALUE;
+			} else if (pixels[i] == nan) {
+				pixels[i] = FLOAT_NAN_VALUE;
+			}
+		}
+	}
+
+	private void setNaNValuesShort(ImagePlus grapImagePlus) throws IOException {
+		short nan = (short) getNoDataValue();
+		short min = (short) minThreshold;
+		short max = (short) minThreshold;
+		short[] pixels = (short[]) grapImagePlus.getProcessor().getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i] < min) {
+				pixels[i] = SHORT_NAN_VALUE;
+			} else if (pixels[i] > max) {
+				pixels[i] = SHORT_NAN_VALUE;
+			} else if (pixels[i] == nan) {
+				pixels[i] = SHORT_NAN_VALUE;
+			}
+		}
+	}
+
+	private void setNaNValuesByte(ImagePlus grapImagePlus) throws IOException {
+		byte nan = (byte) getNoDataValue();
+		byte min = (byte) minThreshold;
+		byte max = (byte) minThreshold;
+		byte[] pixels = (byte[]) grapImagePlus.getProcessor().getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i] < min) {
+				pixels[i] = BYTE_NAN_VALUE;
+			} else if (pixels[i] > max) {
+				pixels[i] = BYTE_NAN_VALUE;
+			} else if (pixels[i] == nan) {
+				pixels[i] = BYTE_NAN_VALUE;
+			}
 		}
 	}
 
 	public ColorModel getDefaultColorModel() throws IOException {
-		return getCachedValues(null).colorModel;
-	}
-
-	private CachedValues getCachedValues(ImagePlus img) throws IOException {
-		if (null == cachedValues) {
-			cachedValues = new CachedValues();
-			ImagePlus ip = img;
-			if (ip == null) {
-				ip = getGrapImagePlus();
-			}
-			final ImageProcessor processor = ip.getProcessor();
-			cachedValues.min = processor.getMin();
-			cachedValues.max = processor.getMax();
-			cachedValues.height = ip.getHeight();
-			cachedValues.width = ip.getWidth();
-			cachedValues.type = ip.getType();
-			cachedValues.minThreshold = null;
-			cachedValues.maxThreshold = null;
-			cachedValues.colorModel = processor.getColorModel();
+		if (cachedColorModel == null) {
+			updateCachedValues();
 		}
-		return cachedValues;
+		return cachedColorModel;
 	}
 
 	public double getNoDataValue() {
-		return getMetadata().getNoDataValue();
+		return noDataValue;
 	}
+
+	public byte[] getBytePixels() throws IOException {
+		return (byte[]) getImagePlus().getProcessor().getPixels();
+	}
+
+	public float[] getFloatPixels() throws IOException {
+		return (float[]) getImagePlus().getProcessor().getPixels();
+	}
+
+	public int[] getIntPixels() throws IOException {
+		return (int[]) getImagePlus().getProcessor().getPixels();
+	}
+
+	public short[] getShortPixels() throws IOException {
+		return (short[]) getImagePlus().getProcessor().getPixels();
+	}
+
+	public Image getImage(ColorModel colorModel) throws IOException {
+		if (noDataSpecified()) {
+			colorModel = addFirstTransparentClass(colorModel);
+			switch (getType()) {
+			case ImagePlus.GRAY8:
+				logger.debug("getting image with ndv");
+				return getByteImage(colorModel);
+			case ImagePlus.GRAY16:
+				logger.debug("getting image with ndv");
+				return getShortImage(colorModel);
+			case ImagePlus.GRAY32:
+				logger.debug("getting image with ndv");
+				return getFloatImage(colorModel);
+			}
+		}
+		logger.debug("getting image from imageJ");
+		ImagePlus imagePlus = getImagePlus();
+		imagePlus.getProcessor().setColorModel(colorModel);
+		return imagePlus.getImage();
+	}
+
+	/**
+	 * This code is from FloatProcessor.getImage() in IJ. The difference is that
+	 * IJ creates 255 classes for the values and we create 254. The first class
+	 * is reserved for NaN (see first 'if' inside 'for')
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	private Image getFloatImage(ColorModel cm) throws IOException {
+		// Get the imagej pixels
+		final ImagePlus imagePlus = (null == cachedImagePlus) ? fileReader
+				.readImagePlus() : cachedImagePlus;
+		float[] pixels = (float[]) imagePlus.getProcessor().getPixels();
+		// scale from float to 8-bits
+		byte[] pixels8;
+		int size = getWidth() * getHeight();
+		pixels8 = new byte[size];
+		float max = (float) getMax();
+		float min = (float) getMin();
+		float scale = 254f / (max - min);
+		for (int i = 0; i < size; i++) {
+			if ((pixels[i] == noDataValue) || (pixels[i] < min)
+					|| (pixels[i] > max)) {
+				pixels8[i] = (byte) 0;
+			} else {
+				float value = pixels[i] - min;
+				if (value < 0f) {
+					value = 0f;
+				}
+				int ivalue = (int) (value * scale);
+				if (ivalue > 254) {
+					ivalue = 254;
+				}
+				pixels8[i] = (byte) (ivalue + 1);
+			}
+		}
+		MemoryImageSource source = new MemoryImageSource(getWidth(),
+				getHeight(), cm, pixels8, 0, getWidth());
+		source.setAnimated(true);
+		source.setFullBufferUpdates(true);
+		return Toolkit.getDefaultToolkit().createImage(source);
+	}
+
+	/**
+	 * This code is from ShortProcessor.getImage() in IJ. The difference is that
+	 * IJ creates 255 classes for the values and we create 254. The first class
+	 * is reserved for NaN (see first 'if' inside 'for')
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	private Image getShortImage(ColorModel cm) throws IOException {
+		// Get the imagej pixels
+		final ImagePlus imagePlus = (null == cachedImagePlus) ? fileReader
+				.readImagePlus() : cachedImagePlus;
+		short[] pixels = (short[]) imagePlus.getProcessor().getPixels();
+		// scale from float to 8-bits
+		byte[] pixels8;
+		int size = getWidth() * getHeight();
+		pixels8 = new byte[size];
+		short max = (short) getMax();
+		short min = (short) getMin();
+		float scale = 254 / (max - min);
+		for (int i = 0; i < size; i++) {
+			if ((pixels[i] == noDataValue) || (pixels[i] < min)
+					|| (pixels[i] > max)) {
+				pixels8[i] = (byte) 0;
+			} else {
+				short value = (short) (pixels[i] - min);
+				if (value < 0) {
+					value = 0;
+				}
+				int ivalue = (int) (value * scale);
+				if (ivalue > 254) {
+					ivalue = 254;
+				}
+				pixels8[i] = (byte) (ivalue + 1);
+			}
+		}
+		MemoryImageSource source = new MemoryImageSource(getWidth(),
+				getHeight(), cm, pixels8, 0, getWidth());
+		source.setAnimated(true);
+		source.setFullBufferUpdates(true);
+		return Toolkit.getDefaultToolkit().createImage(source);
+	}
+
+	/**
+	 * This code is from ShortProcessor.getImage() in IJ. The difference is that
+	 * IJ creates 255 classes for the values and we create 254. The first class
+	 * is reserved for NaN (see first 'if' inside 'for')
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	private Image getByteImage(ColorModel cm) throws IOException {
+		// Get the imagej pixels
+		final ImagePlus imagePlus = (null == cachedImagePlus) ? fileReader
+				.readImagePlus() : cachedImagePlus;
+		byte[] pixels = (byte[]) imagePlus.getProcessor().getPixels();
+		// scale from float to 8-bits
+		byte[] pixels8;
+		int size = getWidth() * getHeight();
+		pixels8 = new byte[size];
+		byte max = (byte) getMax();
+		byte min = (byte) getMin();
+		float scale = 254 / (max - min);
+		for (int i = 0; i < size; i++) {
+			if ((pixels[i] == noDataValue) || (pixels[i] < min)
+					|| (pixels[i] > max)) {
+				pixels8[i] = (byte) 0;
+			} else {
+				byte value = (byte) (pixels[i] - min);
+				if (value < 0) {
+					value = 0;
+				}
+				int ivalue = (int) (value * scale);
+				if (ivalue > 254) {
+					ivalue = 254;
+				}
+				pixels8[i] = (byte) (ivalue + 1);
+			}
+		}
+		MemoryImageSource source = new MemoryImageSource(getWidth(),
+				getHeight(), cm, pixels8, 0, getWidth());
+		source.setAnimated(true);
+		source.setFullBufferUpdates(true);
+		return Toolkit.getDefaultToolkit().createImage(source);
+	}
+
+	/**
+	 * Returns a color model equal to the one specified as parameter but making
+	 * the class containing the no-data-value pixels (first class) be
+	 * transparent
+	 *
+	 * @param colorModel
+	 * @return
+	 */
+	private static ColorModel addFirstTransparentClass(ColorModel colorModel) {
+		IndexColorModel indexColorModel = (IndexColorModel) colorModel;
+		int nbOfColors = indexColorModel.getMapSize();
+		byte[] reds = new byte[nbOfColors];
+		byte[] greens = new byte[nbOfColors];
+		byte[] blues = new byte[nbOfColors];
+		byte[] alphas = new byte[nbOfColors];
+
+		indexColorModel.getReds(reds);
+		indexColorModel.getGreens(greens);
+		indexColorModel.getBlues(blues);
+		indexColorModel.getAlphas(alphas);
+		// transparency for nodata (NaN) pixels
+		alphas[0] = 0;
+
+		return new IndexColorModel(8, nbOfColors, reds, greens, blues, alphas);
+	}
+
 }

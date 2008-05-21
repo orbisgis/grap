@@ -39,7 +39,10 @@
  */
 package org.grap.model;
 
+import ij.ImagePlus;
+
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
@@ -66,7 +69,7 @@ class NullGeoRaster implements GeoRaster {
 		return instance;
 	}
 
-	public GrapImagePlus getGrapImagePlus() {
+	public ImagePlus getImagePlus() {
 		return null;
 	}
 
@@ -74,7 +77,7 @@ class NullGeoRaster implements GeoRaster {
 		return null;
 	}
 
-	public Point2D fromRealWorldCoordToPixelGridCoord(double mouseX,
+	public Point2D fromRealWorldToPixel(double mouseX,
 			double mouseY) {
 		return null;
 	}
@@ -86,7 +89,7 @@ class NullGeoRaster implements GeoRaster {
 	public void open() {
 	}
 
-	public Point2D fromPixelGridCoordToRealWorldCoord(int xpixel, int ypixel) {
+	public Point2D fromPixelToRealWorld(int xpixel, int ypixel) {
 		return null;
 	}
 
@@ -167,4 +170,25 @@ class NullGeoRaster implements GeoRaster {
 	public double getNoDataValue() {
 		return 0;
 	}
+
+	public byte[] getBytePixels() {
+		return (byte[]) getImagePlus().getProcessor().getPixels();
+	}
+
+	public short[] getShortPixels() {
+		return (short[]) getImagePlus().getProcessor().getPixels();
+	}
+
+	public float[] getFloatPixels() {
+		return new float[0];
+	}
+
+	public int[] getIntPixels() {
+		return new int[0];
+	}
+
+	public Image getImage(ColorModel cm) {
+		return null;
+	}
+
 }

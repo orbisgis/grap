@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
-import org.grap.processing.operation.hydrology.HydrologyUtilities;
 
 public class PixelUtilitiesTest extends TestCase {
 	private static final double EPSILON = 1.0E-5;

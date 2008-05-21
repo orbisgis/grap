@@ -54,7 +54,7 @@ public class Dilate implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 			imagePlus.getProcessor().dilate();
 
 			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster

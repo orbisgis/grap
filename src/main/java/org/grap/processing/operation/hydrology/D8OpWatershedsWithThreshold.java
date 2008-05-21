@@ -78,13 +78,14 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -93,9 +94,9 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		Operation {
 	public final static short noDataValue = (short) Float.NaN;
 
-	private GrapImagePlus gipAllWatersheds;
-	private GrapImagePlus gipAllOutlets;
-	private GrapImagePlus gipSlopesAccumulations;
+	private ImagePlus gipAllWatersheds;
+	private ImagePlus gipAllOutlets;
+	private ImagePlus gipSlopesAccumulations;
 	private short[] watershedsWithThreshold;
 	private int threshold;
 	private int ncols;
@@ -105,8 +106,8 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 			final GeoRaster grAllOutlets, final int threshold)
 			throws OperationException {
 		try {
-			gipAllWatersheds = grAllWatersheds.getGrapImagePlus();
-			gipAllOutlets = grAllOutlets.getGrapImagePlus();
+			gipAllWatersheds = grAllWatersheds.getImagePlus();
+			gipAllOutlets = grAllOutlets.getImagePlus();
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
@@ -117,7 +118,7 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 	public GeoRaster evaluateResult(GeoRaster grSlopesAccumulations)
 			throws OperationException {
 		try {
-			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
+			gipSlopesAccumulations = grSlopesAccumulations.getImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesAccumulations
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
@@ -143,15 +144,18 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		int i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if ((!Float.isNaN(gipAllOutlets.getPixelValue(c, r)))
-						&& (gipSlopesAccumulations.getPixelValue(c, r) >= threshold)) {
+				if ((!Float.isNaN(gipAllOutlets.getProcessor().getPixelValue(c,
+						r)))
+						&& (gipSlopesAccumulations.getProcessor()
+								.getPixelValue(c, r) >= threshold)) {
 					// current cell is an outlet. It's slopes accumulation value
 					// is greater or equal to the threshold value.
 					System.out.printf("(%d, %d) : %.0f\n", c, r,
-							gipSlopesAccumulations.getPixelValue(c, r));
+							gipSlopesAccumulations.getProcessor()
+									.getPixelValue(c, r));
 					nbOfWatershedsWithThreshold++;
-					mapOfBigOutlets.put(gipAllWatersheds.getPixelValue(c, r),
-							nbOfWatershedsWithThreshold);
+					mapOfBigOutlets.put(gipAllWatersheds.getProcessor()
+							.getPixelValue(c, r), nbOfWatershedsWithThreshold);
 				}
 			}
 		}
@@ -160,7 +164,8 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		i = 0;
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				final float tmp = gipAllWatersheds.getPixelValue(c, r);
+				final float tmp = gipAllWatersheds.getProcessor()
+						.getPixelValue(c, r);
 				watershedsWithThreshold[i] = mapOfBigOutlets.containsKey(tmp) ? mapOfBigOutlets
 						.get(tmp)
 						: noDataValue;

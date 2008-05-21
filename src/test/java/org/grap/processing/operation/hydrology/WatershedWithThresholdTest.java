@@ -42,11 +42,6 @@ package org.grap.processing.operation.hydrology;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.D8OpAllOutlets;
-import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
-import org.grap.processing.operation.hydrology.D8OpAccumulation;
-import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 
 public class WatershedWithThresholdTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
@@ -95,15 +90,15 @@ public class WatershedWithThresholdTest extends GrapTest {
 
 		// extract some "big" watersheds
 		threshold = 50;
-		watershedsWithThreshold = new D8OpWatershedsWithThreshold(grAllWatersheds,
-				grAllOutlets, threshold);
+		watershedsWithThreshold = new D8OpWatershedsWithThreshold(
+				grAllWatersheds, grAllOutlets, threshold);
 		grWatershedsWithThreshold = grSlopesAccumulations
 				.doOperation(watershedsWithThreshold);
 
 		for (int r = 0; r < grWatershedsWithThreshold.getHeight(); r++) {
 			for (int c = 0; c < grWatershedsWithThreshold.getWidth(); c++) {
-				assertTrue(Float.isNaN(grWatershedsWithThreshold
-						.getGrapImagePlus().getPixelValue(c, r)));
+				assertTrue(Float.isNaN(grWatershedsWithThreshold.getImagePlus()
+						.getProcessor().getPixelValue(c, r)));
 			}
 		}
 	}

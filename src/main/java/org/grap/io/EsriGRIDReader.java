@@ -39,6 +39,7 @@
  */
 package org.grap.io;
 
+import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -53,7 +54,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.grap.model.GeoProcessorType;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 /**
@@ -250,8 +250,7 @@ public class EsriGRIDReader implements FileReader {
 		final float pixelSize_Y = -cellsize;
 
 		rasterMetadata = new RasterMetadata(upperLeftX, upperLeftY,
-				pixelSize_X, pixelSize_Y, ncols, nrows);
-		rasterMetadata.setNoData(noDataValue);
+				pixelSize_X, pixelSize_Y, ncols, nrows, noDataValue);
 		return rasterMetadata;
 	}
 
@@ -268,7 +267,7 @@ public class EsriGRIDReader implements FileReader {
 		return rasterMetadata;
 	}
 
-	public synchronized GrapImagePlus readGrapImagePlus() throws IOException {
+	public synchronized ImagePlus readImagePlus() throws IOException {
 		open();
 		readHeaderPart();
 		ImageProcessor imageProcessor = null;
@@ -296,6 +295,6 @@ public class EsriGRIDReader implements FileReader {
 					+ geoProcessorType);
 		}
 		close();
-		return new GrapImagePlus("", imageProcessor);
+		return new ImagePlus("", imageProcessor);
 	}
 }

@@ -95,7 +95,7 @@ public class FillSinks implements Operation {
 
 		try {
 
-			m_DEM = geoRaster.getGrapImagePlus().getProcessor();
+			m_DEM = geoRaster.getImagePlus().getProcessor();
 
 			int i;
 			double iValue;

@@ -62,9 +62,9 @@ public class Mathtest extends GrapTest {
 		final Operation addValue = new AddValueOperation(addedValue);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
-		float[] pixelsSrc = geoRasterSrc.getGrapImagePlus().getFloatPixels();
+		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
 
-		float[] pixelsResult = gResult.getGrapImagePlus().getFloatPixels();
+		float[] pixelsResult = gResult.getFloatPixels();
 
 		for (int i = 0; i < pixelsResult.length; i++) {
 			if (Float.isNaN(pixelsSrc[i])) {
@@ -75,7 +75,7 @@ public class Mathtest extends GrapTest {
 			}
 		}
 	}
-	
+
 	public void testSubtractValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -86,9 +86,9 @@ public class Mathtest extends GrapTest {
 		final Operation addValue = new SubtractValueOperation(addedValue);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
-		float[] pixelsSrc = geoRasterSrc.getGrapImagePlus().getFloatPixels();
+		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
 
-		float[] pixelsResult = gResult.getGrapImagePlus().getFloatPixels();
+		float[] pixelsResult = gResult.getFloatPixels();
 
 		for (int i = 0; i < pixelsResult.length; i++) {
 			if (Float.isNaN(pixelsSrc[i])) {
@@ -99,7 +99,7 @@ public class Mathtest extends GrapTest {
 			}
 		}
 	}
-	
+
 	public void testMultiplyValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -110,9 +110,9 @@ public class Mathtest extends GrapTest {
 		final Operation addValue = new MultiplyValueOperation(addedValue);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
-		float[] pixelsSrc = geoRasterSrc.getGrapImagePlus().getFloatPixels();
+		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
 
-		float[] pixelsResult = gResult.getGrapImagePlus().getFloatPixels();
+		float[] pixelsResult = gResult.getFloatPixels();
 
 		for (int i = 0; i < pixelsResult.length; i++) {
 			if (Float.isNaN(pixelsSrc[i])) {
@@ -123,7 +123,7 @@ public class Mathtest extends GrapTest {
 			}
 		}
 	}
-	
+
 	public void testDivideValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -134,9 +134,9 @@ public class Mathtest extends GrapTest {
 		final Operation addValue = new DivideValueOperation(addedValue);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
-		float[] pixelsSrc = geoRasterSrc.getGrapImagePlus().getFloatPixels();
+		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
 
-		float[] pixelsResult = gResult.getGrapImagePlus().getFloatPixels();
+		float[] pixelsResult = gResult.getFloatPixels();
 
 		for (int i = 0; i < pixelsResult.length; i++) {
 			if (Float.isNaN(pixelsSrc[i])) {
@@ -147,7 +147,7 @@ public class Mathtest extends GrapTest {
 			}
 		}
 	}
-	
+
 	public void testABSValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -158,8 +158,8 @@ public class Mathtest extends GrapTest {
 		final Operation addValue = new AbsValueOperation();
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
-		
-		float[] pixelsResult = gResult.getGrapImagePlus().getFloatPixels();
+
+		float[] pixelsResult = gResult.getFloatPixels();
 
 		for (int i = 0; i < pixelsResult.length; i++) {
 			if (Float.isNaN(pixelsResult[i])) {

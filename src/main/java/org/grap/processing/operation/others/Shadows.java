@@ -39,11 +39,12 @@
  */
 package org.grap.processing.operation.others;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
@@ -59,7 +60,7 @@ public class Shadows implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final GrapImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 
 			switch (orientation) {
 			case NORTH:

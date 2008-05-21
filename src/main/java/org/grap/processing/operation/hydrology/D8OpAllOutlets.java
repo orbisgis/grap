@@ -78,11 +78,12 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -92,7 +93,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 	public final static byte noDataValue = 0;
 	public final static byte isAnOutletValue = 1;
 
-	private GrapImagePlus gipSlopesDirections;
+	private ImagePlus gipSlopesDirections;
 	private byte[] outlets;
 	private int ncols;
 	private int nrows;
@@ -101,7 +102,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 	public GeoRaster evaluateResult(GeoRaster geoRaster)
 			throws OperationException {
 		try {
-			gipSlopesDirections = geoRaster.getGrapImagePlus();
+			gipSlopesDirections = geoRaster.getImagePlus();
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
@@ -123,7 +124,8 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 
 		for (int r = 0; r < nrows; r++) {
 			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
+				if (Float.isNaN(gipSlopesDirections.getProcessor()
+						.getPixelValue(c, r))) {
 					outlets[i] = tmpNoDataValue;
 				} else if (0 == outlets[i]) {
 					// current cell value has not been yet modified...
@@ -150,7 +152,8 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
-			if (Float.isNaN(gipSlopesDirections.getPixelValue(c, r))) {
+			if (Float.isNaN(gipSlopesDirections.getProcessor().getPixelValue(c,
+					r))) {
 				// previous cell is a new outlet...
 				outlets[prevCellIdx] = isAnOutletValue;
 				outlets[curCellIdx] = tmpNoDataValue;

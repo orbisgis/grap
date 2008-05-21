@@ -78,11 +78,12 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -90,7 +91,7 @@ import org.grap.processing.OperationException;
 public class D8OpAccumulation extends D8OpAbstract implements Operation {
 	public static final float noDataValue = Float.NaN;
 
-	private GrapImagePlus gipDirection;
+	private ImagePlus gipDirection;
 	private float[] d8Accumulation;
 	private int ncols;
 	private int nrows;
@@ -99,7 +100,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 	public GeoRaster evaluateResult(GeoRaster geoRaster)
 			throws OperationException {
 		try {
-			gipDirection = geoRaster.getGrapImagePlus();
+			gipDirection = geoRaster.getImagePlus();
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
@@ -126,7 +127,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 				if ((0 == r) || (nrows == r + 1) || (0 == c)
 						|| (ncols == c + 1)) {
 					d8Accumulation[i] = noDataValue;
-				} else if (Float.isNaN(gipDirection.getPixelValue(c, r))) {
+				} else if (Float.isNaN(gipDirection.getProcessor().getPixelValue(c, r))) {
 					d8Accumulation[i] = noDataValue;
 				} else if (0 == d8Accumulation[i]) {
 					// current cell value has not been yet modified...
@@ -147,7 +148,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 			final int r = curCellIdx / ncols;
 			final int c = curCellIdx % ncols;
 
-			if (Float.isNaN(gipDirection.getPixelValue(c, r))) {
+			if (Float.isNaN(gipDirection.getProcessor().getPixelValue(c, r))) {
 				return isProbablyANewOutlet ? 1 : 0;
 			} else {
 				if (0 == d8Accumulation[curCellIdx]) {

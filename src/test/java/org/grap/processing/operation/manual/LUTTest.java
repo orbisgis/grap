@@ -53,7 +53,7 @@ public class LUTTest {
 		ColorModel cm = LutGenerator.colorModel("fire");
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		geoRaster.getGrapImagePlus().getProcessor().setColorModel(cm);
+		geoRaster.getImagePlus().getProcessor().setColorModel(cm);
 		geoRaster.show();
 
 		LutDisplay lutDisplay = new LutDisplay(cm);

@@ -22,19 +22,19 @@ public class HydrologyUtilities {
 	/**
 	 * Implementation of some classical D8 analysis algorithms. D8 stands for
 	 * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
-	 * 
+	 *
 	 * The standard we have decided to implement is the one explained by David
 	 * G. Tarboton (Utah State University, May, 2005) in the "Terrain Analysis
 	 * Using Digital Elevation Models" (TauDEM) method.
-	 * 
+	 *
 	 * 4 | 3 | 2
-	 * 
+	 *
 	 * 5 | X | 1
-	 * 
+	 *
 	 * 6 | 7 | 8
-	 * 
+	 *
 	 * sink and flat areas pixels are equal to -1
-	 * 
+	 *
 	 * nodataValue pixels are equal to Short.MIN_VALUE
 	 */
 
@@ -42,7 +42,7 @@ public class HydrologyUtilities {
 			throws IOException {
 		ncols = dem.getMetadata().getNCols();
 		nrows = dem.getMetadata().getNRows();
-		pixels = dem.getGrapImagePlus().getFloatPixels();
+		pixels = dem.getFloatPixels();
 
 		float invPixelSize_X = 1 / dem.getMetadata().getPixelSize_X();
 		float invPixelSize_Y = Math.abs(1 / dem.getMetadata().getPixelSize_Y());

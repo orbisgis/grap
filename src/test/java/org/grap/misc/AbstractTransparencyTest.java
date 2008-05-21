@@ -19,7 +19,7 @@ abstract public class AbstractTransparencyTest extends GrapTest {
 		graphics.setColor(Color.RED);
 		graphics.fillRect(0, 0, geoRaster.getWidth(), geoRaster.getHeight());
 
-		graphics.drawImage(geoRaster.getGrapImagePlus().getImage(), 0, 0, null);
+		graphics.drawImage(geoRaster.getImagePlus().getImage(), 0, 0, null);
 
 		System.out.println("Color model of the buffered image : "
 				+ redImage.getColorModel());

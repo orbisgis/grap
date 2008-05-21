@@ -84,7 +84,7 @@ public class GeoreferencingTest extends TestCase {
 				for (float aleaR = -halfPixelSize_Y + deltaX; aleaR <= halfPixelSize_Y; aleaR += deltaX) {
 					for (float aleaC = -halfPixelSize_X + deltaY; aleaC < halfPixelSize_X; aleaC += deltaY) {
 						final Point2D p = sampleRaster
-								.fromRealWorldCoordToPixelGridCoord(x + aleaC,
+								.fromRealWorldToPixel(x + aleaC,
 										y + aleaR);
 						assertTrue(c == p.getX());
 						assertTrue(r == p.getY());
@@ -102,7 +102,7 @@ public class GeoreferencingTest extends TestCase {
 			for (int c = 0; c < md.getNCols(); c++) {
 				final double x = md.getXulcorner() + c * md.getPixelSize_X();
 				final Point2D p = sampleRaster
-						.fromPixelGridCoordToRealWorldCoord(c, r);
+						.fromPixelToRealWorld(c, r);
 				assertTrue(x == p.getX());
 				assertTrue(y == p.getY());
 			}

@@ -61,7 +61,7 @@ public class ShapeExtractionTest {
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
 
-		Wand w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
+		Wand w = new Wand(geoRaster.getImagePlus().getProcessor());
 
 		w.autoOutline(150, 150);
 
@@ -75,7 +75,7 @@ public class ShapeExtractionTest {
 		for (int i = 0; i < roi.getPolygon().npoints; i++) {
 			final int xWand = roi.getPolygon().xpoints[i];
 			final int yWand = roi.getPolygon().ypoints[i];
-			final Point2D worldXY = geoRaster.fromPixelGridCoordToRealWorldCoord(xWand,
+			final Point2D worldXY = geoRaster.fromPixelToRealWorld(xWand,
 					yWand);
 
 			jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());

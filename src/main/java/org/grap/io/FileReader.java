@@ -39,13 +39,14 @@
  */
 package org.grap.io;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public interface FileReader {
 	public RasterMetadata readRasterMetadata() throws IOException;
 
-	public GrapImagePlus readGrapImagePlus() throws IOException;
+	public ImagePlus readImagePlus() throws IOException;
 }

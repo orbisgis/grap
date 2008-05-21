@@ -39,28 +39,28 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.grap.model.GrapImagePlus;
-
 /**
  * Implementation of some classical D8 analysis algorithms. D8 stands for
  * "Deterministic eight neighbour" method by O’Callaghan & Mark (1984)
- * 
+ *
  * The standard we have decided to implement is the one explained by David G.
  * Tarboton (Utah State University, May, 2005) in the "Terrain Analysis Using
  * Digital Elevation Models" (TauDEM) method.
- * 
+ *
  * 4 | 3 | 2
- * 
+ *
  * 5 | X | 1
- * 
+ *
  * 6 | 7 | 8
- * 
+ *
  * sink and flat areas pixels are equal to -1
- * 
+ *
  * nodataValue pixels are equal to Short.MIN_VALUE
  */
 
@@ -69,7 +69,7 @@ public class SlopesUtilities {
 			8, 1, 2, 3, 4 };
 
 	public static Set<Integer> fromCellSlopeDirectionIdxToContributiveArea(
-			final GrapImagePlus gipSlopesDirections, final int ncols,
+			final ImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int cellIdx) throws IOException {
 		final Set<Integer> contributiveArea = new HashSet<Integer>();
 		final int[] neighboursIndices = new int[] { 1, -ncols + 1, -ncols,
@@ -82,7 +82,7 @@ public class SlopesUtilities {
 				final int rTmp = tmp / ncols;
 				final int cTmp = tmp % ncols;
 				if ((neighboursDirection[i] == gipSlopesDirections
-						.getPixelValue(cTmp, rTmp))) {
+						.getProcessor().getPixelValue(cTmp, rTmp))) {
 					contributiveArea.add(tmp);
 				}
 			}
@@ -91,7 +91,7 @@ public class SlopesUtilities {
 	}
 
 	public static Integer fromCellSlopeDirectionToNextCellIndex(
-			final GrapImagePlus gipSlopesDirections, final int ncols,
+			final ImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int i) throws IOException {
 		final int r = i / ncols;
 		final int c = i % ncols;
@@ -100,10 +100,10 @@ public class SlopesUtilities {
 	}
 
 	public static Integer fromCellSlopeDirectionToNextCellIndex(
-			final GrapImagePlus gipSlopesDirections, final int ncols,
+			final ImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int i, final int c, final int r)
 			throws IOException {
-		switch ((short) gipSlopesDirections.getPixelValue(c, r)) {
+		switch ((short) gipSlopesDirections.getProcessor().getPixelValue(c, r)) {
 		case 1:
 			return getCellIndex(ncols, nrows, i + 1, c + 1, r);
 		case 2:
@@ -136,13 +136,13 @@ public class SlopesUtilities {
 		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? null : i;
 	}
 
-	public static boolean isARiverStart(
-			final GrapImagePlus gipSlopesAccumulations,
-			final GrapImagePlus gipSlopesDirections, final int riverThreshold,
+	public static boolean isARiverStart(final ImagePlus gipSlopesAccumulations,
+			final ImagePlus gipSlopesDirections, final int riverThreshold,
 			final int ncols, final int nrows, final int i) throws IOException {
 		final int r = i / ncols;
 		final int c = i % ncols;
-		final Float currAcc = gipSlopesAccumulations.getPixelValue(c, r);
+		final Float currAcc = gipSlopesAccumulations.getProcessor()
+				.getPixelValue(c, r);
 
 		if (riverThreshold == currAcc) {
 			return true;
@@ -152,8 +152,8 @@ public class SlopesUtilities {
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
 				final int cContributor = contributor % ncols;
-				if (riverThreshold <= gipSlopesAccumulations.getPixelValue(
-						cContributor, rContributor)) {
+				if (riverThreshold <= gipSlopesAccumulations.getProcessor()
+						.getPixelValue(cContributor, rContributor)) {
 					return false;
 				}
 			}

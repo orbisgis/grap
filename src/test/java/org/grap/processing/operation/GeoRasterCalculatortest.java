@@ -56,7 +56,7 @@ public class GeoRasterCalculatortest extends GrapTest {
 				GeoRasterCalculator.SUBSTRACT);
 		final GeoRaster gResult = geoRasterSrc.doOperation(subtract);
 
-		float[] pixels = gResult.getGrapImagePlus().getFloatPixels();
+		float[] pixels = gResult.getFloatPixels();
 
 		for (float pixel : pixels) {
 			assertTrue((0 == pixel) || (Float.isNaN(pixel)));

@@ -40,11 +40,12 @@
 
 package org.grap.io;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 import java.net.URL;
 
 import org.grap.model.GeoProcessorType;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public class XYZ2DEMReader implements FileReader {
@@ -67,8 +68,8 @@ public class XYZ2DEMReader implements FileReader {
 		xyzImporter = new XYZ2DEM_Importer(fileName, pixelsize, false);
 	}
 
-	public GrapImagePlus readGrapImagePlus() throws IOException {
-		return new GrapImagePlus("", xyzImporter.ip);
+	public ImagePlus readImagePlus() throws IOException {
+		return new ImagePlus("", xyzImporter.ip);
 	}
 
 	public RasterMetadata readRasterMetadata() throws IOException {

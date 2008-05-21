@@ -62,7 +62,7 @@ public class MinValueOperation implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 			imagePlus.getProcessor().min(minValue);
 			if (!(imagePlus.getProcessor() instanceof ByteProcessor)) {
 				imagePlus.getProcessor().resetMinAndMax();

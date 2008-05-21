@@ -39,12 +39,12 @@
  */
 package org.grap.io;
 
+import ij.ImagePlus;
 import junit.framework.TestCase;
 
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 public class GrapTest extends TestCase {
@@ -90,20 +90,20 @@ public class GrapTest extends TestCase {
 				LutGenerator.colorModel("fire"), rmd);
 		float N = Float.NaN;
 		slopesDirectionForDEM = new float[] {//
-		N, N, N, N, N, N, N, N, N, N,// 
-				N, 7, 7, 7, 6, 1, 2, 3, 4, N,// 
-				N, 8, 7, 6, 5, 1, 1, 3, 5, N,// 
-				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
-				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
-				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
-				N, 1, 7, 5, 5, 1, 1, 3, 5, N,// 
-				N, 1, 7, 5, 5, 1, 2, 3, 4, N,// 
-				N, 8, 7, 6, 5, 2, 3, 3, 3, N,// 
-				N, N, N, N, N, N, N, N, N, N,// 
+		N, N, N, N, N, N, N, N, N, N,//
+				N, 7, 7, 7, 6, 1, 2, 3, 4, N,//
+				N, 8, 7, 6, 5, 1, 1, 3, 5, N,//
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
+				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
+				N, 1, 7, 5, 5, 1, 2, 3, 4, N,//
+				N, 8, 7, 6, 5, 2, 3, 3, 3, N,//
+				N, N, N, N, N, N, N, N, N, N,//
 		};
 
 		slopesAccumulationForDEM = new short[] {//
-		0, 0, 0, 0, 0, 0, 0, 49, 0, 0,// 
+		0, 0, 0, 0, 0, 0, 0, 49, 0, 0,//
 				0, 2, 1, 2, 0, 0, 2, 40, 2, 0,//
 				0, 5, 2, 5, 0, 0, 1, 39, 1, 0,//
 				0, 1, 19, 1, 0, 0, 1, 34, 1, 0,//
@@ -171,11 +171,11 @@ public class GrapTest extends TestCase {
 	public static void compareGeoRasterAndArray(final GeoRaster geoRaster,
 			final short[] sArray) throws Exception {
 		assertTrue(geoRaster.getWidth() * geoRaster.getHeight() == sArray.length);
-		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
+		final ImagePlus grapImagePlus = geoRaster.getImagePlus();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				assertTrue((short) grapImagePlus.getPixelValue(c, r) == sArray[r
-						* ncols + c]);
+				assertTrue((short) grapImagePlus.getProcessor().getPixelValue(
+						c, r) == sArray[r * ncols + c]);
 			}
 		}
 
@@ -184,24 +184,26 @@ public class GrapTest extends TestCase {
 	public static void compareGeoRasterAndArray(final GeoRaster geoRaster,
 			final float[] sArray) throws Exception {
 		assertTrue(geoRaster.getWidth() * geoRaster.getHeight() == sArray.length);
-		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
+		final ImagePlus grapImagePlus = geoRaster.getImagePlus();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				assertTrue((grapImagePlus.getPixelValue(c, r) == sArray[r
+				assertTrue((grapImagePlus.getProcessor().getPixelValue(c, r) == sArray[r
 						* ncols + c])
-						|| (Float.isNaN(grapImagePlus.getPixelValue(c, r)) && Float
-								.isNaN(sArray[r * ncols + c])));
+						|| (Float.isNaN(grapImagePlus.getProcessor()
+								.getPixelValue(c, r)) && Float.isNaN(sArray[r
+								* ncols + c])));
 			}
 		}
 	}
 
 	public static void printGeoRasterAndArray(final GeoRaster geoRaster,
 			final short[] sArray) throws Exception {
-		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
+		final ImagePlus grapImagePlus = geoRaster.getImagePlus();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			System.out.printf("raw %d\t", r);
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%4.0f", grapImagePlus.getPixelValue(c, r));
+				System.out.printf("%4.0f", grapImagePlus.getProcessor()
+						.getPixelValue(c, r));
 			}
 			System.out.printf("\t");
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
@@ -213,11 +215,12 @@ public class GrapTest extends TestCase {
 
 	public static void printGeoRasterAndArray(final GeoRaster geoRaster,
 			final float[] sArray) throws Exception {
-		final GrapImagePlus grapImagePlus = geoRaster.getGrapImagePlus();
+		final ImagePlus grapImagePlus = geoRaster.getImagePlus();
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			System.out.printf("raw %d\t", r);
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%4.0f", grapImagePlus.getPixelValue(c, r));
+				System.out.printf("%4.0f", grapImagePlus.getProcessor()
+						.getPixelValue(c, r));
 			}
 			System.out.printf("\t");
 			for (int c = 0; c < geoRaster.getWidth(); c++) {

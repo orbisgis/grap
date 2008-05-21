@@ -40,27 +40,13 @@
 package org.grap.io;
 
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
-import org.grap.model.GeoProcessorType;
-import org.grap.model.GeoRaster;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 /**
@@ -116,82 +102,80 @@ import org.grap.model.RasterMetadata;
  * NODATA_value -9999
  */
 public class EsriGRIDWriter {
-	
-
-	
-
 
 	private String fileName;
 
-	private GrapImagePlus grapImagePlus;
+	private ImagePlus grapImagePlus;
 
 	private RasterMetadata rasterMetadata;
 
-	
 	/**
 	 * This class permits to save a georaster onto a asc esri grid format.
+	 *
 	 * @param fileName
 	 * @param grapImagePlus
 	 * @param rasterMetadata
 	 */
 
-	public EsriGRIDWriter(final String fileName,
-			final GrapImagePlus grapImagePlus, final RasterMetadata rasterMetadata) {
+	public EsriGRIDWriter(final String fileName, final ImagePlus grapImagePlus,
+			final RasterMetadata rasterMetadata) {
 		this.fileName = fileName;
 		this.grapImagePlus = grapImagePlus;
 		this.rasterMetadata = rasterMetadata;
 	}
 
-	
-	public void save(){
-		
-		try{
-			
+	public void save() {
+
+		try {
+
 			FileWriter f = new FileWriter(fileName);
 			BufferedWriter fout = new BufferedWriter(f);
 			DecimalFormat df = new DecimalFormat("##.###");
 			df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
 			df.setDecimalSeparatorAlwaysShown(true);
-	
-			int ncols  = rasterMetadata.getNCols();
+
+			int ncols = rasterMetadata.getNCols();
 			int nrows = rasterMetadata.getNRows();
-			
+
 			fout.write("ncols " + Integer.toString(ncols));
 			fout.newLine();
 			fout.write("nrows " + Integer.toString(nrows));
 			fout.newLine();
-			fout.write("xllcorner " + Double.toString(rasterMetadata.getEnvelope().getMinX()));
+			fout.write("xllcorner "
+					+ Double.toString(rasterMetadata.getEnvelope().getMinX()));
 			fout.newLine();
-			fout.write("yllcorner " + Double.toString(rasterMetadata.getEnvelope().getMinY()));
+			fout.write("yllcorner "
+					+ Double.toString(rasterMetadata.getEnvelope().getMinY()));
 			fout.newLine();
-			fout.write("cellsize " + Double.toString(rasterMetadata.getPixelSize_X()));
+			fout.write("cellsize "
+					+ Double.toString(rasterMetadata.getPixelSize_X()));
 			fout.newLine();
-			fout.write("nodata_value " + Double.toString(rasterMetadata.getNoDataValue()));
+			fout.write("nodata_value "
+					+ Double.toString(rasterMetadata.getNoDataValue()));
 			fout.newLine();
-	
-			if (grapImagePlus.getType()!= ImagePlus.COLOR_RGB){
-			for (int i = 0; i < nrows; i++) {
-				for (int j = 0; j < ncols; j++) {
-					
-					float dValue = grapImagePlus.getPixelValue(j, i);
-					
-					if (Float.isNaN(dValue)){
-						fout.write(df.format(-9999f) + " ");
+
+			if (grapImagePlus.getType() != ImagePlus.COLOR_RGB) {
+				for (int i = 0; i < nrows; i++) {
+					for (int j = 0; j < ncols; j++) {
+
+						float dValue = grapImagePlus.getProcessor()
+								.getPixelValue(j, i);
+
+						if (Float.isNaN(dValue)) {
+							fout.write(df.format(-9999f) + " ");
+						} else {
+							fout.write(df.format(dValue) + " ");
+						}
 					}
-					else {
-					fout.write(df.format(dValue) + " ");
-					}
+					fout.newLine();
 				}
-				fout.newLine();
-			}
 			}
 			fout.close();
 			f.close();
-			
-		}catch(Exception e){
+
+		} catch (Exception e) {
 		}
-		
+
 	}
 
-	
 }

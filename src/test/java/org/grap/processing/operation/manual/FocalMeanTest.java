@@ -54,7 +54,7 @@ public class FocalMeanTest {
 		geoRaster.open();
 		final GeoRaster result = geoRaster.doOperation(new MeanFilter());
 		TestUtils.printFreeMemory();
-		result.getGrapImagePlus().getProcessor().setColorModel(
+		result.getImagePlus().getProcessor().setColorModel(
 				LutGenerator.colorModel("fire"));
 		TestUtils.printFreeMemory();
 		result.show();

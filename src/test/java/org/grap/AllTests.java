@@ -44,6 +44,7 @@ import junit.framework.TestSuite;
 
 import org.grap.io.BasicTest;
 import org.grap.io.GeoreferencingTest;
+import org.grap.io.NDVTest;
 import org.grap.processing.operation.CANImplementationsTest;
 import org.grap.processing.operation.CropTest;
 import org.grap.processing.operation.IdentityTest;
@@ -58,6 +59,7 @@ public class AllTests extends TestSuite {
 		// $JUnit-BEGIN$
 
 		suite.addTestSuite(BasicTest.class);
+		suite.addTestSuite(NDVTest.class);
 		suite.addTestSuite(GeoreferencingTest.class);
 
 		// Solve bug ticket #3736 before un-commenting following instruction

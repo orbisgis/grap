@@ -81,7 +81,6 @@
 					<includes>
 						<include>org/grap/AllTests.java</include>
 					</includes>
-					<argLine>-Xmx1024M</argLine>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -84,8 +84,8 @@ public class WetnessIndex implements Operation {
 
 
 		try {
-			m_Slope = geoRaster.getGrapImagePlus().getProcessor();
-			m_accFlow = accFlow.getGrapImagePlus().getProcessor();
+			m_Slope = geoRaster.getImagePlus().getProcessor();
+			m_accFlow = accFlow.getImagePlus().getProcessor();
 
 
 

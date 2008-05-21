@@ -60,7 +60,7 @@ public class MeanFilter implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 			imagePlus.getProcessor().convolve(KERNEL, 3, 3);
 
 			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster

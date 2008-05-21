@@ -54,7 +54,7 @@ public class Erode implements Operation {
 			throws OperationException {
 		try {
 			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getGrapImagePlus();
+			final ImagePlus imagePlus = geoRaster.getImagePlus();
 			imagePlus.getProcessor().erode();
 
 			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster

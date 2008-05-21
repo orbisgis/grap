@@ -78,6 +78,8 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -86,7 +88,6 @@ import java.util.TreeMap;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -95,8 +96,8 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	public final static short noDataValue = (short) Float.NaN;
 	public final static short riversStartValue = Short.MAX_VALUE;
 
-	private GrapImagePlus gipDirection;
-	private GrapImagePlus gipSlopesAccumulations;
+	private ImagePlus gipDirection;
+	private ImagePlus gipSlopesAccumulations;
 	private short[] strahlerStreamOrder;
 	private int riverThreshold;
 	private int ncols;
@@ -105,7 +106,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	public D8OpStrahlerStreamOrder(final GeoRaster grSlopesAccumulations,
 			final int riverThreshold) throws OperationException {
 		try {
-			gipSlopesAccumulations = grSlopesAccumulations.getGrapImagePlus();
+			gipSlopesAccumulations = grSlopesAccumulations.getImagePlus();
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
@@ -116,7 +117,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	public GeoRaster evaluateResult(GeoRaster geoRaster)
 			throws OperationException {
 		try {
-			gipDirection = geoRaster.getGrapImagePlus();
+			gipDirection = geoRaster.getImagePlus();
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
@@ -207,18 +208,18 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 			final int rIdx, final Set<Integer> nextJunctionsStack)
 			throws IOException {
 		final Integer next = SlopesUtilities
-				.fromCellSlopeDirectionToNextCellIndex(gipDirection,
-						ncols, nrows, idx, cIdx, rIdx);
+				.fromCellSlopeDirectionToNextCellIndex(gipDirection, ncols,
+						nrows, idx, cIdx, rIdx);
 		if (null != next) {
 			final Set<Integer> contributiveArea = SlopesUtilities
-					.fromCellSlopeDirectionIdxToContributiveArea(
-							gipDirection, ncols, nrows, next);
+					.fromCellSlopeDirectionIdxToContributiveArea(gipDirection,
+							ncols, nrows, next);
 			contributiveArea.remove(idx);
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
 				final int cContributor = contributor % ncols;
-				if (riverThreshold <= gipSlopesAccumulations.getPixelValue(
-						cContributor, rContributor)) {
+				if (riverThreshold <= gipSlopesAccumulations.getProcessor()
+						.getPixelValue(cContributor, rContributor)) {
 					// next cell is a junction cell
 					nextJunctionsStack.add(next);
 					return null;
@@ -233,14 +234,14 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 			return 1;
 		} else {
 			final Set<Integer> contributiveArea = SlopesUtilities
-					.fromCellSlopeDirectionIdxToContributiveArea(
-							gipDirection, ncols, nrows, idx);
+					.fromCellSlopeDirectionIdxToContributiveArea(gipDirection,
+							ncols, nrows, idx);
 			final SortedMap<Short, Short> tm = new TreeMap<Short, Short>();
 			for (int contributor : contributiveArea) {
 				final int rContributor = contributor / ncols;
 				final int cContributor = contributor % ncols;
-				if (riverThreshold <= gipSlopesAccumulations.getPixelValue(
-						cContributor, rContributor)) {
+				if (riverThreshold <= gipSlopesAccumulations.getProcessor()
+						.getPixelValue(cContributor, rContributor)) {
 					final short sso = strahlerStreamOrder[contributor];
 					if (tm.containsKey(sso)) {
 						tm.put(sso, (short) (tm.get(sso) + 1));

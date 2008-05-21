@@ -39,6 +39,9 @@
  */
 package org.grap.model;
 
+import ij.ImagePlus;
+
+import java.awt.Image;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.io.IOException;
@@ -47,24 +50,108 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
+/**
+ * <p>
+ * Interface to access raster data. The raster data accessible through this
+ * interface is the pixel array and the information to situate the raster on the
+ * world.
+ * </p>
+ * <p>
+ * It is possible to specify one value as no-data-value so that all the pixels
+ * equal to that value will be retrieved as no-data-value. What no-data-value is
+ * depends on the pixel type (byte, short, float or int). There are constants
+ * specifying the value for each pixel type.
+ * </p>
+ * <p>
+ * The pixel type depends on the image type so that ImagePlus.GRAY8 and
+ * ImagePlus.COLOR_256 images will contain bytes as pixel values,
+ * ImagePlus.GRAY16 will contain shorts, ImagePlus.GRAY32 floats and
+ * ImagePlus.COLOR_RGB will contain ints as pixel values
+ * </p>
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public interface GeoRaster {
+	static final byte BYTE_NAN_VALUE = Byte.MIN_VALUE;
+	static final short SHORT_NAN_VALUE = Short.MIN_VALUE;
+	static final float FLOAT_NAN_VALUE = Float.NaN;
+	static final int INT_NAN_VALUE = Integer.MIN_VALUE;
+
+	/**
+	 * Opens the raster.
+	 *
+	 * @throws IOException
+	 */
 	public abstract void open() throws IOException;
 
+	/**
+	 * Gets the raster metadata
+	 *
+	 * @return
+	 */
 	public abstract RasterMetadata getMetadata();
 
+	/**
+	 * Set the range of valid values in this raster. All the values in the
+	 * raster outside the interval specified by the min and max parameters will
+	 * treated as no-data-value. If no range is to be applied, Float.NaN should
+	 * be specified in both arguments.
+	 *
+	 * @param min
+	 *            Minimum valid value (inclusive)
+	 * @param max
+	 *            Maximum valid value (inclusive)
+	 * @throws IOException
+	 */
 	public abstract void setRangeValues(final double min, final double max)
 			throws IOException;
 
-	public abstract void setNodataValue(final float value);
+	/**
+	 * Specifies a value as no-data-value. To specify no no-data-value Float.NaN
+	 * should be specified as a parameter
+	 *
+	 *
+	 * @param value
+	 *            Value to be treated as no-data-value
+	 * @throws IOException
+	 */
+	public abstract void setNodataValue(final float value) throws IOException;
 
-	public abstract Point2D fromPixelGridCoordToRealWorldCoord(
-			final int xpixel, final int ypixel);
+	/**
+	 * Transforms the specified pixel in raster coordinates to real world
+	 * coordinates
+	 *
+	 * @param xpixel
+	 * @param ypixel
+	 * @return
+	 */
+	public abstract Point2D fromPixelToRealWorld(final int xpixel,
+			final int ypixel);
 
-	public abstract Point2D fromRealWorldCoordToPixelGridCoord(
-			final double mouseX, final double mouseY);
+	/**
+	 * Transforms the specified real world coordinate into a raster pixel
+	 * coordinate
+	 *
+	 * @param realWorldX
+	 * @param realWorldY
+	 * @return
+	 */
+	public abstract Point2D fromRealWorldToPixel(final double realWorldX,
+			final double realWorldY);
 
+	/**
+	 * Saves this raster in the specified destination
+	 *
+	 * @param dest
+	 * @throws IOException
+	 */
 	public abstract void save(final String dest) throws IOException;
 
+	/**
+	 * show the raster. Only for debugging purposes
+	 *
+	 * @throws IOException
+	 */
 	public abstract void show() throws IOException;
 
 	/**
@@ -102,17 +189,56 @@ public interface GeoRaster {
 	 */
 	public abstract int getType() throws IOException;
 
+	/**
+	 * This raster contains no information
+	 *
+	 * @return
+	 */
 	public abstract boolean isEmpty();
 
+	/**
+	 * Gets the minimum value in the raster taking into account the already
+	 * specified no-data-value
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public abstract double getMin() throws IOException;
 
+	/**
+	 * Gets the maximum value in the raster taking into account the already
+	 * specified no-data-value
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public abstract double getMax() throws IOException;
 
+	/**
+	 * Gets the raster width in pixels, this is, the number of columns
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public abstract int getWidth() throws IOException;
 
+	/**
+	 * Gets the raster height in pixels, this is, the number of rows
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public abstract int getHeight() throws IOException;
 
-	public GrapImagePlus getGrapImagePlus() throws IOException;
+	/**
+	 * Gets an ImageJ object containing all the pixels. This method is time
+	 * consuming and the return object is memory consuming. It's a good practice
+	 * to call it once and set it to null once it has been used.
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public ImagePlus getImagePlus() throws IOException;
 
 	/**
 	 * Gets this raster default color model
@@ -123,6 +249,65 @@ public interface GeoRaster {
 	 */
 	public abstract ColorModel getDefaultColorModel() throws IOException;
 
+	/**
+	 * Gets the value treated as no-data-value.
+	 *
+	 * @return The no-data-value or Float.NaN if no no-data-value is specified
+	 */
 	public abstract double getNoDataValue();
 
+	/**
+	 * Gets the pixels as an array of bytes
+	 *
+	 * @return
+	 * @throws IOException
+	 * @throws ClassCastException
+	 *             if this raster doesn't contain bytes, this is, getType()
+	 *             returns a value different from ImagePlus.GRAY8 or
+	 *             ImagePlus.COLOR_256
+	 */
+	public abstract byte[] getBytePixels() throws IOException;
+
+	/**
+	 * Gets the pixels as an array of shorts
+	 *
+	 * @return
+	 * @throws IOException
+	 * @throws ClassCastException
+	 *             if this raster doesn't contain shorts, this is, getType()
+	 *             returns a value different from ImagePlus.GRAY16
+	 */
+	public abstract short[] getShortPixels() throws IOException;
+
+	/**
+	 * Gets the pixels as an array of floats
+	 *
+	 * @return
+	 * @throws IOException
+	 * @throws ClassCastException
+	 *             if this raster doesn't contain floats, this is, getType()
+	 *             returns a value different from ImagePlus.GRAY32
+	 */
+	public abstract float[] getFloatPixels() throws IOException;
+
+	/**
+	 * Gets the pixels as an array of integers
+	 *
+	 * @return
+	 * @throws IOException
+	 * @throws ClassCastException
+	 *             if this raster doesn't contain integers, this is, getType()
+	 *             returns a value different from ImagePlus.COLOR_RGB
+	 */
+	public abstract int[] getIntPixels() throws IOException;
+
+	/**
+	 * Gets an image of all the raster. Those pixels equals to no-data-value and
+	 * those outside the range values are painted transparent
+	 *
+	 * @param cm
+	 * @return
+	 * @throws IOException
+	 */
+	public Image getImage(ColorModel cm) throws IOException;
 }

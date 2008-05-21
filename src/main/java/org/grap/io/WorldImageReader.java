@@ -54,7 +54,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.grap.model.GrapImagePlus;
 import org.grap.model.RasterMetadata;
 
 import com.sun.image.codec.jpeg.JPEGCodec;
@@ -182,7 +181,7 @@ public class WorldImageReader implements FileReader {
 		}
 	}
 
-	public GrapImagePlus readGrapImagePlus() throws IOException {
+	public ImagePlus readImagePlus() throws IOException {
 		// return new Opener().openImage(fileName);
 
 		ImagePlus imagePlus;
@@ -198,6 +197,6 @@ public class WorldImageReader implements FileReader {
 			imagePlus = null;
 		}
 
-		return new GrapImagePlus("", imageProcessor);
+		return new ImagePlus("", imageProcessor);
 	}
 }

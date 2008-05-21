@@ -63,7 +63,7 @@ public class CANImplementationsTest extends GrapTest {
 	public void testSeqAndParImplementations() throws Exception {
 		// load the DEM
 		// geoRasterSrc.open();
-		// final float[] DEM = geoRasterSrc.getPixelProvider().getFloatPixels();
+		// final float[] DEM = geoRasterSrc.getPixelProvider().getProcessor().getFloatPixels();
 		// final int nrows = geoRasterSrc.getHeight();
 		// final int ncols = geoRasterSrc.getWidth();
 

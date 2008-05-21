@@ -43,9 +43,9 @@ import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
-import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 
@@ -90,7 +90,7 @@ public class WatershedWithThresholdTest {
 		final GeoRaster grWatershedsWithThreshold = grSlopesAccumulations
 				.doOperation(watershedsWithThreshold);
 
-		grWatershedsWithThreshold.getGrapImagePlus().getProcessor()
+		grWatershedsWithThreshold.getImagePlus().getProcessor()
 				.setColorModel(LutGenerator.colorModel("fire"));
 		grWatershedsWithThreshold.show();
 		grWatershedsWithThreshold.save("../../datas2tests/tmp/2.tif");

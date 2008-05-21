@@ -107,7 +107,7 @@ public class Crop implements Operation {
 				final PolygonRoi roi = JTSConverter.toPolygonRoi(toPixel(
 						geoRaster, ring));
 
-				final ImageProcessor processor = geoRaster.getGrapImagePlus()
+				final ImageProcessor processor = geoRaster.getImagePlus()
 						.getProcessor();
 				processor.setRoi(roi);
 				final ImageProcessor result = processor.crop();
@@ -123,7 +123,8 @@ public class Crop implements Operation {
 								.getPixelSize_Y(), result.getWidth(), result
 								.getHeight(), geoRaster.getMetadata()
 								.getRotation_X(), geoRaster.getMetadata()
-								.getRotation_Y());
+								.getRotation_Y(), (float) geoRaster
+								.getMetadata().getNoDataValue());
 
 				return GeoRasterFactory.createGeoRaster(result, metadataResult);
 			} else {
@@ -143,7 +144,7 @@ public class Crop implements Operation {
 			if (roiEnv.intersects(geoRaster.getMetadata().getEnvelope())) {
 
 				final Rectangle2D pixelRoi = toPixel(geoRaster, roi);
-				final ImageProcessor processor = geoRaster.getGrapImagePlus()
+				final ImageProcessor processor = geoRaster.getImagePlus()
 						.getProcessor();
 				processor.setRoi((int) pixelRoi.getMinX(), (int) pixelRoi
 						.getMinY(), (int) pixelRoi.getWidth(), (int) pixelRoi
@@ -160,7 +161,8 @@ public class Crop implements Operation {
 								.getPixelSize_Y(), result.getWidth(), result
 								.getHeight(), geoRaster.getMetadata()
 								.getRotation_X(), geoRaster.getMetadata()
-								.getRotation_Y());
+								.getRotation_Y(), (float) geoRaster
+								.getMetadata().getNoDataValue());
 
 				return GeoRasterFactory.createGeoRaster(result, metadataResult);
 			} else {
@@ -175,7 +177,7 @@ public class Crop implements Operation {
 		final Coordinate[] realWorldCoords = ring.getCoordinates();
 		final Coordinate[] pixelGridCoords = new Coordinate[realWorldCoords.length];
 		for (int i = 0; i < pixelGridCoords.length; i++) {
-			final Point2D p = geoRaster.fromRealWorldCoordToPixelGridCoord(
+			final Point2D p = geoRaster.fromRealWorldToPixel(
 					realWorldCoords[i].x, realWorldCoords[i].y);
 			pixelGridCoords[i] = new Coordinate(p.getX(), p.getY());
 		}
@@ -185,9 +187,9 @@ public class Crop implements Operation {
 	private Rectangle2D toPixel(final GeoRaster geoRaster,
 			final Rectangle2D rectangle) {
 		// TODO following Math.ceil() must be validated !
-		final Point2D min = geoRaster.fromRealWorldCoordToPixelGridCoord(
+		final Point2D min = geoRaster.fromRealWorldToPixel(
 				rectangle.getMinX(), rectangle.getMinY());
-		final Point2D max = geoRaster.fromRealWorldCoordToPixelGridCoord(
+		final Point2D max = geoRaster.fromRealWorldToPixel(
 				rectangle.getMaxX(), rectangle.getMaxY());
 		final int minx = (int) Math.min(min.getX(), max.getX());
 		final int maxx = (int) Math
@@ -200,9 +202,9 @@ public class Crop implements Operation {
 
 	private Envelope toWorld(final GeoRaster geoRaster, Rectangle2D rectangle) {
 		// TODO following (int) cast must be validated !
-		final Point2D min = geoRaster.fromPixelGridCoordToRealWorldCoord(
+		final Point2D min = geoRaster.fromPixelToRealWorld(
 				(int) rectangle.getMinX(), (int) rectangle.getMinY());
-		final Point2D max = geoRaster.fromPixelGridCoordToRealWorldCoord(
+		final Point2D max = geoRaster.fromPixelToRealWorld(
 				(int) rectangle.getMaxX(), (int) rectangle.getMaxY());
 		final double minx = Math.min(min.getX(), max.getX());
 		final double maxx = Math.max(min.getX(), max.getX());
