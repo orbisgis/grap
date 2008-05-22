@@ -41,6 +41,7 @@ package org.grap.model;
 
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
@@ -93,6 +94,13 @@ public class GeoRasterFactory {
 		return createGeoRaster(ip, rasterMetadata);
 	}
 
+	public static GeoRaster createGeoRaster(int[] pixels,
+			RasterMetadata rasterMetadata) {
+		final ImageProcessor ip = new ColorProcessor(rasterMetadata.getNCols(),
+				rasterMetadata.getNRows(), pixels);
+		return createGeoRaster(ip, rasterMetadata);
+	}
+
 	public static GeoRaster createGeoRaster(
 			final ImageProcessor imageProcessor,
 			final RasterMetadata rasterMetadata) {
@@ -118,5 +126,33 @@ public class GeoRasterFactory {
 	public static GeoRaster createGeoRaster(final float[] pixels,
 			final RasterMetadata rasterMetadata) {
 		return createGeoRaster(pixels, null, rasterMetadata);
+	}
+
+	public static GeoRaster createGeoRaster(int[] intPixels,
+			RasterMetadata metadata, int imageType, double min, double max) {
+		final ImagePlus imagePlus = new ImagePlus("", new ColorProcessor(
+				metadata.getNCols(), metadata.getNRows(), intPixels));
+		return new DefaultGeoRaster(imagePlus, metadata, imageType, min, max);
+	}
+
+	public static GeoRaster createGeoRaster(byte[] bytePixels,
+			RasterMetadata metadata, int imageType, double min, double max) {
+		final ImagePlus imagePlus = new ImagePlus("", new ByteProcessor(
+				metadata.getNCols(), metadata.getNRows(), bytePixels, null));
+		return new DefaultGeoRaster(imagePlus, metadata, imageType, min, max);
+	}
+
+	public static GeoRaster createGeoRaster(short[] shortPixels,
+			RasterMetadata metadata, int imageType, double min, double max) {
+		final ImagePlus imagePlus = new ImagePlus("", new ShortProcessor(
+				metadata.getNCols(), metadata.getNRows(), shortPixels, null));
+		return new DefaultGeoRaster(imagePlus, metadata, imageType, min, max);
+	}
+
+	public static GeoRaster createGeoRaster(float[] floatPixels,
+			RasterMetadata metadata, int imageType, double min, double max) {
+		final ImagePlus imagePlus = new ImagePlus("", new FloatProcessor(
+				metadata.getNCols(), metadata.getNRows(), floatPixels, null));
+		return new DefaultGeoRaster(imagePlus, metadata, imageType, min, max);
 	}
 }

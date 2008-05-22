@@ -112,6 +112,16 @@ public class DefaultGeoRaster implements GeoRaster {
 	DefaultGeoRaster(final ImagePlus imagePlus, final RasterMetadata metadata) {
 		cachedImagePlus = imagePlus;
 		this.rasterMetadata = metadata;
+		cachedWidth = metadata.getNCols();
+		cachedHeight = metadata.getNRows();
+	}
+
+	public DefaultGeoRaster(ImagePlus imagePlus, RasterMetadata metadata,
+			int imageType, double min, double max) {
+		this(imagePlus, metadata);
+		cachedMin = min;
+		cachedMax = max;
+		cachedType = imageType;
 	}
 
 	// public methods
