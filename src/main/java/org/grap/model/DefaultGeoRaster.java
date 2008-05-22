@@ -124,6 +124,18 @@ public class DefaultGeoRaster implements GeoRaster {
 		cachedType = imageType;
 	}
 
+	public DefaultGeoRaster(FileReader fileReader) {
+		this.fileReader = fileReader;
+	}
+
+	public DefaultGeoRaster(FileReader fileReader, int imageType, double min,
+			double max) {
+		cachedMin = min;
+		cachedMax = max;
+		cachedType = imageType;
+		this.fileReader = fileReader;
+	}
+
 	// public methods
 	public void open() throws IOException {
 		logger.debug("Opening raster");
@@ -151,13 +163,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		resetMinAndMax();
 	}
 
-	public Point2D fromPixelToRealWorld(final int xpixel,
-			final int ypixel) {
+	public Point2D fromPixelToRealWorld(final int xpixel, final int ypixel) {
 		return rasterMetadata.toWorld(xpixel, ypixel);
 	}
 
-	public Point2D fromRealWorldToPixel(final double mouseX,
-			final double mouseY) {
+	public Point2D fromRealWorldToPixel(final double mouseX, final double mouseY) {
 		return rasterMetadata.toPixel(mouseX, mouseY);
 	}
 
