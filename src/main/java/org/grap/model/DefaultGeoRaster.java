@@ -138,7 +138,6 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	// public methods
 	public void open() throws IOException {
-		logger.debug("Opening raster");
 		if (null != fileReader) {
 			rasterMetadata = fileReader.readRasterMetadata();
 			noDataValue = getMetadata().getNoDataValue();
