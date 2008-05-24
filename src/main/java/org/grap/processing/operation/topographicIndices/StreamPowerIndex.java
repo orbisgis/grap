@@ -51,7 +51,19 @@ import org.orbisgis.progress.IProgressMonitor;
 
 
 
-
+/**
+ * The stream power index (Moore et al., 1992) is the first of several indices indicating
+ * possibke erosion by concentrated flow.
+ * 
+ * StreamPowerIndex =  A s * S
+ * 
+ * where 
+ * 
+ * A s =  unit contributing area (m²/m)
+ * S = slope gradient in radians (m/m) (tan B = S)
+ * @author bocher
+ *
+ */
 public class StreamPowerIndex implements Operation {
 
 
@@ -92,6 +104,8 @@ public class StreamPowerIndex implements Operation {
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
 
+			m_accFlow.multiply(cellSize * cellSize);
+			
 			m_StreamPowerIndex =   m_Slope.duplicate();
 
 			m_StreamPowerIndex.multiply(0);

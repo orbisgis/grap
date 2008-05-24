@@ -51,6 +51,19 @@ import org.orbisgis.progress.IProgressMonitor;
 
 
 
+/**
+ * 
+ * @author bocher
+ *
+ * The wetness index (Beven and Kirkby, 1979) gives an idea of the spatial pattern of soil
+ * moisture content.
+ * 
+ * Wetness =  ln(A s / S)
+ * where A s =  unit contributing area (m²/m)
+ * S = slope gradient in radians (m/m) (tan B = S)
+ * 
+ * To compute this index you need only a DEM.
+ */
 
 
 public class WetnessIndex implements Operation {
@@ -59,7 +72,6 @@ public class WetnessIndex implements Operation {
 	private int ncols;
 	private int nrows;
 	private ImageProcessor m_Slope;
-	private ImageProcessor slope;
 	private GeoRaster accFlow;
 	private ImageProcessor m_WetnessIndex;
 	private ImageProcessor m_accFlow;
@@ -87,11 +99,13 @@ public class WetnessIndex implements Operation {
 			m_Slope = geoRaster.getImagePlus().getProcessor();
 			m_accFlow = accFlow.getImagePlus().getProcessor();
 
-
+			
 
 			nrows = geoRaster.getMetadata().getNRows() ;
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
+
+			m_accFlow.multiply(cellSize * cellSize);
 
 			m_WetnessIndex =   m_Slope.duplicate();
 

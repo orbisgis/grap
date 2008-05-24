@@ -50,7 +50,22 @@ import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
 
-
+/**
+ * LS factor is a slope length index used by the Universal Soil Loss Equation (USLE).
+ * 
+ *  A procedure  for estimating the LS-factor using contributing area is provided by
+ *  Moore et al. (1993).
+ *  
+ *  LS = (n+1) [A s /22.13].n [sin B / 0.0896]m
+ *  
+ *  where  n = contant (0.4),
+ *  B = local slope gradient (degrees),
+ *  m = constant (1.3)
+ *  A s =  unit contributind area
+ *  
+ * @author bocher
+ *
+ */
 
 public class LSFactor implements Operation {
 
@@ -66,6 +81,9 @@ public class LSFactor implements Operation {
 	private ImageProcessor m_accFlow;
 	private float cellSize;
 
+	private final static double FACTOR = 180 / Math.PI;
+
+	
 	public LSFactor(final GeoRaster accFlow){
 		this.accFlow=accFlow;
 	}
@@ -84,14 +102,17 @@ public class LSFactor implements Operation {
 
 		try {
 			m_Slope = geoRaster.getImagePlus().getProcessor();
+			
+			//Convert the slope from radians to degrees.
+			m_Slope.multiply(FACTOR);
 			m_accFlow = accFlow.getImagePlus().getProcessor();
-
-
-
+			
 			nrows = geoRaster.getMetadata().getNRows() ;
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
 
+			m_accFlow.multiply(cellSize * cellSize);
+			
 			m_LSFactor =   m_Slope.duplicate();
 
 			m_LSFactor.multiply(0);
