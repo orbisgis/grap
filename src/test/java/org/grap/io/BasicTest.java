@@ -62,28 +62,18 @@ public class BasicTest extends GrapTest {
 	}
 
 	public void testJPGReader() throws Exception {
+		final GeoRaster gr = GeoRasterFactory
+				.createGeoRaster("src/test/resources/smallChezineLambert.jpg");
 
-		try {
-			final GeoRaster gr = GeoRasterFactory
-					.createGeoRaster("src/test/resources/smallChezineLambert.jpg");
-
-			gr.open();
-			assertTrue(true);
-		} catch (IOException e) {
-		}
+		gr.open();
+		assertTrue(true);
 	}
 
 	public void testXYZDEMReader() throws Exception {
-		try {
-			final GeoRaster gr = GeoRasterFactory
-					.createGeoRaster(externalData
-							+ "/xyz/MNT_Nantes_Lambert.xyz",
-							GeoProcessorType.FLOAT, 10);
-			gr.open();
-			gr.save(tmpData + "xyzdem.tif");
-
-		} catch (IOException e) {
-		}
+		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "/xyz/MNT_Nantes_Lambert.xyz", GeoProcessorType.FLOAT, 10);
+		gr.open();
+		gr.save(tmpData + "xyzdem.tif");
 	}
 
 	public void testPNGWithoutWorldFile() throws Exception {
