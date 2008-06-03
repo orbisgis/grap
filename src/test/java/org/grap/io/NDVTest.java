@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 
 public class NDVTest extends GrapTest {
 
@@ -82,4 +83,24 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getNoDataValue() == originalMin);
 		assertTrue(gr.getMin() != gr.getNoDataValue());
 	}
+
+	public void testNDVMinMax() throws Exception {
+		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
+		testNDVMinMax(GeoRasterFactory.createGeoRaster(new byte[] { -3, -4, 5,
+				6 }, md));
+		testNDVMinMax(GeoRasterFactory.createGeoRaster(new short[] { -3, -4, 5,
+				6 }, md));
+		testNDVMinMax(GeoRasterFactory.createGeoRaster(
+				new int[] { -3, -4, 5, 6 }, md));
+		testNDVMinMax(GeoRasterFactory.createGeoRaster(new float[] { -3, -4, 5,
+				6 }, md));
+	}
+
+	private void testNDVMinMax(final GeoRaster gr) throws IOException {
+		gr.open();
+		double min = gr.getMin();
+		gr.setNodataValue((float) (gr.getMin() + 1));
+		assertTrue(gr.getMin() == min);
+	}
+
 }
