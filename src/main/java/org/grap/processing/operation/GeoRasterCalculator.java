@@ -111,14 +111,5 @@ public class GeoRasterCalculator implements Operation {
 		return GeoRasterFactory.createNullGeoRaster();
 	}
 
-	// TODO: what is "createNewImage" used for ?
-	ImageProcessor createNewImage(ImageProcessor ip1, ImageProcessor ip2,
-			Calibration cal) {
-		final int width = Math.min(ip1.getWidth(), ip2.getWidth());
-		final int height = Math.min(ip1.getHeight(), ip2.getHeight());
-		final ImageProcessor ip3 = ip1.createProcessor(width, height);
-
-		ip3.insert(ip1, 0, 0);
-		return ip3;
-	}
+	
 }
