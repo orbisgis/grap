@@ -325,7 +325,7 @@ public class FillSinks implements Operation {
 	}
 
 	/**
-	 * TODO : This method must be extracted into a global class. It is used to
+	 * This method must be extracted into a global class. It is used to
 	 * calculate the distance for each pixels around a 3X3 matrix.
 	 *
 	 * @param iDir
