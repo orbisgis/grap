@@ -75,6 +75,7 @@ public class DefaultGeoRaster implements GeoRaster {
 	private ImagePlus cachedImagePlus;
 	private double maxThreshold = Double.NaN;
 	private double minThreshold = Double.NaN;
+
 	private float noDataValue = Float.NaN;
 
 	private Integer cachedType = null;
@@ -233,11 +234,8 @@ public class DefaultGeoRaster implements GeoRaster {
 		cachedHeight = imagePlus.getHeight();
 		cachedColorModel = imagePlus.getProcessor().getColorModel();
 
-		if ((cachedMin == null) || (cachedMax == null)) {			 
-			if (cachedType!=ImagePlus.COLOR_RGB){
-				 resetMinAndMax();
-			 }
-			
+		if ((cachedMin == null) || (cachedMax == null)) {
+			resetMinAndMax();
 		}
 
 	}
@@ -245,20 +243,28 @@ public class DefaultGeoRaster implements GeoRaster {
 	private void resetMinAndMax() throws IOException {
 		logger.debug("Recalculating min and max");
 		ImagePlus imagePlus = getImagePlus();
-		switch (imagePlus.getType()) {
-		case ImagePlus.COLOR_256:
-		case ImagePlus.GRAY8:
-			resetMinAndMaxByte((byte[]) imagePlus.getProcessor().getPixels());
-			break;
-		case ImagePlus.GRAY16:
-			resetMinAndMaxShort((short[]) imagePlus.getProcessor().getPixels());
-			break;
-		case ImagePlus.GRAY32:
-			resetMinAndMaxFloat((float[]) imagePlus.getProcessor().getPixels());
-			break;
-		case ImagePlus.COLOR_RGB:
-			resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
-			break;
+		if (noDataSpecified()) {
+			switch (imagePlus.getType()) {
+			case ImagePlus.COLOR_256:
+			case ImagePlus.GRAY8:
+				resetMinAndMaxByte((byte[]) imagePlus.getProcessor()
+						.getPixels());
+				break;
+			case ImagePlus.GRAY16:
+				resetMinAndMaxShort((short[]) imagePlus.getProcessor()
+						.getPixels());
+				break;
+			case ImagePlus.GRAY32:
+				resetMinAndMaxFloat((float[]) imagePlus.getProcessor()
+						.getPixels());
+				break;
+			case ImagePlus.COLOR_RGB:
+				resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
+				break;
+			}
+		} else {
+			cachedMin = imagePlus.getProcessor().getMin();
+			cachedMax = imagePlus.getProcessor().getMax();
 		}
 	}
 
@@ -270,20 +276,14 @@ public class DefaultGeoRaster implements GeoRaster {
 	private void resetMinAndMaxInt(int[] pixels) {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		
-		// TODO To be delated. Not necessary for RGB image.
-		/*for (int pixel : pixels) {
-			if (pixel == INT_NAN_VALUE) {
-				continue;
-			} else {
-				if (min > pixel) {
-					min = pixel;
-				}
-				if (max < pixel) {
-					max = pixel;
-				}
+		for (int pixel : pixels) {
+			if (min > pixel) {
+				min = pixel;
 			}
-		}*/
+			if (max < pixel) {
+				max = pixel;
+			}
+		}
 		cachedMin = new Double(min);
 		cachedMax = new Double(max);
 	}
@@ -292,15 +292,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		float min = Float.MAX_VALUE;
 		float max = Float.MIN_VALUE;
 		for (float pixel : pixels) {
-			if (pixel == FLOAT_NAN_VALUE) {
-				continue;
-			} else {
-				if (min > pixel) {
-					min = pixel;
-				}
-				if (max < pixel) {
-					max = pixel;
-				}
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
 			}
 		}
 		cachedMin = new Double(min);
@@ -311,15 +307,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		short min = Short.MAX_VALUE;
 		short max = Short.MIN_VALUE;
 		for (short pixel : pixels) {
-			if (pixel == SHORT_NAN_VALUE) {
-				continue;
-			} else {
-				if (min > pixel) {
-					min = pixel;
-				}
-				if (max < pixel) {
-					max = pixel;
-				}
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
 			}
 		}
 		cachedMin = new Double(min);
@@ -327,18 +319,14 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	private void resetMinAndMaxByte(byte[] pixels) {
-		int min = Integer.MAX_VALUE;
-		int max = Integer.MIN_VALUE;
+		byte min = Byte.MAX_VALUE;
+		byte max = Byte.MIN_VALUE;
 		for (byte pixel : pixels) {
-			if (pixel == BYTE_NAN_VALUE) {
-				continue;
-			} else {
-				if (min > pixel) {
-					min = pixel;
-				}
-				if (max < pixel) {
-					max = pixel;
-				}
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
 			}
 		}
 		cachedMin = new Double(min);
@@ -382,11 +370,8 @@ public class DefaultGeoRaster implements GeoRaster {
 		final ImagePlus grapImagePlus = (null == cachedImagePlus) ? fileReader
 				.readImagePlus() : cachedImagePlus;
 
-		if (grapImagePlus.getType() != ImagePlus.COLOR_RGB){
-			setNaNValues(grapImagePlus);
-	
-		}
-		
+		setNaNValues(grapImagePlus);
+
 		return grapImagePlus;
 	}
 
@@ -415,14 +400,8 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesInt(ImagePlus grapImagePlus) throws IOException {
 		int nan = (int) getNoDataValue();
-		int min = Integer.MIN_VALUE;
-		if (!Double.isNaN(minThreshold)) {
-			min = (int) minThreshold;
-		}
-		int max = Integer.MAX_VALUE;
-		if (!Double.isNaN(maxThreshold)) {
-			min = (int) maxThreshold;
-		}
+		int min = (int) minThreshold;
+		int max = (int) minThreshold;
 		int[] pixels = (int[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -437,14 +416,8 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesFloat(ImagePlus grapImagePlus) throws IOException {
 		float nan = (float) getNoDataValue();
-		float min = Float.NEGATIVE_INFINITY;
-		if (!Double.isNaN(minThreshold)) {
-			min = (float) minThreshold;
-		}
-		float max = Float.POSITIVE_INFINITY;
-		if (!Double.isNaN(maxThreshold)) {
-			min = (float) maxThreshold;
-		}
+		float min = (float) minThreshold;
+		float max = (float) minThreshold;
 		float[] pixels = (float[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -459,14 +432,8 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesShort(ImagePlus grapImagePlus) throws IOException {
 		short nan = (short) getNoDataValue();
-		short min = Short.MIN_VALUE;
-		if (!Double.isNaN(minThreshold)) {
-			min = (short) minThreshold;
-		}
-		short max = Short.MAX_VALUE;
-		if (!Double.isNaN(maxThreshold)) {
-			min = (short) maxThreshold;
-		}
+		short min = (short) minThreshold;
+		short max = (short) minThreshold;
 		short[] pixels = (short[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -481,14 +448,8 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesByte(ImagePlus grapImagePlus) throws IOException {
 		byte nan = (byte) getNoDataValue();
-		byte min = Byte.MIN_VALUE;
-		if (!Double.isNaN(minThreshold)) {
-			min = (byte) minThreshold;
-		}
-		byte max = Byte.MAX_VALUE;
-		if (!Double.isNaN(maxThreshold)) {
-			min = (byte) maxThreshold;
-		}
+		byte min = (byte) minThreshold;
+		byte max = (byte) minThreshold;
 		byte[] pixels = (byte[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -528,9 +489,6 @@ public class DefaultGeoRaster implements GeoRaster {
 		return (short[]) getImagePlus().getProcessor().getPixels();
 	}
 
-	/**
-	 * This method is used to 
-	 */
 	public Image getImage(ColorModel colorModel) throws IOException {
 		if (noDataSpecified()) {
 			colorModel = addFirstTransparentClass(colorModel);
@@ -544,11 +502,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			case ImagePlus.GRAY32:
 				logger.debug("getting image with ndv");
 				return getFloatImage(colorModel);
-			case ImagePlus.COLOR_RGB:
-				logger.debug("getting image without ndv RGB type");
-				return getImagePlus().getImage();
 			}
-			
 		}
 		logger.debug("getting image from imageJ");
 		ImagePlus imagePlus = getImagePlus();
