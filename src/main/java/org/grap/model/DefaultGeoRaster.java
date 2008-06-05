@@ -233,8 +233,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		cachedHeight = imagePlus.getHeight();
 		cachedColorModel = imagePlus.getProcessor().getColorModel();
 
-		if ((cachedMin == null) || (cachedMax == null)) {
-			resetMinAndMax();
+		if ((cachedMin == null) || (cachedMax == null)) {			 
+			if (cachedType!=ImagePlus.COLOR_RGB){
+				 resetMinAndMax();
+			 }
+			
 		}
 
 	}
@@ -267,7 +270,9 @@ public class DefaultGeoRaster implements GeoRaster {
 	private void resetMinAndMaxInt(int[] pixels) {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		for (int pixel : pixels) {
+		
+		// TODO To be delated. Not necessary for RGB image.
+		/*for (int pixel : pixels) {
 			if (pixel == INT_NAN_VALUE) {
 				continue;
 			} else {
@@ -278,7 +283,7 @@ public class DefaultGeoRaster implements GeoRaster {
 					max = pixel;
 				}
 			}
-		}
+		}*/
 		cachedMin = new Double(min);
 		cachedMax = new Double(max);
 	}
@@ -377,8 +382,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		final ImagePlus grapImagePlus = (null == cachedImagePlus) ? fileReader
 				.readImagePlus() : cachedImagePlus;
 
-		setNaNValues(grapImagePlus);
-
+		if (grapImagePlus.getType() != ImagePlus.COLOR_RGB){
+			setNaNValues(grapImagePlus);
+	
+		}
+		
 		return grapImagePlus;
 	}
 
@@ -520,6 +528,9 @@ public class DefaultGeoRaster implements GeoRaster {
 		return (short[]) getImagePlus().getProcessor().getPixels();
 	}
 
+	/**
+	 * This method is used to 
+	 */
 	public Image getImage(ColorModel colorModel) throws IOException {
 		if (noDataSpecified()) {
 			colorModel = addFirstTransparentClass(colorModel);
@@ -533,7 +544,11 @@ public class DefaultGeoRaster implements GeoRaster {
 			case ImagePlus.GRAY32:
 				logger.debug("getting image with ndv");
 				return getFloatImage(colorModel);
+			case ImagePlus.COLOR_RGB:
+				logger.debug("getting image without ndv RGB type");
+				return getImagePlus().getImage();
 			}
+			
 		}
 		logger.debug("getting image from imageJ");
 		ImagePlus imagePlus = getImagePlus();
