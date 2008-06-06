@@ -75,9 +75,7 @@ public class DefaultGeoRaster implements GeoRaster {
 	private ImagePlus cachedImagePlus;
 	private double maxThreshold = Double.NaN;
 	private double minThreshold = Double.NaN;
-
 	private float noDataValue = Float.NaN;
-
 	private Integer cachedType = null;
 	/**
 	 * Minimum valid value (inclusive)
@@ -243,28 +241,20 @@ public class DefaultGeoRaster implements GeoRaster {
 	private void resetMinAndMax() throws IOException {
 		logger.debug("Recalculating min and max");
 		ImagePlus imagePlus = getImagePlus();
-		if (noDataSpecified()) {
-			switch (imagePlus.getType()) {
-			case ImagePlus.COLOR_256:
-			case ImagePlus.GRAY8:
-				resetMinAndMaxByte((byte[]) imagePlus.getProcessor()
-						.getPixels());
-				break;
-			case ImagePlus.GRAY16:
-				resetMinAndMaxShort((short[]) imagePlus.getProcessor()
-						.getPixels());
-				break;
-			case ImagePlus.GRAY32:
-				resetMinAndMaxFloat((float[]) imagePlus.getProcessor()
-						.getPixels());
-				break;
-			case ImagePlus.COLOR_RGB:
-				resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
-				break;
-			}
-		} else {
-			cachedMin = imagePlus.getProcessor().getMin();
-			cachedMax = imagePlus.getProcessor().getMax();
+		switch (imagePlus.getType()) {
+		case ImagePlus.COLOR_256:
+		case ImagePlus.GRAY8:
+			resetMinAndMaxByte((byte[]) imagePlus.getProcessor().getPixels());
+			break;
+		case ImagePlus.GRAY16:
+			resetMinAndMaxShort((short[]) imagePlus.getProcessor().getPixels());
+			break;
+		case ImagePlus.GRAY32:
+			resetMinAndMaxFloat((float[]) imagePlus.getProcessor().getPixels());
+			break;
+		case ImagePlus.COLOR_RGB:
+			resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
+			break;
 		}
 	}
 
@@ -277,11 +267,15 @@ public class DefaultGeoRaster implements GeoRaster {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		for (int pixel : pixels) {
-			if (min > pixel) {
-				min = pixel;
-			}
-			if (max < pixel) {
-				max = pixel;
+			if (pixel == INT_NAN_VALUE) {
+				continue;
+			} else {
+				if (min > pixel) {
+					min = pixel;
+				}
+				if (max < pixel) {
+					max = pixel;
+				}
 			}
 		}
 		cachedMin = new Double(min);
@@ -292,11 +286,15 @@ public class DefaultGeoRaster implements GeoRaster {
 		float min = Float.MAX_VALUE;
 		float max = Float.MIN_VALUE;
 		for (float pixel : pixels) {
-			if (min > pixel) {
-				min = pixel;
-			}
-			if (max < pixel) {
-				max = pixel;
+			if (pixel == FLOAT_NAN_VALUE) {
+				continue;
+			} else {
+				if (min > pixel) {
+					min = pixel;
+				}
+				if (max < pixel) {
+					max = pixel;
+				}
 			}
 		}
 		cachedMin = new Double(min);
@@ -307,11 +305,15 @@ public class DefaultGeoRaster implements GeoRaster {
 		short min = Short.MAX_VALUE;
 		short max = Short.MIN_VALUE;
 		for (short pixel : pixels) {
-			if (min > pixel) {
-				min = pixel;
-			}
-			if (max < pixel) {
-				max = pixel;
+			if (pixel == SHORT_NAN_VALUE) {
+				continue;
+			} else {
+				if (min > pixel) {
+					min = pixel;
+				}
+				if (max < pixel) {
+					max = pixel;
+				}
 			}
 		}
 		cachedMin = new Double(min);
@@ -319,14 +321,18 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	private void resetMinAndMaxByte(byte[] pixels) {
-		byte min = Byte.MAX_VALUE;
-		byte max = Byte.MIN_VALUE;
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
 		for (byte pixel : pixels) {
-			if (min > pixel) {
-				min = pixel;
-			}
-			if (max < pixel) {
-				max = pixel;
+			if (pixel == BYTE_NAN_VALUE) {
+				continue;
+			} else {
+				if (min > pixel) {
+					min = pixel;
+				}
+				if (max < pixel) {
+					max = pixel;
+				}
 			}
 		}
 		cachedMin = new Double(min);
@@ -400,8 +406,14 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesInt(ImagePlus grapImagePlus) throws IOException {
 		int nan = (int) getNoDataValue();
-		int min = (int) minThreshold;
-		int max = (int) minThreshold;
+		int min = Integer.MIN_VALUE;
+		if (!Double.isNaN(minThreshold)) {
+			min = (int) minThreshold;
+		}
+		int max = Integer.MAX_VALUE;
+		if (!Double.isNaN(maxThreshold)) {
+			min = (int) maxThreshold;
+		}
 		int[] pixels = (int[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -416,8 +428,14 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesFloat(ImagePlus grapImagePlus) throws IOException {
 		float nan = (float) getNoDataValue();
-		float min = (float) minThreshold;
-		float max = (float) minThreshold;
+		float min = Float.NEGATIVE_INFINITY;
+		if (!Double.isNaN(minThreshold)) {
+			min = (float) minThreshold;
+		}
+		float max = Float.POSITIVE_INFINITY;
+		if (!Double.isNaN(maxThreshold)) {
+			min = (float) maxThreshold;
+		}
 		float[] pixels = (float[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -432,8 +450,14 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesShort(ImagePlus grapImagePlus) throws IOException {
 		short nan = (short) getNoDataValue();
-		short min = (short) minThreshold;
-		short max = (short) minThreshold;
+		short min = Short.MIN_VALUE;
+		if (!Double.isNaN(minThreshold)) {
+			min = (short) minThreshold;
+		}
+		short max = Short.MAX_VALUE;
+		if (!Double.isNaN(maxThreshold)) {
+			min = (short) maxThreshold;
+		}
 		short[] pixels = (short[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
@@ -448,8 +472,14 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void setNaNValuesByte(ImagePlus grapImagePlus) throws IOException {
 		byte nan = (byte) getNoDataValue();
-		byte min = (byte) minThreshold;
-		byte max = (byte) minThreshold;
+		byte min = Byte.MIN_VALUE;
+		if (!Double.isNaN(minThreshold)) {
+			min = (byte) minThreshold;
+		}
+		byte max = Byte.MAX_VALUE;
+		if (!Double.isNaN(maxThreshold)) {
+			min = (byte) maxThreshold;
+		}
 		byte[] pixels = (byte[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
