@@ -45,6 +45,7 @@ import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
@@ -52,23 +53,39 @@ import org.orbisgis.progress.IProgressMonitor;
 public class FillSinks implements Operation {
 
 	private double dEpsilon[] = new double[8];
+
 	private int R, C;
+
 	private int[] R0 = new int[8];
+
 	private int[] C0 = new int[8];
+
 	private int[] dR = new int[8];
+
 	private int[] dC = new int[8];
+
 	private int[] fR = new int[8];
+
 	private int[] fC = new int[8];
+
 	private int depth;
+
 	private int ncols;
+
 	private int nrows;
+
 	private ImageProcessor m_DEM;
+
 	private ImageProcessor m_Border;
+
 	private ImageProcessor m_PreprocessedDEM;
+
 	private Double minSlope = 0.01;
 
 	private final static int m_iOffsetX[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
+
 	private final static int m_iOffsetY[] = { 1, 1, 0, -1, -1, -1, 0, 1 };
+
 	private final static double INIT_ELEVATION = 50000D;
 
 	public FillSinks(Double minSlope) {
@@ -82,17 +99,18 @@ public class FillSinks implements Operation {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param geoRaster
 	 *            the DEM to be processed.
 	 * @param dMinSlope
 	 *            is a slope parameters used to fill the sink, to find an
-	 *            outlet.
+	 *            outlet. Method from Olivier Planchon & Frederic Darboux (2001)
 	 */
 
 	public GeoRaster processAlgorithm(final GeoRaster geoRaster,
 			final double minSlope) {
 
+		GeoRaster grResult = null;
 		try {
 
 			m_DEM = geoRaster.getImagePlus().getProcessor();
@@ -227,12 +245,16 @@ public class FillSinks implements Operation {
 				}
 			}
 
+			grResult = GeoRasterFactory.createGeoRaster(m_PreprocessedDEM,
+					geoRaster.getMetadata());
+
+			grResult.setNodataValue(Float.NaN);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return GeoRasterFactory.createGeoRaster(m_PreprocessedDEM, geoRaster
-				.getMetadata());
+		return grResult;
 
 	}
 
@@ -327,7 +349,7 @@ public class FillSinks implements Operation {
 	/**
 	 * This method must be extracted into a global class. It is used to
 	 * calculate the distance for each pixels around a 3X3 matrix.
-	 *
+	 * 
 	 * @param iDir
 	 * @return
 	 */

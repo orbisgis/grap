@@ -107,6 +107,13 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 
 	private float direction;
 
+	/**
+	 * This method build a constrained grid accumulation based on a D8 grid direction and a constrained
+	 * raster grid.
+	 * It can be used to evaluate the impact of hedgerow on runoff pathways.
+	 * 
+	 * @param constrainedGR
+	 */
 	public D8OpConstrainedAccumulation(GeoRaster constrainedGR) {
 		this.constrainedGR = constrainedGR;
 	}
