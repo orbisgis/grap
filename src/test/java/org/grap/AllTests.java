@@ -75,9 +75,9 @@ public class AllTests extends TestSuite {
 		// suite.addTestSuite(WatershedWithThresholdTest.class);
 		// suite.addTestSuite(StrahlerStreamOrderTest.class);
 
-		suite.addTestSuite(D8OpSlopeTest.class);
+//		suite.addTestSuite(D8OpSlopeTest.class);
 		suite.addTestSuite(D8OpDirectionTest.class);
-		suite.addTestSuite(D8OpAccumulationTest.class);
+//		suite.addTestSuite(D8OpAccumulationTest.class);
 
 		// $JUnit-END$
 		return suite;
