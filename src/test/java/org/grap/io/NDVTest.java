@@ -77,29 +77,34 @@ public class NDVTest extends GrapTest {
 				+ "grid/sample.asc");
 		gr.open();
 		float[] pixels = gr.getFloatPixels();
-		assertTrue(0 < nanCount(pixels));
+		int originalNDV = ndvCount(pixels);
+		assertTrue(0 < originalNDV);
 
 		gr.setNodataValue(Float.MAX_VALUE);
 		pixels = gr.getFloatPixels();
-		assertEquals(0, nanCount(pixels));
+		assertTrue(originalNDV == ndvCount(pixels));
+
+		gr.setNodataValue((float) gr.getMin());
+		pixels = gr.getFloatPixels();
+		assertTrue(originalNDV < ndvCount(pixels));
 	}
 
-	public void testNaN() throws Exception {
+	public void testNDVFromProcessor() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
 		gr.open();
 		gr.setNodataValue((float) gr.getMin());
 		float[] pixels = gr.getFloatPixels();
-		int nanCount = nanCount(pixels);
+		int nanCount = ndvCount(pixels);
 		pixels = (float[]) gr.getImagePlus().getProcessor().getPixels();
-		assertTrue(nanCount == nanCount(pixels));
+		assertTrue(nanCount == ndvCount(pixels));
 
 	}
 
-	private int nanCount(float[] pixels) {
+	private int ndvCount(float[] pixels) {
 		int nanCount = 0;
 		for (float f : pixels) {
-			if (Float.isNaN(f)) {
+			if (f == GeoRaster.FLOAT_NO_DATA_VALUE) {
 				nanCount++;
 			}
 		}
