@@ -126,8 +126,6 @@ public class NDVTest extends GrapTest {
 				6 }, md));
 		testNDVMinMax(GeoRasterFactory.createGeoRaster(new short[] { -3, -4, 5,
 				6 }, md));
-		testNDVMinMax(GeoRasterFactory.createGeoRaster(
-				new int[] { -3, -4, 5, 6 }, md));
 		testNDVMinMax(GeoRasterFactory.createGeoRaster(new float[] { -3, -4, 5,
 				6 }, md));
 	}
@@ -139,4 +137,27 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMin() == min);
 	}
 
+	public void testMinMax() throws Exception {
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+				+ "/geotif/littlelehavre.tif");
+
+		gr.open();
+		assertTrue(gr.getMin() < gr.getMax());
+	}
+
+	public void testNDVForRGB() throws Exception {
+		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(new int[] { -3, -4, 5,
+				6 }, md);
+		try {
+			gr.setNodataValue(23);
+			assertTrue(false);
+		} catch (UnsupportedOperationException e) {
+		}
+		try {
+			gr.setRangeValues(23, 24);
+			assertTrue(false);
+		} catch (UnsupportedOperationException e) {
+		}
+	}
 }

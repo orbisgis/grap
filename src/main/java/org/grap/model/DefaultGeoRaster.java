@@ -38,6 +38,7 @@ package org.grap.model;
 
 import ij.ImagePlus;
 import ij.io.FileSaver;
+import ij.process.ImageProcessor;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -148,12 +149,20 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public void setRangeValues(final double min, final double max)
 			throws IOException {
+		if (getType() == ImagePlus.COLOR_RGB) {
+			throw new UnsupportedOperationException("RGB images doesn't "
+					+ "allow no-data-value");
+		}
 		minThreshold = min;
 		maxThreshold = max;
 		resetMinAndMax();
 	}
 
 	public void setNodataValue(final float value) throws IOException {
+		if (getType() == ImagePlus.COLOR_RGB) {
+			throw new UnsupportedOperationException("RGB images doesn't "
+					+ "allow no-data-value");
+		}
 		noDataValue = value;
 		resetMinAndMax();
 	}
@@ -237,53 +246,34 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	private void resetMinAndMax() throws IOException {
 		logger.debug("Recalculating min and max");
-		ImagePlus imagePlus = getImagePlus();
-		switch (imagePlus.getType()) {
+		switch (getType()) {
 		case ImagePlus.COLOR_256:
 		case ImagePlus.GRAY8:
-			resetMinAndMaxByte((byte[]) imagePlus.getProcessor().getPixels());
+			resetMinAndMaxByte(getBytePixels());
 			break;
 		case ImagePlus.GRAY16:
-			resetMinAndMaxShort((short[]) imagePlus.getProcessor().getPixels());
+			resetMinAndMaxShort(getShortPixels());
 			break;
 		case ImagePlus.GRAY32:
-			resetMinAndMaxFloat((float[]) imagePlus.getProcessor().getPixels());
+			resetMinAndMaxFloat(getFloatPixels());
 			break;
 		case ImagePlus.COLOR_RGB:
-			resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
-			break;
+			ImageProcessor processor = getImagePlus().getProcessor();
+			cachedMin = processor.getMin();
+			cachedMax = processor.getMax();
 		}
 	}
 
-	private boolean noDataSpecified() {
+	private boolean noDataSpecified() throws IOException {
 		return !Double.isNaN(getNoDataValue()) || !Double.isNaN(minThreshold)
 				|| !Double.isNaN(maxThreshold);
-	}
-
-	private void resetMinAndMaxInt(int[] pixels) {
-		int min = Integer.MAX_VALUE;
-		int max = Integer.MIN_VALUE;
-		for (int pixel : pixels) {
-			if (pixel == INT_NAN_VALUE) {
-				continue;
-			} else {
-				if (min > pixel) {
-					min = pixel;
-				}
-				if (max < pixel) {
-					max = pixel;
-				}
-			}
-		}
-		cachedMin = new Double(min);
-		cachedMax = new Double(max);
 	}
 
 	private void resetMinAndMaxFloat(float[] pixels) {
 		float min = Float.MAX_VALUE;
 		float max = Float.MIN_VALUE;
 		for (float pixel : pixels) {
-			if (pixel == FLOAT_NAN_VALUE) {
+			if (pixel == FLOAT_NO_DATA_VALUE) {
 				continue;
 			} else {
 				if (min > pixel) {
@@ -302,7 +292,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		short min = Short.MAX_VALUE;
 		short max = Short.MIN_VALUE;
 		for (short pixel : pixels) {
-			if (pixel == SHORT_NAN_VALUE) {
+			if (pixel == SHORT_NO_DATA_VALUE) {
 				continue;
 			} else {
 				if (min > pixel) {
@@ -321,7 +311,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		for (byte pixel : pixels) {
-			if (pixel == BYTE_NAN_VALUE) {
+			if (pixel == BYTE_NO_DATA_VALUE) {
 				continue;
 			} else {
 				if (min > pixel) {
@@ -373,27 +363,24 @@ public class DefaultGeoRaster implements GeoRaster {
 		final ImagePlus grapImagePlus = (null == cachedImagePlus) ? fileReader
 				.readImagePlus() : cachedImagePlus;
 
-		setNaNValues(grapImagePlus);
+		setNDVValues(grapImagePlus);
 
 		return grapImagePlus;
 	}
 
-	private void setNaNValues(ImagePlus grapImagePlus) throws IOException {
+	private void setNDVValues(ImagePlus grapImagePlus) throws IOException {
 		if (noDataSpecified()) {
 			logger.debug("setting ndv pixels");
 			switch (grapImagePlus.getType()) {
 			case ImagePlus.COLOR_256:
 			case ImagePlus.GRAY8:
-				setNaNValuesByte(grapImagePlus);
+				setNDVValuesByte(grapImagePlus);
 				break;
 			case ImagePlus.GRAY16:
-				setNaNValuesShort(grapImagePlus);
+				setNDVValuesShort(grapImagePlus);
 				break;
 			case ImagePlus.GRAY32:
-				setNaNValuesFloat(grapImagePlus);
-				break;
-			case ImagePlus.COLOR_RGB:
-				setNaNValuesInt(grapImagePlus);
+				setNDVValuesFloat(grapImagePlus);
 				break;
 			}
 		} else {
@@ -401,29 +388,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 	}
 
-	private void setNaNValuesInt(ImagePlus grapImagePlus) throws IOException {
-		int nan = (int) getNoDataValue();
-		int min = Integer.MIN_VALUE;
-		if (!Double.isNaN(minThreshold)) {
-			min = (int) minThreshold;
-		}
-		int max = Integer.MAX_VALUE;
-		if (!Double.isNaN(maxThreshold)) {
-			min = (int) maxThreshold;
-		}
-		int[] pixels = (int[]) grapImagePlus.getProcessor().getPixels();
-		for (int i = 0; i < pixels.length; i++) {
-			if (pixels[i] < min) {
-				pixels[i] = INT_NAN_VALUE;
-			} else if (pixels[i] > max) {
-				pixels[i] = INT_NAN_VALUE;
-			} else if (pixels[i] == nan) {
-				pixels[i] = INT_NAN_VALUE;
-			}
-		}
-	}
-
-	private void setNaNValuesFloat(ImagePlus grapImagePlus) throws IOException {
+	private void setNDVValuesFloat(ImagePlus grapImagePlus) throws IOException {
 		float nan = (float) getNoDataValue();
 		float min = Float.NEGATIVE_INFINITY;
 		if (!Double.isNaN(minThreshold)) {
@@ -436,16 +401,16 @@ public class DefaultGeoRaster implements GeoRaster {
 		float[] pixels = (float[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
-				pixels[i] = FLOAT_NAN_VALUE;
+				pixels[i] = FLOAT_NO_DATA_VALUE;
 			} else if (pixels[i] > max) {
-				pixels[i] = FLOAT_NAN_VALUE;
+				pixels[i] = FLOAT_NO_DATA_VALUE;
 			} else if (pixels[i] == nan) {
-				pixels[i] = FLOAT_NAN_VALUE;
+				pixels[i] = FLOAT_NO_DATA_VALUE;
 			}
 		}
 	}
 
-	private void setNaNValuesShort(ImagePlus grapImagePlus) throws IOException {
+	private void setNDVValuesShort(ImagePlus grapImagePlus) throws IOException {
 		short nan = (short) getNoDataValue();
 		short min = Short.MIN_VALUE;
 		if (!Double.isNaN(minThreshold)) {
@@ -458,16 +423,16 @@ public class DefaultGeoRaster implements GeoRaster {
 		short[] pixels = (short[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
-				pixels[i] = SHORT_NAN_VALUE;
+				pixels[i] = SHORT_NO_DATA_VALUE;
 			} else if (pixels[i] > max) {
-				pixels[i] = SHORT_NAN_VALUE;
+				pixels[i] = SHORT_NO_DATA_VALUE;
 			} else if (pixels[i] == nan) {
-				pixels[i] = SHORT_NAN_VALUE;
+				pixels[i] = SHORT_NO_DATA_VALUE;
 			}
 		}
 	}
 
-	private void setNaNValuesByte(ImagePlus grapImagePlus) throws IOException {
+	private void setNDVValuesByte(ImagePlus grapImagePlus) throws IOException {
 		byte nan = (byte) getNoDataValue();
 		byte min = Byte.MIN_VALUE;
 		if (!Double.isNaN(minThreshold)) {
@@ -480,11 +445,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		byte[] pixels = (byte[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
 			if (pixels[i] < min) {
-				pixels[i] = BYTE_NAN_VALUE;
+				pixels[i] = BYTE_NO_DATA_VALUE;
 			} else if (pixels[i] > max) {
-				pixels[i] = BYTE_NAN_VALUE;
+				pixels[i] = BYTE_NO_DATA_VALUE;
 			} else if (pixels[i] == nan) {
-				pixels[i] = BYTE_NAN_VALUE;
+				pixels[i] = BYTE_NO_DATA_VALUE;
 			}
 		}
 	}
@@ -496,7 +461,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		return cachedColorModel;
 	}
 
-	public double getNoDataValue() {
+	public double getNoDataValue() throws IOException {
 		return noDataValue;
 	}
 
@@ -516,6 +481,9 @@ public class DefaultGeoRaster implements GeoRaster {
 		return (short[]) getImagePlus().getProcessor().getPixels();
 	}
 
+	/**
+	 * This method is used to
+	 */
 	public Image getImage(ColorModel colorModel) throws IOException {
 		if (noDataSpecified()) {
 			colorModel = addFirstTransparentClass(colorModel);
@@ -529,7 +497,11 @@ public class DefaultGeoRaster implements GeoRaster {
 			case ImagePlus.GRAY32:
 				logger.debug("getting image with ndv");
 				return getFloatImage(colorModel);
+			case ImagePlus.COLOR_RGB:
+				logger.debug("getting image without ndv RGB type");
+				return getImagePlus().getImage();
 			}
+
 		}
 		logger.debug("getting image from imageJ");
 		ImagePlus imagePlus = getImagePlus();

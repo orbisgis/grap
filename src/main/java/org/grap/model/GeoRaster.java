@@ -57,7 +57,8 @@ import org.orbisgis.progress.IProgressMonitor;
  * It is possible to specify one value as no-data-value so that all the pixels
  * equal to that value will be retrieved as no-data-value. What no-data-value is
  * depends on the pixel type (byte, short, float or int). There are constants
- * specifying the value for each pixel type.
+ * specifying the value for each pixel type. Note that this functionality is not
+ * available for RGB images
  * </p>
  * <p>
  * The pixel type depends on the image type so that ImagePlus.GRAY8 and
@@ -69,10 +70,24 @@ import org.orbisgis.progress.IProgressMonitor;
  * @author Fernando Gonzalez Cortes
  */
 public interface GeoRaster {
-	static final byte BYTE_NAN_VALUE = Byte.MIN_VALUE;
-	static final short SHORT_NAN_VALUE = Short.MIN_VALUE;
-	static final float FLOAT_NAN_VALUE = Float.NaN;
-	static final int INT_NAN_VALUE = Integer.MIN_VALUE;
+
+	/**
+	 * Value returned by byte rasters (ImagePlus.COLOR_256 and ImagePlus.GRAY8)
+	 * when a pixel contains no data
+	 */
+	static final byte BYTE_NO_DATA_VALUE = Byte.MIN_VALUE;
+
+	/**
+	 * Value returned by short rasters (ImagePlus.GRAY16) when a pixel contains
+	 * no data
+	 */
+	static final short SHORT_NO_DATA_VALUE = Short.MIN_VALUE;
+
+	/**
+	 * Value returned by float rasters (ImagePlus.GRAY32) when a pixel contains
+	 * no data
+	 */
+	static final float FLOAT_NO_DATA_VALUE = -9999;
 
 	/**
 	 * Opens the raster.
@@ -92,27 +107,34 @@ public interface GeoRaster {
 	 * Set the range of valid values in this raster. All the values in the
 	 * raster outside the interval specified by the min and max parameters will
 	 * treated as no-data-value. If no range is to be applied, Float.NaN should
-	 * be specified in both arguments.
+	 * be specified in both arguments. This method is not valid for RGB images:
+	 * ImagePlus.COLOR_RGB
 	 *
 	 * @param min
 	 *            Minimum valid value (inclusive)
 	 * @param max
 	 *            Maximum valid value (inclusive)
 	 * @throws IOException
+	 * @throws UnsupportedOperationException
+	 *             If this raster is RGB
 	 */
 	public abstract void setRangeValues(final double min, final double max)
-			throws IOException;
+			throws IOException, UnsupportedOperationException;
 
 	/**
 	 * Specifies a value as no-data-value. To specify no no-data-value Float.NaN
-	 * should be specified as a parameter
+	 * should be specified as a parameter. This method is not valid for RGB
+	 * images: ImagePlus.COLOR_RGB
 	 *
 	 *
 	 * @param value
 	 *            Value to be treated as no-data-value
 	 * @throws IOException
+	 * @throws UnsupportedOperationException
+	 *             If this raster is RGB
 	 */
-	public abstract void setNodataValue(final float value) throws IOException;
+	public abstract void setNodataValue(final float value) throws IOException,
+			UnsupportedOperationException;
 
 	/**
 	 * Transforms the specified pixel in raster coordinates to real world
@@ -249,9 +271,10 @@ public interface GeoRaster {
 	/**
 	 * Gets the value treated as no-data-value.
 	 *
-	 * @return The no-data-value or Float.NaN if no no-data-value is specified
+	 * @return The no-data-value or Float.NaN if no no-data-value is specified.
+	 * @throws IOException
 	 */
-	public abstract double getNoDataValue();
+	public abstract double getNoDataValue() throws IOException;
 
 	/**
 	 * Gets the pixels as an array of bytes
