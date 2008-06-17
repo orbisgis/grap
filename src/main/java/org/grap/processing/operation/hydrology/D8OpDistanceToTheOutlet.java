@@ -78,8 +78,6 @@
  */
 package org.grap.processing.operation.hydrology;
 
-import ij.ImagePlus;
-
 import java.io.IOException;
 import java.util.Stack;
 
@@ -90,25 +88,27 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class D8OpDistanceToTheOutlet extends D8OpAbstract implements Operation {
-	public static final float noDataValue = Float.NaN;
+	public static final float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
+	public final static float notProcessedYet = 0;
 
-	private ImagePlus ipDirection;
+	private HydrologyUtilities hydrologyUtilities;
 	private float[] d8Distances;
 	private int ncols;
 	private int nrows;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster direction)
 			throws OperationException {
 		try {
-			ipDirection = geoRaster.getImagePlus();
-			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			hydrologyUtilities = new HydrologyUtilities(direction);
+
+			final RasterMetadata rasterMetadata = direction.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
 			calculateDistances();
 			final GeoRaster grDistancesToTheOutlet = GeoRasterFactory
 					.createGeoRaster(d8Distances, rasterMetadata);
-			grDistancesToTheOutlet.setNodataValue(noDataValue);
+			grDistancesToTheOutlet.setNodataValue(ndv);
 			return grDistancesToTheOutlet;
 		} catch (IOException e) {
 			throw new OperationException(e);
@@ -119,60 +119,25 @@ public class D8OpDistanceToTheOutlet extends D8OpAbstract implements Operation {
 		// distances' array initialization
 		d8Distances = new float[nrows * ncols];
 
-		int i = 0;
-
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++, i++) {
-				if ((0 == r)
-						|| (nrows == r + 1)
-						|| (0 == c)
-						|| (ncols == c + 1)
-						|| Float.isNaN(ipDirection.getProcessor()
-								.getPixelValue(c, r))) {
-					d8Distances[i] = noDataValue;
-				} else if (0 == d8Distances[i]) {
+		for (int y = 0, i = 0; y < nrows; y++) {
+			for (int x = 0; x < ncols; x++, i++) {
+				if (hydrologyUtilities.isOnEdge(x, y)
+						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
+					d8Distances[i] = ndv;
+				} else if (notProcessedYet == d8Distances[i]) {
 					// current cell value has not been yet modified...
-					findOutletAndCalculateDistances(i);
+					final Stack<HydroCell> path = new Stack<HydroCell>();
+					HydroCell top = hydrologyUtilities.shortHydrologicalPath(i,
+							path, d8Distances, 1);
+
+					float accumulDist = (null == top) ? 0 : top.dist;
+					while (!path.empty()) {
+						HydroCell cell = path.pop();
+						accumulDist += cell.dist;
+						d8Distances[cell.index] = accumulDist;
+					}
 				}
-				// print();
 			}
 		}
-	}
-
-	private void findOutletAndCalculateDistances(final int i)
-			throws IOException {
-		final Stack<Integer> stack = new Stack<Integer>();
-		Integer curCellIdx = i;
-		boolean goOn = true;
-		int beginning = 0;
-
-		stack.add(curCellIdx);
-		do {
-			final Integer nextCellIdx = SlopesUtilities
-					.fromCellSlopeDirectionToNextCellIndex(ipDirection, ncols,
-							nrows, curCellIdx);
-			if ((null != nextCellIdx) && (0 == d8Distances[nextCellIdx])) {
-				stack.add(nextCellIdx);
-				curCellIdx = nextCellIdx;
-			} else {
-				goOn = false;
-				beginning = (null == nextCellIdx) ? -1
-						: (int) d8Distances[nextCellIdx];
-			}
-		} while (goOn);
-
-		while (!stack.empty()) {
-			d8Distances[stack.pop()] = ++beginning;
-		}
-	}
-
-	void print() {
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++) {
-				System.out.printf("%3.0f ", d8Distances[r * ncols + c]);
-			}
-			System.out.println();
-		}
-		System.out.println("= = = = ");
 	}
 }

@@ -42,7 +42,6 @@ import java.io.IOException;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;

@@ -52,7 +52,7 @@ public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 		Operation {
 	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+			final HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(
 					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
@@ -61,14 +61,13 @@ public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 			int i = 0;
 			for (int y = 0; y < nrows; y++) {
 				for (int x = 0; x < ncols; x++, i++) {
-					slopes[i] = pixelUtilities.getSlopeInRadians(x, y);
+					slopes[i] = hydrologyUtilities.getSlopeInRadians(x, y);
 				}
 			}
 
 			final GeoRaster grSlopeInRadians = GeoRasterFactory
 					.createGeoRaster(slopes, rasterMetadata);
-			grSlopeInRadians
-					.setNodataValue(HydrologyUtilities.noDataValueForAngle);
+			grSlopeInRadians.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
 			return grSlopeInRadians;
 		} catch (IOException e) {
 			throw new OperationException(e);
@@ -90,8 +89,7 @@ public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 			final GeoRaster grSlopeInRadians = GeoRasterFactory
 					.createGeoRaster((float[]) ccan.getCANValues(),
 							rasterMetadata);
-			grSlopeInRadians
-					.setNodataValue(HydrologyUtilities.noDataValueForAngle);
+			grSlopeInRadians.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
 			return grSlopeInRadians;
 		} catch (IOException e) {
 			throw new OperationException(e);

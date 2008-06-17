@@ -60,7 +60,6 @@ public class AllTests extends TestSuite {
 		suite.addTestSuite(GeoreferencingTest.class);
 
 		// Solve bug ticket #3736 before un-commenting following instruction
-		// :
 		// suite.addTestSuite(TransparencyTest.class);
 
 		// suite.addTestSuite(SetRangeValuesTest.class);
@@ -68,16 +67,11 @@ public class AllTests extends TestSuite {
 		suite.addTestSuite(CropTest.class);
 		suite.addTestSuite(IdentityTest.class);
 
-		// suite.addTestSuite(D8OpAllOutletsTest.class);
 		suite.addTestSuite(CANImplementationsTest.class);
-		// suite.addTestSuite(AllWatershedsTest.class);
-		// suite.addTestSuite(WatershedFromOutletIndexTest.class);
-		// suite.addTestSuite(WatershedWithThresholdTest.class);
-		// suite.addTestSuite(StrahlerStreamOrderTest.class);
 
-//		suite.addTestSuite(D8OpSlopeTest.class);
+		suite.addTestSuite(D8OpSlopeTest.class);
 		suite.addTestSuite(D8OpDirectionTest.class);
-//		suite.addTestSuite(D8OpAccumulationTest.class);
+		suite.addTestSuite(D8OpAccumulationTest.class);
 
 		// $JUnit-END$
 		return suite;

@@ -75,8 +75,6 @@
  */
 package org.grap.processing.operation.hydrology;
 
-import ij.ImagePlus;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -87,12 +85,14 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
-public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operation {
-	public final static byte noDataValue = 0;
+public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements
+		Operation {
+	public final static byte ndv = 0;
+	public final static byte doNotBelongsToTheWatershed = ndv;
 	public final static byte belongsToTheWatershed = 1;
 
-	private ImagePlus ppSlopesDirections;
-	private byte[] sameWatershed;
+	private HydrologyUtilities hydrologyUtilities;
+	private float[] sameWatershed;
 	private int ncols;
 	private int nrows;
 
@@ -103,17 +103,18 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operat
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster direction)
 			throws OperationException {
 		try {
-			ppSlopesDirections = geoRaster.getImagePlus();
-			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			hydrologyUtilities = new HydrologyUtilities(direction);
+
+			final RasterMetadata rasterMetadata = direction.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
 			computeSameWatershed();
 			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
 					sameWatershed, rasterMetadata);
-			grAllOutlets.setNodataValue(noDataValue);
+			grAllOutlets.setNodataValue(ndv);
 			System.out.printf("Watershed for (%d,%d)\n", outletIdx % ncols,
 					outletIdx / ncols);
 			return grAllOutlets;
@@ -123,12 +124,20 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operat
 	}
 
 	private void computeSameWatershed() throws IOException {
-		sameWatershed = new byte[nrows * ncols];
+		sameWatershed = new float[nrows * ncols];
 		Set<Integer> parentsCell = new HashSet<Integer>();
 		parentsCell.add(outletIdx);
 		do {
 			parentsCell = computeSameWatershed(parentsCell);
 		} while (0 < parentsCell.size());
+
+		// TODO : remove !!!!!!!
+		// for (int y = 0; y < nrows; y++) {
+		// for (int x = 0; x < ncols; x++) {
+		// System.out.println(sameWatershed[x + y * ncols] + " ");
+		// }
+		// System.out.println();
+		// }
 	}
 
 	private Set<Integer> computeSameWatershed(final Set<Integer> sonsCell)
@@ -136,9 +145,8 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements Operat
 		final Set<Integer> parentsCell = new HashSet<Integer>();
 		for (int sonIdx : sonsCell) {
 			sameWatershed[sonIdx] = belongsToTheWatershed;
-			parentsCell.addAll(SlopesUtilities
-					.fromCellSlopeDirectionIdxToContributiveArea(
-							ppSlopesDirections, ncols, nrows, sonIdx));
+			parentsCell.addAll(hydrologyUtilities
+					.fromCellSlopeDirectionIdxToContributiveArea(sonIdx));
 		}
 		return parentsCell;
 	}

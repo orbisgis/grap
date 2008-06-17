@@ -65,7 +65,7 @@ public class SlopesUtilities {
 	private final static short[] neighboursDirection = new short[] { 5, 6, 7,
 			8, 1, 2, 3, 4 };
 
-	public static Set<Integer> fromCellSlopeDirectionIdxToContributiveArea(
+	private static Set<Integer> fromCellSlopeDirectionIdxToContributiveArea(
 			final ImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int cellIdx) throws IOException {
 		final Set<Integer> contributiveArea = new HashSet<Integer>();
@@ -87,7 +87,7 @@ public class SlopesUtilities {
 		return contributiveArea;
 	}
 
-	public static Integer fromCellSlopeDirectionToNextCellIndex(
+	private static Integer fromCellSlopeDirectionToNextCellIndex(
 			final ImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int i) throws IOException {
 		final int r = i / ncols;
@@ -96,7 +96,7 @@ public class SlopesUtilities {
 				ncols, nrows, i, c, r);
 	}
 
-	public static Integer fromCellSlopeDirectionToNextCellIndex(
+	private static Integer fromCellSlopeDirectionToNextCellIndex(
 			final ImagePlus gipSlopesDirections, final int ncols,
 			final int nrows, final int i, final int c, final int r)
 			throws IOException {
@@ -133,7 +133,7 @@ public class SlopesUtilities {
 		return ((0 > r) || (nrows <= r) || (0 > c) || (ncols <= c)) ? null : i;
 	}
 
-	public static boolean isARiverStart(final ImagePlus gipSlopesAccumulations,
+	private static boolean isARiverStart(final ImagePlus gipSlopesAccumulations,
 			final ImagePlus gipSlopesDirections, final int riverThreshold,
 			final int ncols, final int nrows, final int i) throws IOException {
 		final int r = i / ncols;

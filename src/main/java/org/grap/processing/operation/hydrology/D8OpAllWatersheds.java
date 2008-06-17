@@ -75,11 +75,8 @@
  */
 package org.grap.processing.operation.hydrology;
 
-import ij.ImagePlus;
-
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Stack;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -88,23 +85,27 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
-	private ImagePlus gipSlopesDirections;
+	public final static float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
+	public final static float notProcessedYet = 0;
+
+	private HydrologyUtilities hydrologyUtilities;
 	private float[] watersheds;
 	private int ncols;
 	private int nrows;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster direction)
 			throws OperationException {
 		try {
-			gipSlopesDirections = geoRaster.getImagePlus();
-			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			hydrologyUtilities = new HydrologyUtilities(direction);
+			final RasterMetadata rasterMetadata = direction.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
 			int nbOfWatersheds = computeAllWatersheds();
 			final GeoRaster grAllWatersheds = GeoRasterFactory.createGeoRaster(
 					watersheds, rasterMetadata);
-			grAllWatersheds.setNodataValue(Float.NaN);
+			grAllWatersheds.setNodataValue(ndv);
+			System.out.printf("%d watersheds\n", nbOfWatersheds);
 			return grAllWatersheds;
 		} catch (IOException e) {
 			throw new OperationException(e);
@@ -115,58 +116,33 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 		watersheds = new float[nrows * ncols];
 		float newDefaultColor = 1;
 
-		int i = 0;
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++, i++) {
-				if (Float.isNaN(gipSlopesDirections.getProcessor()
-						.getPixelValue(c, r))) {
-					watersheds[i] = Float.NaN;
-				} else if (0 == watersheds[i]) {
+		for (int y = 0, i = 0; y < nrows; y++) {
+			for (int x = 0; x < ncols; x++, i++) {
+				if (hydrologyUtilities.isOnEdge(x, y)
+						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
+					watersheds[i] = ndv;
+				} else if (notProcessedYet == watersheds[i]) {
 					// current cell value has not been yet modified...
 					Float color = null;
-					final List<Integer> pathStack = new LinkedList<Integer>();
-					color = findOutlet(i, pathStack);
-					if (null == color) {
+					final Stack<HydroCell> path = new Stack<HydroCell>();
+					HydroCell top = hydrologyUtilities.shortHydrologicalPath(i,
+							path, watersheds, 1);
+					if (null == top) {
 						color = newDefaultColor;
 						newDefaultColor++;
+					} else {
+						color = top.dist;
 					}
-					colourize(pathStack, color);
+					colourize(path, color);
 				}
 			}
 		}
 		return (int) (newDefaultColor - 1);
 	}
 
-	private Float findOutlet(final int i, final List<Integer> pathStack)
-			throws IOException {
-		Integer curCellIdx = i;
-		do {
-			final int r = curCellIdx / ncols;
-			final int c = curCellIdx % ncols;
-
-			if (Float.isNaN(gipSlopesDirections.getProcessor().getPixelValue(c,
-					r))) {
-				return null;
-			} else {
-				if (0 == watersheds[curCellIdx]) {
-					pathStack.add(curCellIdx);
-					curCellIdx = SlopesUtilities
-							.fromCellSlopeDirectionToNextCellIndex(
-									gipSlopesDirections, ncols, nrows,
-									curCellIdx, c, r);
-				} else {
-					// current watershed's cell as already been modified : it is
-					// a break condition !
-					return watersheds[curCellIdx];
-				}
-			}
-		} while (null != curCellIdx);
-		return null;
-	}
-
-	private void colourize(final List<Integer> pathStack, final float color) {
-		for (Integer cellItem : pathStack) {
-			watersheds[cellItem] = color;
+	private void colourize(final Stack<HydroCell> path, final float color) {
+		for (HydroCell cellItem : path) {
+			watersheds[cellItem.index] = color;
 		}
 	}
 }

@@ -34,13 +34,14 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.hydrology;
+package org.grap.processing.operation.hydrology.archive;
 
 import junit.framework.TestCase;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
+import org.grap.processing.operation.hydrology.HydrologyUtilities;
 
 public class PixelUtilitiesTest extends TestCase {
 	private static final double EPSILON = 1.0E-5;
@@ -77,7 +78,7 @@ public class PixelUtilitiesTest extends TestCase {
 
 				switch (j) {
 				case 0:
-					assertEquals(HydrologyUtilities.noDataValueForDirection,
+					assertEquals(GeoRaster.FLOAT_NO_DATA_VALUE,
 							hydrologyUtilities.getD8Direction(1, 1));
 					break;
 				case 1:

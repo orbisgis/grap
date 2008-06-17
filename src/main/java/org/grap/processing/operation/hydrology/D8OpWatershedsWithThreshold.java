@@ -89,7 +89,7 @@ import org.grap.processing.OperationException;
 
 public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		Operation {
-	public final static short noDataValue = (short) Float.NaN;
+	public final static short ndv = GeoRaster.SHORT_NO_DATA_VALUE;
 
 	private ImagePlus gipAllWatersheds;
 	private ImagePlus gipAllOutlets;
@@ -123,7 +123,7 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold();
 			final GeoRaster grWatershedsWithThreshold = GeoRasterFactory
 					.createGeoRaster(watershedsWithThreshold, rasterMetadata);
-			grWatershedsWithThreshold.setNodataValue(noDataValue);
+			grWatershedsWithThreshold.setNodataValue(ndv);
 			System.out.printf("%d watersheds (outlet's threshold = %d)\n",
 					nbOfWatershedsWithThreshold, threshold);
 			return grWatershedsWithThreshold;
@@ -164,7 +164,7 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 						.getPixelValue(c, r);
 				watershedsWithThreshold[i] = mapOfBigOutlets.containsKey(tmp) ? mapOfBigOutlets
 						.get(tmp)
-						: noDataValue;
+						: ndv;
 			}
 		}
 		return nbOfWatershedsWithThreshold;

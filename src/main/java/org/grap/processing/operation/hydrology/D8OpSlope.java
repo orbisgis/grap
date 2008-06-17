@@ -51,7 +51,7 @@ import org.grap.processing.cellularAutomata.cam.ICAN;
 public class D8OpSlope extends D8OpAbstractMultiThreads implements Operation {
 	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+			final HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(
 					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
@@ -60,13 +60,13 @@ public class D8OpSlope extends D8OpAbstractMultiThreads implements Operation {
 			int i = 0;
 			for (int y = 0; y < nrows; y++) {
 				for (int x = 0; x < ncols; x++, i++) {
-					slopes[i] = pixelUtilities.getSlope(x, y);
+					slopes[i] = hydrologyUtilities.getSlope(x, y);
 				}
 			}
 
 			final GeoRaster grSlope = GeoRasterFactory.createGeoRaster(slopes,
 					rasterMetadata);
-			grSlope.setNodataValue(HydrologyUtilities.noDataValueForAngle);
+			grSlope.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
 			return grSlope;
 		} catch (IOException e) {
 			throw new OperationException(e);
@@ -87,7 +87,7 @@ public class D8OpSlope extends D8OpAbstractMultiThreads implements Operation {
 
 			final GeoRaster grSlope = GeoRasterFactory.createGeoRaster(
 					(float[]) ccan.getCANValues(), rasterMetadata);
-			grSlope.setNodataValue(HydrologyUtilities.noDataValueForAngle);
+			grSlope.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
 			return grSlope;
 		} catch (IOException e) {
 			throw new OperationException(e);

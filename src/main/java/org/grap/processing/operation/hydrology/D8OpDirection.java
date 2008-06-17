@@ -91,7 +91,7 @@ public class D8OpDirection extends D8OpAbstractMultiThreads implements
 		Operation {
 	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+			final HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(
 					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
@@ -100,14 +100,14 @@ public class D8OpDirection extends D8OpAbstractMultiThreads implements
 			int i = 0;
 			for (int r = 0; r < nrows; r++) {
 				for (int c = 0; c < ncols; c++, i++) {
-					slopesDirections[i] = pixelUtilities.getD8Direction(c, r);
+					slopesDirections[i] = hydrologyUtilities.getD8Direction(c, r);
 				}
 			}
 
 			final GeoRaster grSlopesDirections = GeoRasterFactory
 					.createGeoRaster(slopesDirections, rasterMetadata);
 			grSlopesDirections
-					.setNodataValue(HydrologyUtilities.noDataValueForDirection);
+					.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
 			return grSlopesDirections;
 		} catch (IOException e) {
 			throw new OperationException(e);

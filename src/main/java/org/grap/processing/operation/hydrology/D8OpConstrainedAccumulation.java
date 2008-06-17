@@ -75,7 +75,6 @@
  */
 package org.grap.processing.operation.hydrology;
 
-import ij.ImagePlus;
 import ij.process.ImageProcessor;
 
 import java.io.IOException;
@@ -88,26 +87,21 @@ import org.grap.processing.OperationException;
 
 public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		Operation {
-	public static final float noDataValue = Float.NaN;
+	public static final float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
 
-	private ImagePlus gipDirection;
-
+	private HydrologyUtilities hydrologyUtilities;
 	private float[] d8Accumulation;
-
 	private int ncols;
-
 	private int nrows;
 
 	private GeoRaster constrainedGR;
-
 	private ImageProcessor constrainedProcessor;
-
 	private float direction;
 
 	/**
-	 * This method build a constrained grid accumulation based on a D8 grid direction and a constrained
-	 * raster grid.
-	 * It can be used to evaluate the impact of hedgerow on runoff pathways.
+	 * This method build a constrained grid accumulation based on a D8 grid
+	 * direction and a constrained raster grid. It can be used to evaluate the
+	 * impact of hedgerow on runoff pathways.
 	 * 
 	 * @param constrainedGR
 	 */
@@ -116,18 +110,19 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster direction)
 			throws OperationException {
 		try {
-			gipDirection = geoRaster.getImagePlus();
+			hydrologyUtilities = new HydrologyUtilities(direction);
+
 			constrainedProcessor = constrainedGR.getImagePlus().getProcessor();
-			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
+			final RasterMetadata rasterMetadata = direction.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
 			int nbOfOutlets = accumulateSlopes();
 			final GeoRaster grAccumulation = GeoRasterFactory.createGeoRaster(
 					d8Accumulation, rasterMetadata);
-			grAccumulation.setNodataValue(noDataValue);
+			grAccumulation.setNodataValue(ndv);
 			System.out.printf("%d outlet(s)\n", nbOfOutlets);
 			return grAccumulation;
 		} catch (IOException e) {
@@ -140,16 +135,12 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		d8Accumulation = new float[nrows * ncols];
 
 		int nbOfOutlets = 0;
-		int i = 0;
 
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++, i++) {
-				if ((0 == r) || (nrows == r + 1) || (0 == c)
-						|| (ncols == c + 1)) {
-					d8Accumulation[i] = noDataValue;
-				} else if (Float.isNaN(gipDirection.getProcessor()
-						.getPixelValue(c, r))) {
-					d8Accumulation[i] = noDataValue;
+		for (int y = 0, i = 0; y < nrows; y++) {
+			for (int x = 0; x < ncols; x++, i++) {
+				if (hydrologyUtilities.isOnEdge(x, y)
+						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
+					d8Accumulation[i] = ndv;
 				} else if (0 == d8Accumulation[i]) {
 					// current cell value has not been yet modified...
 					nbOfOutlets += findOutletAndAccumulateSlopes(i);
@@ -166,12 +157,12 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		float acc = 0;
 
 		do {
-			final int r = curCellIdx / ncols;
-			final int c = curCellIdx % ncols;
+			final int y = curCellIdx / ncols;
+			final int x = curCellIdx % ncols;
 
-			direction = gipDirection.getProcessor().getPixelValue(c, r);
-			
-			if (Float.isNaN(gipDirection.getProcessor().getPixelValue(c, r))) {
+			direction = hydrologyUtilities.getPixelValue(x, y);
+
+			if (Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
 				return isProbablyANewOutlet ? 1 : 0;
 			} else {
 				if (0 == d8Accumulation[curCellIdx]) {
@@ -186,15 +177,14 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 					}
 					d8Accumulation[curCellIdx] += acc;
 				}
-				if (isAnOutletDueToConstrain(curCellIdx, (int) direction)){
+				if (isAnOutletDueToConstrain(curCellIdx, (int) direction)) {
 					return 1;
+				} else {
+					curCellIdx = hydrologyUtilities
+							.fromCellSlopeDirectionToNextCellIndex(curCellIdx,
+									x, y);
 				}
-				else {
-					curCellIdx = SlopesUtilities
-					.fromCellSlopeDirectionToNextCellIndex(gipDirection,
-							ncols, nrows, curCellIdx, c, r);	
-				}
-			
+
 			}
 		} while (null != curCellIdx);
 		return isProbablyANewOutlet ? 1 : 0;
@@ -218,65 +208,52 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 
 		switch (direction) {
 		case 1:
-			
-			if (constrainedProcessor.getPixelValue(c+1, r)==1){
+			if (constrainedProcessor.getPixelValue(c + 1, r) == 1) {
 				return true;
 			}
 			break;
 		case 2:
-			if (constrainedProcessor.getPixelValue(c + 1, r)+constrainedProcessor.getPixelValue(c,
-							r - 1)==2) {
+			if (constrainedProcessor.getPixelValue(c + 1, r)
+					+ constrainedProcessor.getPixelValue(c, r - 1) == 2) {
 				return true;
 			}
 			break;
 		case 3:
-			
-			if (constrainedProcessor.getPixelValue(c, r-1)==1){
+			if (constrainedProcessor.getPixelValue(c, r - 1) == 1) {
 				return true;
 			}
 			break;
 		case 4:
-			if (constrainedProcessor.getPixelValue(c, r - 1 )+
-					 constrainedProcessor.getPixelValue(
-							c - 1, r)==2) {
+			if (constrainedProcessor.getPixelValue(c, r - 1)
+					+ constrainedProcessor.getPixelValue(c - 1, r) == 2) {
 				return true;
 			}
 			break;
 		case 5:
-			
-			if (constrainedProcessor.getPixelValue(c-1, r)==1){
+			if (constrainedProcessor.getPixelValue(c - 1, r) == 1) {
 				return true;
 			}
 			break;
 		case 6:
-			if (constrainedProcessor.getPixelValue(c - 1, r)+
-					constrainedProcessor.getPixelValue(c,
-							r + 1)==2) {
+			if (constrainedProcessor.getPixelValue(c - 1, r)
+					+ constrainedProcessor.getPixelValue(c, r + 1) == 2) {
 				return true;
 			}
-
 			break;
-			
 		case 7:
-			
-			if (constrainedProcessor.getPixelValue(c, r+1)==1){
+			if (constrainedProcessor.getPixelValue(c, r + 1) == 1) {
 				return true;
 			}
 			break;
 		case 8:
-			if (constrainedProcessor.getPixelValue(c + 1, r)+
-					constrainedProcessor.getPixelValue(c,
-							r + 1)==2) {
+			if (constrainedProcessor.getPixelValue(c + 1, r)
+					+ constrainedProcessor.getPixelValue(c, r + 1) == 2) {
 				return true;
 			}
-
 			break;
-
 		default:
 			break;
 		}
-
 		return false;
-
 	}
 }

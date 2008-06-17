@@ -34,13 +34,15 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.hydrology;
+package org.grap.processing.operation.hydrology.archive;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
+import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class StrahlerStreamOrderTest extends GrapTest {
 	private RasterMetadata rasterMetadata = new RasterMetadata(0, 15, 1, -1,

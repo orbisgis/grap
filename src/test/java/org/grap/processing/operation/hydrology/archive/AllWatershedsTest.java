@@ -34,13 +34,15 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.hydrology;
+package org.grap.processing.operation.hydrology.archive;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
+import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 
-public class WatershedWithThresholdTest extends GrapTest {
+public class AllWatershedsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
 
 	protected void setUp() throws Exception {
@@ -48,7 +50,7 @@ public class WatershedWithThresholdTest extends GrapTest {
 		geoRasterSrc = sampleDEM;
 	}
 
-	public void testWatershedFromOutletIndex() throws Exception {
+	public void testAllWatersheds() throws Exception {
 		// load the DEM
 		geoRasterSrc.open();
 
@@ -57,46 +59,13 @@ public class WatershedWithThresholdTest extends GrapTest {
 		final GeoRaster grSlopesDirections = geoRasterSrc
 				.doOperation(slopesDirections);
 
-		// compute the slopes accumulations
-		final Operation slopesAccumulations = new D8OpAccumulation();
-		final GeoRaster grSlopesAccumulations = grSlopesDirections
-				.doOperation(slopesAccumulations);
-
-		// find all the outlets
-		final Operation allOutlets = new D8OpAllOutlets();
-		final GeoRaster grAllOutlets = grSlopesDirections
-				.doOperation(allOutlets);
-
-		// compute all the watersheds
+		// compute all watersheds
 		final Operation allWatersheds = new D8OpAllWatersheds();
 		final GeoRaster grAllWatersheds = grSlopesDirections
 				.doOperation(allWatersheds);
 
-		// extract some "big" watersheds
-		int threshold = 49;
-		Operation watershedsWithThreshold = new D8OpWatershedsWithThreshold(
-				grAllWatersheds, grAllOutlets, threshold);
-		GeoRaster grWatershedsWithThreshold = grSlopesAccumulations
-				.doOperation(watershedsWithThreshold);
-
 		// compare the computed watersheds with previous ones
-		printGeoRasterAndArray(grWatershedsWithThreshold,
-				otherAllWatershedsForDEM);
-		compareGeoRasterAndArray(grWatershedsWithThreshold,
-				otherAllWatershedsForDEM);
-
-		// extract some "big" watersheds
-		threshold = 50;
-		watershedsWithThreshold = new D8OpWatershedsWithThreshold(
-				grAllWatersheds, grAllOutlets, threshold);
-		grWatershedsWithThreshold = grSlopesAccumulations
-				.doOperation(watershedsWithThreshold);
-
-		for (int r = 0; r < grWatershedsWithThreshold.getHeight(); r++) {
-			for (int c = 0; c < grWatershedsWithThreshold.getWidth(); c++) {
-				assertTrue(Float.isNaN(grWatershedsWithThreshold.getImagePlus()
-						.getProcessor().getPixelValue(c, r)));
-			}
-		}
+		printGeoRasterAndArray(grAllWatersheds, allWatershedsForDEM);
+		compareGeoRasterAndArray(grAllWatersheds, allWatershedsForDEM);
 	}
 }

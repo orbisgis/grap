@@ -34,13 +34,16 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.hydrology;
+package org.grap.processing.operation.hydrology.archive;
 
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 
-public class WatershedFromOutletIndexTest extends GrapTest {
+public class D8OpAllOutletsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
 
 	protected void setUp() throws Exception {
@@ -48,26 +51,29 @@ public class WatershedFromOutletIndexTest extends GrapTest {
 		geoRasterSrc = sampleDEM;
 	}
 
-	public void testWatershedFromOutletIndex() throws Exception {
+	public void testAllOutlets() throws Exception {
 		// load the DEM
 		geoRasterSrc.open();
 
 		// compute the slopes directions
-		final Operation slopesDirections = new D8OpDirection();
-		final GeoRaster grSlopesDirections = geoRasterSrc
-				.doOperation(slopesDirections);
+		final Operation d8Direction = new D8OpDirection();
+		final GeoRaster grD8Direction = geoRasterSrc.doOperation(d8Direction);
+		printGeoRasterAndArray(grD8Direction, slopesDirectionForDEM);
+		compareGeoRasterAndArray(grD8Direction, slopesDirectionForDEM);
 
-		// find the good outlet
-		final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
-				92);
-		final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
-				.doOperation(watershedFromOutletIndex);
+		// compute the slopes accumulations
+		final Operation d8Accumulation = new D8OpAccumulation();
+		final GeoRaster grD8Accumulation = grD8Direction.doOperation(d8Accumulation);
+		printGeoRasterAndArray(grD8Accumulation, slopesAccumulationForDEM);
+//		compareGeoRasterAndArray(grD8Accumulation, slopesAccumulationForDEM);
+
+		// find all outlets
+		final Operation d8AllOutlets = new D8OpAllOutlets();
+		final GeoRaster grD8AllOutlets = grD8Direction
+				.doOperation(d8AllOutlets);
 
 		// compare the computed watersheds with previous ones
-		grWatershedFromOutletIndex.setNodataValue(1.234f);
-		printGeoRasterAndArray(grWatershedFromOutletIndex,
-				watershedFromOutletIndexForDEM);
-		compareGeoRasterAndArray(grWatershedFromOutletIndex,
-				watershedFromOutletIndexForDEM);
+		printGeoRasterAndArray(grD8AllOutlets, allOutletsForDEM);
+		compareGeoRasterAndArray(grD8AllOutlets, allOutletsForDEM);
 	}
 }
