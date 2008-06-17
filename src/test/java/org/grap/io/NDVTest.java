@@ -165,4 +165,21 @@ public class NDVTest extends GrapTest {
 		} catch (UnsupportedOperationException e) {
 		}
 	}
+
+	public void testInitialNDVArray() throws Exception {
+		float ndv = 3;
+
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { 1, 2, 3,
+				4, 5, 6, 7, 8, 9 }, new RasterMetadata(0, 0, 1, 1, 3, 3, ndv));
+		gr.open();
+
+		boolean someNDV = false;
+		for (float pv : gr.getFloatPixels()) {
+			if (pv == GeoRaster.FLOAT_NO_DATA_VALUE) {
+				someNDV = true;
+			}
+		}
+
+		assertTrue(someNDV);
+	}
 }

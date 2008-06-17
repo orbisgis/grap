@@ -137,10 +137,10 @@ public class DefaultGeoRaster implements GeoRaster {
 	public void open() throws IOException {
 		if (null != fileReader) {
 			rasterMetadata = fileReader.readRasterMetadata();
-			noDataValue = getMetadata().getNoDataValue();
 		} else {
 			// Ignore open for results in memory
 		}
+		noDataValue = getMetadata().getNoDataValue();
 	}
 
 	public RasterMetadata getMetadata() {
