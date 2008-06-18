@@ -59,11 +59,6 @@ public class AllTests extends TestSuite {
 		suite.addTestSuite(NDVTest.class);
 		suite.addTestSuite(GeoreferencingTest.class);
 
-		// Solve bug ticket #3736 before un-commenting following instruction
-		// suite.addTestSuite(TransparencyTest.class);
-
-		// suite.addTestSuite(SetRangeValuesTest.class);
-
 		suite.addTestSuite(CropTest.class);
 		suite.addTestSuite(IdentityTest.class);
 
