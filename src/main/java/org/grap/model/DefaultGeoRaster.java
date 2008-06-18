@@ -38,7 +38,6 @@ package org.grap.model;
 
 import ij.ImagePlus;
 import ij.io.FileSaver;
-import ij.process.ImageProcessor;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -155,7 +154,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 		minThreshold = min;
 		maxThreshold = max;
-		resetMinAndMax();
+		resetMinAndMax(null);
 	}
 
 	public void setNodataValue(final float value) throws IOException {
@@ -164,7 +163,7 @@ public class DefaultGeoRaster implements GeoRaster {
 					+ "allow no-data-value");
 		}
 		noDataValue = value;
-		resetMinAndMax();
+		resetMinAndMax(null);
 	}
 
 	public Point2D fromPixelToRealWorld(final int xpixel, final int ypixel) {
@@ -226,41 +225,45 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public int getType() throws IOException {
 		if (cachedType == null) {
-			updateCachedValues();
+			updateCachedValues(null);
 		}
 		return cachedType.intValue();
 	}
 
-	private void updateCachedValues() throws IOException {
-		ImagePlus imagePlus = getImagePlus();
+	private void updateCachedValues(ImagePlus imagePlus) throws IOException {
+		if (imagePlus == null) {
+			imagePlus = getImagePlus();
+		}
 		cachedType = imagePlus.getType();
 		cachedWidth = imagePlus.getWidth();
 		cachedHeight = imagePlus.getHeight();
 		cachedColorModel = imagePlus.getProcessor().getColorModel();
 
 		if ((cachedMin == null) || (cachedMax == null)) {
-			resetMinAndMax();
+			resetMinAndMax(imagePlus);
 		}
 
 	}
 
-	private void resetMinAndMax() throws IOException {
+	private void resetMinAndMax(ImagePlus imagePlus) throws IOException {
 		logger.debug("Recalculating min and max");
+		if (imagePlus == null) {
+			imagePlus = getImagePlus();
+		}
 		switch (getType()) {
 		case ImagePlus.COLOR_256:
 		case ImagePlus.GRAY8:
-			resetMinAndMaxByte(getBytePixels());
+			resetMinAndMaxByte((byte[]) imagePlus.getProcessor().getPixels());
 			break;
 		case ImagePlus.GRAY16:
-			resetMinAndMaxShort(getShortPixels());
+			resetMinAndMaxShort((short[]) imagePlus.getProcessor().getPixels());
 			break;
 		case ImagePlus.GRAY32:
-			resetMinAndMaxFloat(getFloatPixels());
+			resetMinAndMaxFloat((float[]) imagePlus.getProcessor().getPixels());
 			break;
 		case ImagePlus.COLOR_RGB:
-			ImageProcessor processor = getImagePlus().getProcessor();
-			cachedMin = processor.getMin();
-			cachedMax = processor.getMax();
+			resetMinAndMaxInt((int[]) imagePlus.getProcessor().getPixels());
+			break;
 		}
 	}
 
@@ -326,34 +329,49 @@ public class DefaultGeoRaster implements GeoRaster {
 		cachedMax = new Double(max);
 	}
 
+	private void resetMinAndMaxInt(int[] pixels) {
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
+		for (int pixel : pixels) {
+			if (min > pixel) {
+				min = pixel;
+			}
+			if (max < pixel) {
+				max = pixel;
+			}
+		}
+		cachedMin = new Double(min);
+		cachedMax = new Double(max);
+	}
+
 	public boolean isEmpty() {
 		return false;
 	}
 
 	public double getMax() throws IOException {
 		if (cachedMax == null) {
-			updateCachedValues();
+			updateCachedValues(null);
 		}
 		return cachedMax.doubleValue();
 	}
 
 	public double getMin() throws IOException {
 		if (cachedMin == null) {
-			updateCachedValues();
+			updateCachedValues(null);
 		}
 		return cachedMin.doubleValue();
 	}
 
 	public int getHeight() throws IOException {
 		if (cachedHeight == null) {
-			updateCachedValues();
+			updateCachedValues(null);
 		}
 		return cachedHeight.intValue();
 	}
 
 	public int getWidth() throws IOException {
 		if (cachedWidth == null) {
-			updateCachedValues();
+			updateCachedValues(null);
 		}
 		return cachedWidth.intValue();
 	}
@@ -363,7 +381,13 @@ public class DefaultGeoRaster implements GeoRaster {
 		final ImagePlus grapImagePlus = (null == cachedImagePlus) ? fileReader
 				.readImagePlus() : cachedImagePlus;
 
-		setNDVValues(grapImagePlus);
+		if (!(grapImagePlus.getType() == ImagePlus.COLOR_RGB)) {
+			setNDVValues(grapImagePlus);
+		} else {
+			if (cachedMin == null) {
+				updateCachedValues(grapImagePlus);
+			}
+		}
 
 		return grapImagePlus;
 	}
@@ -456,7 +480,7 @@ public class DefaultGeoRaster implements GeoRaster {
 
 	public ColorModel getDefaultColorModel() throws IOException {
 		if (cachedColorModel == null) {
-			updateCachedValues();
+			updateCachedValues(null);
 		}
 		return cachedColorModel;
 	}

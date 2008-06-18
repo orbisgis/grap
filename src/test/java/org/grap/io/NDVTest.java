@@ -154,6 +154,7 @@ public class NDVTest extends GrapTest {
 		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(new int[] { -3, -4, 5,
 				6 }, md);
+		gr.open();
 		try {
 			gr.setNodataValue(23);
 			assertTrue(false);
@@ -164,6 +165,15 @@ public class NDVTest extends GrapTest {
 			assertTrue(false);
 		} catch (UnsupportedOperationException e) {
 		}
+	}
+
+	public void testMinMaxRGB() throws Exception {
+		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(new int[] { -3, -4, 5,
+				6 }, md);
+		gr.open();
+		assertTrue(gr.getMin() == -4);
+		assertTrue(gr.getMax() == 6);
 	}
 
 	public void testInitialNDVArray() throws Exception {
