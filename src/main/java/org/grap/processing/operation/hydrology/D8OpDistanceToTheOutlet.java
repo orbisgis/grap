@@ -121,7 +121,7 @@ public class D8OpDistanceToTheOutlet extends D8OpAbstract implements Operation {
 
 		for (int y = 0, i = 0; y < nrows; y++) {
 			for (int x = 0; x < ncols; x++, i++) {
-				if (hydrologyUtilities.isOnEdge(x, y)
+				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
 					d8Distances[i] = ndv;
 				} else if (notProcessedYet == d8Distances[i]) {

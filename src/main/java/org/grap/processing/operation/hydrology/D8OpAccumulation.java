@@ -117,7 +117,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 
 		for (int y = 0, i = 0; y < nrows; y++) {
 			for (int x = 0; x < ncols; x++, i++) {
-				if (hydrologyUtilities.isOnEdge(x, y)
+				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
 					d8Accumulation[i] = GeoRaster.FLOAT_NO_DATA_VALUE;
 				} else if (0 == d8Accumulation[i]) {

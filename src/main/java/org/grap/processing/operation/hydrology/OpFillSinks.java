@@ -36,6 +36,9 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import ij.ImagePlus;
+import ij.io.FileSaver;
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.io.IOException;
@@ -78,6 +81,10 @@ public class OpFillSinks implements Operation {
 
 	private Double minSlope = 0.01;
 
+	private ImageProcessor m_mAsk;
+
+	private HydrologyUtilities hydrologyUtilities;
+
 	private final static int m_iOffsetX[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
 
 	private final static int m_iOffsetY[] = { 1, 1, 0, -1, -1, -1, 0, 1 };
@@ -109,6 +116,8 @@ public class OpFillSinks implements Operation {
 		GeoRaster grResult = null;
 		try {
 
+			hydrologyUtilities = new HydrologyUtilities(geoRaster);
+			
 			m_DEM = geoRaster.getImagePlus().getProcessor();
 
 			int i;
@@ -255,45 +264,29 @@ public class OpFillSinks implements Operation {
 	}
 
 	private void initAltitude() {
-		boolean border;
-		int x, y, i, ix, iy;
-		float dValue;
-
-		m_PreprocessedDEM = m_DEM.duplicate();
-		m_Border = m_DEM.duplicate();
-
-		m_PreprocessedDEM.multiply(Double.NaN);
-		m_Border.multiply(Double.NaN);
-
+		int x, y;
+		m_PreprocessedDEM = new FloatProcessor(ncols,nrows);
+		m_Border = new FloatProcessor(ncols,nrows);
 		for (x = 0; x < ncols; x++) {
 			for (y = 0; y < nrows; y++) {
-				border = false;
-				dValue = m_DEM.getPixelValue(x, y);
-
-				if (!Float.isNaN(dValue)) {
-					for (i = 0; i < 8; i++) {
-						ix = x + m_iOffsetX[i];
-						iy = y + m_iOffsetY[i];
-						dValue = m_DEM.getPixelValue(ix, iy);
-						if (Float.isNaN(dValue)) {
-							border = true;
-							break;
-						}
+				float dValue = m_DEM.getPixelValue(x, y);
+				if (hydrologyUtilities.isABorder(x, y)){
+					m_Border.putPixelValue(x, y, 1);
+					m_PreprocessedDEM.putPixelValue(x, y, m_DEM
+							.getPixelValue(x, y));
+				}
+				else {
+					m_Border.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
+					
+					if (dValue!= GeoRaster.FLOAT_NO_DATA_VALUE){
+					m_PreprocessedDEM.putPixelValue(x, y, INIT_ELEVATION);
 					}
-					if (border) {
-						m_Border.putPixelValue(x, y, 1);
-						m_PreprocessedDEM.putPixelValue(x, y, m_DEM
-								.getPixelValue(x, y));
-					}
-
 					else {
-						m_PreprocessedDEM.putPixelValue(x, y, INIT_ELEVATION);
-
+						m_PreprocessedDEM.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
 					}
 				}
 			}
 		}
-
 	}
 
 	private void dryUpwardCell(int x, int y) {
@@ -311,7 +304,7 @@ public class OpFillSinks implements Operation {
 				zw = m_PreprocessedDEM.getPixelValue(ix, iy);
 
 				zn = m_DEM.getPixelValue(ix, iy);
-				if (!Float.isNaN(zn) && zw == INIT_ELEVATION) {
+				if ((zn!= GeoRaster.FLOAT_NO_DATA_VALUE) && zw == INIT_ELEVATION) {
 					zw = m_PreprocessedDEM.getPixelValue(x, y)
 							+ (float) dEpsilon[i];
 					if (zn >= zw) {

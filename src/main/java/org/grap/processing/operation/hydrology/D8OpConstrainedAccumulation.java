@@ -138,7 +138,7 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 
 		for (int y = 0, i = 0; y < nrows; y++) {
 			for (int x = 0; x < ncols; x++, i++) {
-				if (hydrologyUtilities.isOnEdge(x, y)
+				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
 					d8Accumulation[i] = ndv;
 				} else if (0 == d8Accumulation[i]) {

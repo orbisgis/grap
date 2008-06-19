@@ -102,7 +102,7 @@ public class HydrologyUtilities {
 				invPixelSize_Y, invHypotenuse };
 	}
 
-	public boolean isOnEdge(final int x, final int y) {
+	public boolean isABorder(final int x, final int y) {
 		return (0 == x) || (ncols - 1 == x) || (0 == y) || (nrows - 1 == y);
 	}
 
@@ -138,7 +138,7 @@ public class HydrologyUtilities {
 	private float[] getD8DirectionAndD8Slope(final int x, final int y) {
 		final float currentElevation = getPixelValue(x, y);
 
-		if (Float.isNaN(currentElevation) || isOnEdge(x, y)) {
+		if (Float.isNaN(currentElevation) || isABorder(x, y)) {
 			return new float[] { GeoRaster.FLOAT_NO_DATA_VALUE,
 					GeoRaster.FLOAT_NO_DATA_VALUE };
 		} else {
