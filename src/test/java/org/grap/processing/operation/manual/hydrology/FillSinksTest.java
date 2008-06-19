@@ -42,7 +42,7 @@ import org.grap.processing.operation.hydrology.OpFillSinks;
 
 public class FillSinksTest {
 	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/smallsample.asc";
+		final String src = "../../datas2tests/grid/sample.asc";
 		
 		long start = System.currentTimeMillis();
 		
