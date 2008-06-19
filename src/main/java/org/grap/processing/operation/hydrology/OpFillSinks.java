@@ -46,7 +46,7 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class FillSinks implements Operation {
+public class OpFillSinks implements Operation {
 
 	private double dEpsilon[] = new double[8];
 
@@ -84,7 +84,7 @@ public class FillSinks implements Operation {
 
 	private final static double INIT_ELEVATION = 50000D;
 
-	public FillSinks(Double minSlope) {
+	public OpFillSinks(Double minSlope) {
 		this.minSlope = minSlope;
 	}
 
