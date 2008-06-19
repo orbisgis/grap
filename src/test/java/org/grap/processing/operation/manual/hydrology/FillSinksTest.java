@@ -38,7 +38,7 @@ package org.grap.processing.operation.manual.hydrology;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.operation.hydrology.FillSinks;
+import org.grap.processing.operation.hydrology.OpFillSinks;
 
 public class FillSinksTest {
 	public static void main(String[] args) throws Exception {
@@ -48,7 +48,7 @@ public class FillSinksTest {
 		
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		final GeoRaster result = geoRaster.doOperation(new FillSinks(0.01));
+		final GeoRaster result = geoRaster.doOperation(new OpFillSinks(0.01));
 		result.show();
 		result.save("/tmp/nosinks.tif");
 		
