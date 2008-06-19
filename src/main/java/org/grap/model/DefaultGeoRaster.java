@@ -273,8 +273,8 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	private void resetMinAndMaxFloat(float[] pixels) {
-		float min = Float.MAX_VALUE;
-		float max = Float.MIN_VALUE;
+		float min = Float.POSITIVE_INFINITY;
+		float max = Float.NEGATIVE_INFINITY;
 		for (float pixel : pixels) {
 			if (pixel == FLOAT_NO_DATA_VALUE) {
 				continue;

@@ -176,6 +176,15 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMax() == 6);
 	}
 
+	public void testMinMaxFloat() throws Exception {
+		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { -3, -4, -5,
+				-6 }, md);
+		gr.open();
+		assertTrue(gr.getMin() == -6);
+		assertTrue(gr.getMax() == -3);
+	}
+
 	public void testInitialNDVArray() throws Exception {
 		float ndv = 3;
 
