@@ -96,7 +96,6 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 
 	private GeoRaster constrainedGR;
 	private ImageProcessor constrainedProcessor;
-	private float direction;
 
 	/**
 	 * This method build a constrained grid accumulation based on a D8 grid
@@ -145,7 +144,6 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 					// current cell value has not been yet modified...
 					nbOfOutlets += findOutletAndAccumulateSlopes(i);
 				}
-				// print();
 			}
 		}
 		return nbOfOutlets;
@@ -160,9 +158,9 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 			final int y = curCellIdx / ncols;
 			final int x = curCellIdx % ncols;
 
-			direction = hydrologyUtilities.getPixelValue(x, y);
+			float direction = hydrologyUtilities.getPixelValue(x, y);
 
-			if (Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
+			if (Float.isNaN(direction)) {
 				return isProbablyANewOutlet ? 1 : 0;
 			} else {
 				if (0 == d8Accumulation[curCellIdx]) {
@@ -177,6 +175,7 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 					}
 					d8Accumulation[curCellIdx] += acc;
 				}
+
 				if (isAnOutletDueToConstrain(curCellIdx, (int) direction)) {
 					return 1;
 				} else {
@@ -190,16 +189,6 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		return isProbablyANewOutlet ? 1 : 0;
 	}
 
-	void print() {
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++) {
-				System.out.printf("%3.0f ", d8Accumulation[r * ncols + c]);
-			}
-			System.out.println();
-		}
-		System.out.println("= = = = ");
-	}
-
 	private boolean isAnOutletDueToConstrain(final int curCellIdx,
 			final int direction) {
 
@@ -208,46 +197,46 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 
 		switch (direction) {
 		case 1:
-			if (constrainedProcessor.getPixelValue(c + 1, r) == 1) {
+			if (constrainedProcessor.getPixelValue(c + 1, r) > 0) {
 				return true;
 			}
 			break;
 		case 2:
-			if (constrainedProcessor.getPixelValue(c + 1, r)
-					+ constrainedProcessor.getPixelValue(c, r - 1) == 2) {
+			if ((constrainedProcessor.getPixelValue(c + 1, r) > 0)
+					&& (constrainedProcessor.getPixelValue(c, r - 1) > 0)) {
 				return true;
 			}
 			break;
 		case 3:
-			if (constrainedProcessor.getPixelValue(c, r - 1) == 1) {
+			if (constrainedProcessor.getPixelValue(c, r - 1) > 0) {
 				return true;
 			}
 			break;
 		case 4:
-			if (constrainedProcessor.getPixelValue(c, r - 1)
-					+ constrainedProcessor.getPixelValue(c - 1, r) == 2) {
+			if ((constrainedProcessor.getPixelValue(c, r - 1) > 0)
+					&& (constrainedProcessor.getPixelValue(c - 1, r) > 0)) {
 				return true;
 			}
 			break;
 		case 5:
-			if (constrainedProcessor.getPixelValue(c - 1, r) == 1) {
+			if (constrainedProcessor.getPixelValue(c - 1, r) > 0) {
 				return true;
 			}
 			break;
 		case 6:
-			if (constrainedProcessor.getPixelValue(c - 1, r)
-					+ constrainedProcessor.getPixelValue(c, r + 1) == 2) {
+			if ((constrainedProcessor.getPixelValue(c - 1, r) > 0)
+					&& (constrainedProcessor.getPixelValue(c, r + 1) > 0)) {
 				return true;
 			}
 			break;
 		case 7:
-			if (constrainedProcessor.getPixelValue(c, r + 1) == 1) {
+			if (constrainedProcessor.getPixelValue(c, r + 1) > 0) {
 				return true;
 			}
 			break;
 		case 8:
-			if (constrainedProcessor.getPixelValue(c + 1, r)
-					+ constrainedProcessor.getPixelValue(c, r + 1) == 2) {
+			if ((constrainedProcessor.getPixelValue(c + 1, r) > 0)
+					&& (constrainedProcessor.getPixelValue(c, r + 1) > 0)) {
 				return true;
 			}
 			break;
