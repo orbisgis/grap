@@ -165,6 +165,11 @@ public class LutGenerator {
 		}
 	}
 
+	
+	public static ColorModel colorModel(String arg){
+		return colorModel(arg, false);
+	}
+	
 	public static ColorModel colorModel(String arg, boolean invert) {
 		final FileInfo fi = new FileInfo();
 		fi.reds = new byte[256];
