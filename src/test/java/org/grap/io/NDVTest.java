@@ -201,4 +201,32 @@ public class NDVTest extends GrapTest {
 
 		assertTrue(someNDV);
 	}
+	
+	public void testRangeValue() throws Exception{
+		float ndv = -9999;
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { 1, 2, 3,
+				4, 5, 6, 7, 8, -9999 }, new RasterMetadata(0, 0, 1, 1, 3, 3, ndv));
+		gr.open();
+		
+		double min = 3;
+		double max = 5;
+		gr.setRangeValues(min, max);
+		
+		for (int i = 0; i < gr.getWidth(); i++) {
+			for (int j = 0; j < gr.getHeight(); j++) {
+				
+				float value = gr.getImagePlus().getProcessor().getPixelValue(i, j);
+				
+				
+				if ((value>=min)&&(value<=max)){
+					assertTrue(true);
+				}
+				else {
+					assertTrue(false);
+				}
+				
+			}
+		}
+		
+	}
 }
