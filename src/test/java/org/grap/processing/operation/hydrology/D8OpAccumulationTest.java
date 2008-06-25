@@ -48,11 +48,12 @@ public class D8OpAccumulationTest extends D8Commons {
 
 	private boolean test(String inFile, String refFile) throws Exception {
 		GeoRaster direction = GeoRasterFactory.createGeoRaster(rep + inFile);
+		direction.open();
 		Operation d8OpAccumulation = new D8OpAccumulation();
 		GeoRaster accumulationCalc = direction.doOperation(d8OpAccumulation);
 
 		// compare to the reference
 		GeoRaster accumulationRef = GeoRasterFactory.createGeoRaster(rep + refFile);
-		return equals(accumulationRef, accumulationCalc, false);
+		return equals(accumulationRef, accumulationCalc, true);
 	}
 }

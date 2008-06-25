@@ -49,6 +49,7 @@ import org.grap.model.GeoRaster;
 public class HydrologyUtilities {
 	public final static float indecisionDirection = -1;
 	public final static float indecisionAngle = 0;
+	public float ndv;
 
 	private final static double FACTOR = 180 / Math.PI;
 
@@ -86,6 +87,8 @@ public class HydrologyUtilities {
 		ncols = dem.getMetadata().getNCols();
 		nrows = dem.getMetadata().getNRows();
 		imageProcessor = dem.getImagePlus().getProcessor();
+		ndv = (float) (Double.isNaN(dem.getNoDataValue()) ? GeoRaster.FLOAT_NO_DATA_VALUE
+				: dem.getNoDataValue());
 
 		float cellWidth = dem.getMetadata().getPixelSize_X();
 		float cellHeight = Math.abs(dem.getMetadata().getPixelSize_Y()); // usefull
@@ -115,7 +118,7 @@ public class HydrologyUtilities {
 			return Float.NaN;
 		} else {
 			float pv = imageProcessor.getPixelValue(x, y);
-			if (GeoRaster.FLOAT_NO_DATA_VALUE == pv) {
+			if (ndv == pv) {
 				return Float.NaN;
 			} else {
 				return pv;
@@ -139,8 +142,7 @@ public class HydrologyUtilities {
 		final float currentElevation = getPixelValue(x, y);
 
 		if (Float.isNaN(currentElevation) || isABorder(x, y)) {
-			return new float[] { GeoRaster.FLOAT_NO_DATA_VALUE,
-					GeoRaster.FLOAT_NO_DATA_VALUE };
+			return new float[] { ndv, ndv };
 		} else {
 			final float[] ratios = new float[] {
 					(currentElevation - getPixelValue(x + 1, y))
@@ -197,7 +199,8 @@ public class HydrologyUtilities {
 			final int yTmp = tmp / ncols;
 			final int xTmp = tmp % ncols;
 			tmp = getCellIndex(tmp, xTmp, yTmp);
-			if ((null != tmp) && (neighboursDirection[i] == getPixelValue(xTmp, yTmp))) {
+			if ((null != tmp)
+					&& (neighboursDirection[i] == getPixelValue(xTmp, yTmp))) {
 				contributiveArea.add(tmp);
 			}
 		}

@@ -67,7 +67,7 @@ public class D8OpSlopeInDegrees extends D8OpAbstractMultiThreads implements
 
 			final GeoRaster grSlopeInDegrees = GeoRasterFactory
 					.createGeoRaster(slopes, rasterMetadata);
-			grSlopeInDegrees.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			grSlopeInDegrees.setNodataValue(hydrologyUtilities.ndv);
 			return grSlopeInDegrees;
 		} catch (IOException e) {
 			throw new OperationException(e);
@@ -76,20 +76,20 @@ public class D8OpSlopeInDegrees extends D8OpAbstractMultiThreads implements
 
 	GeoRaster parallel(final GeoRaster grDEM) throws OperationException {
 		try {
-			final HydrologyUtilities pixelUtilities = new HydrologyUtilities(
+			final HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(
 					grDEM);
 			final RasterMetadata rasterMetadata = grDEM.getMetadata();
 			final int nrows = rasterMetadata.getNRows();
 			final int ncols = rasterMetadata.getNCols();
 
-			final ICA ca = new CASlopeInDegrees(pixelUtilities, nrows, ncols);
+			final ICA ca = new CASlopeInDegrees(hydrologyUtilities, nrows, ncols);
 			final ICAN ccan = CANFactory.createCAN(ca);
 			ccan.getStableState();
 
 			final GeoRaster grSlopeInDegrees = GeoRasterFactory
 					.createGeoRaster((float[]) ccan.getCANValues(),
 							rasterMetadata);
-			grSlopeInDegrees.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			grSlopeInDegrees.setNodataValue(hydrologyUtilities.ndv);
 			return grSlopeInDegrees;
 		} catch (IOException e) {
 			throw new OperationException(e);

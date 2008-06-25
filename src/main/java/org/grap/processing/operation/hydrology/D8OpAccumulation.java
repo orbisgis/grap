@@ -101,7 +101,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 			int nbOfOutlets = accumulateSlopes();
 			final GeoRaster grAccumulation = GeoRasterFactory.createGeoRaster(
 					d8Accumulation, rasterMetadata);
-			grAccumulation.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			grAccumulation.setNodataValue(hydrologyUtilities.ndv);
 			System.out.printf("%d outlet(s)\n", nbOfOutlets);
 			return grAccumulation;
 		} catch (IOException e) {
@@ -119,7 +119,7 @@ public class D8OpAccumulation extends D8OpAbstract implements Operation {
 			for (int x = 0; x < ncols; x++, i++) {
 				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
-					d8Accumulation[i] = GeoRaster.FLOAT_NO_DATA_VALUE;
+					d8Accumulation[i] = hydrologyUtilities.ndv;
 				} else if (0 == d8Accumulation[i]) {
 					// current cell value has not been yet modified...
 					nbOfOutlets += findOutletAndAccumulateSlopes(i);
