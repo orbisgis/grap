@@ -42,7 +42,9 @@ import java.awt.Color;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 
+import org.grap.archive.InvertImageBandsTest;
 public class LutGenerator {
+
 	private static int fire(byte[] reds, byte[] greens, byte[] blues) {
 		final int[] r = { 0, 0, 1, 25, 49, 73, 98, 122, 146, 162, 173, 184,
 				195, 207, 217, 229, 240, 252, 255, 255, 255, 255, 255, 255,
@@ -93,6 +95,7 @@ public class LutGenerator {
 		final int[] b = { 140, 147, 158, 166, 170, 176, 209, 220, 234, 225,
 				236, 246, 250, 251, 250, 250, 245, 230, 230, 222, 202, 180,
 				163, 142, 123, 114, 106, 94, 84, 64, 26, 27 };
+
 		for (int i = 0; i < r.length; i++) {
 			reds[i] = (byte) r[i];
 			greens[i] = (byte) g[i];
@@ -162,11 +165,11 @@ public class LutGenerator {
 		}
 	}
 
-	public static ColorModel colorModel(String arg) {
+	public static ColorModel colorModel(String arg, boolean invert) {
 		final FileInfo fi = new FileInfo();
 		fi.reds = new byte[256];
 		fi.greens = new byte[256];
-		fi.blues = new byte[256];
+		fi.blues = new byte[256];		
 		fi.lutSize = 256;
 		int nColors = 0;
 
@@ -201,14 +204,61 @@ public class LutGenerator {
 			fi.fileName = arg;
 			final ColorModel cm = new IndexColorModel(8, 256, fi.reds,
 					fi.greens, fi.blues);
-			return cm;
+			if (invert){
+
+				return invertLut(cm);
+			}
+			else {
+
+				return cm;
+			}
+			
 		}
 		return null;
 	}
 
 	public static String[] getDefaultLUTS() {
-		return new String[] { "fire", "gray", "ice", "spectrum",
-				"red", "green", "blue", "cyan", "magenta", "yellow",
-				"redgreen", "3-3-2 RGB" };
+		return new String[] { "fire", "gray", "ice", "spectrum", "red",
+				"green", "blue", "cyan", "magenta", "yellow", "redgreen",
+				"3-3-2 RGB" };
 	}
+	
+	/** Inverts the values in this image's LUT (indexed color model).
+	Does nothing if this is a ColorProcessor. */
+	public static ColorModel invertLut(ColorModel colorModel) {
+	if (colorModel==null){
+		colorModel = makeDefaultColorModel();
+	}
+	IndexColorModel icm = (IndexColorModel)colorModel;
+	int mapSize = icm.getMapSize();
+	byte[] reds = new byte[mapSize];
+	byte[] greens = new byte[mapSize];
+	byte[] blues = new byte[mapSize];	
+	byte[] reds2 = new byte[mapSize];
+	byte[] greens2 = new byte[mapSize];
+	byte[] blues2 = new byte[mapSize];	
+	icm.getReds(reds); 
+	icm.getGreens(greens); 
+	icm.getBlues(blues);
+	for (int i=0; i<mapSize; i++) {
+		reds2[i] = (byte)(reds[mapSize-i-1]&255);
+		greens2[i] = (byte)(greens[mapSize-i-1]&255);
+		blues2[i] = (byte)(blues[mapSize-i-1]&255);
+	}
+	return new IndexColorModel(8, mapSize, reds2, greens2, blues2); 
+	
+}
+	
+	protected static ColorModel makeDefaultColorModel() {
+		byte[] rLUT = new byte[256];
+		byte[] gLUT = new byte[256];
+		byte[] bLUT = new byte[256];
+		for(int i=0; i<256; i++) {
+			rLUT[i]=(byte)i;
+			gLUT[i]=(byte)i;
+			bLUT[i]=(byte)i;
+		}
+		return new IndexColorModel(8, 256, rLUT, gLUT, bLUT);
+	}
+
 }
