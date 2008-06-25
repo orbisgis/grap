@@ -45,8 +45,6 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
 public class GrapTest extends TestCase {
-	public final static float N = GeoRaster.FLOAT_NO_DATA_VALUE;
-
 	public final static String externalData = "../../datas2tests/";
 	public final static String internalData = "src/test/resources/";
 	public final static String tmpData = "../../datas2tests/tmp/";
@@ -58,7 +56,7 @@ public class GrapTest extends TestCase {
 	public static short[] allWatershedsForDEM;
 	public static short[] otherAllWatershedsForDEM;
 	public static float[] slopesDirectionForDEM;
-	public static float[] allOutletsForDEM;
+	public static short[] allOutletsForDEM;
 	public static short[] watershedFromOutletIndexForDEM;
 
 	static {
@@ -70,10 +68,10 @@ public class GrapTest extends TestCase {
 		final RasterMetadata rmd = new RasterMetadata(0, 15, 1, -1, ncols,
 				nrows);
 		sampleRaster = GeoRasterFactory.createGeoRaster(values, LutGenerator
-				.colorModel("fire",false), rmd);
+				.colorModel("fire"), rmd);
 
 		final short[] DEM = new short[] {//
-		100, 100, 100, 100, 100, 100, 100, 100, 100, 100,//
+		100, 100, 100, 100, 100, 100, 100, 0, 100, 100,//
 				100, 50, 50, 50, 100, 100, 25, 10, 25, 100,//
 				100, 25, 25, 25, 100, 100, 25, 11, 25, 100,//
 				100, 25, 15, 25, 100, 100, 25, 12, 25, 100,//
@@ -82,21 +80,22 @@ public class GrapTest extends TestCase {
 				100, 25, 12, 25, 100, 100, 25, 15, 25, 100,//
 				100, 25, 11, 25, 100, 100, 25, 25, 25, 100,//
 				100, 25, 10, 25, 100, 100, 50, 50, 50, 100,//
-				100, 100, 100, 100, 100, 100, 100, 100, 100, 100,//
+				100, 100, 0, 100, 100, 100, 100, 100, 100, 100,//
 		};
 
 		sampleDEM = GeoRasterFactory.createGeoRaster(DEM, LutGenerator
-				.colorModel("fire",false), rmd);
+				.colorModel("fire"), rmd);
+		float N = Float.NaN;
 		slopesDirectionForDEM = new float[] {//
 		N, N, N, N, N, N, N, N, N, N,//
-				N, 7, 7, 7, 6, 1, 1, -1, 5, N,//
+				N, 7, 7, 7, 6, 1, 2, 3, 4, N,//
 				N, 8, 7, 6, 5, 1, 1, 3, 5, N,//
 				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
 				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
 				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
 				N, 1, 7, 5, 5, 1, 1, 3, 5, N,//
 				N, 1, 7, 5, 5, 1, 2, 3, 4, N,//
-				N, 1, -1, 5, 5, 2, 3, 3, 3, N,//
+				N, 8, 7, 6, 5, 2, 3, 3, 3, N,//
 				N, N, N, N, N, N, N, N, N, N,//
 		};
 
@@ -139,17 +138,17 @@ public class GrapTest extends TestCase {
 				2, 2, 2, 2, 2, 1, 1, 1, 1, 1,//
 		};
 
-		allOutletsForDEM = new float[] { //
-		N, N, N, N, N, N, N, N, N, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, 0, 0, 0, 0, 0, 0, 0, 0, N,//
-				N, N, N, N, N, N, N, N, N, N,//
+		allOutletsForDEM = new short[] { //
+		0, 0, 0, 0, 0, 0, 0, 1, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 0, 0, 0, 0, 0, 0, 0, 0,//
+				0, 0, 1, 0, 0, 0, 0, 0, 0, 0,//
 		};
 
 		watershedFromOutletIndexForDEM = new short[] { //
@@ -200,12 +199,12 @@ public class GrapTest extends TestCase {
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			System.out.printf("raw %d\t", r);
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%6.0f", grapImagePlus.getProcessor()
+				System.out.printf("%4.0f", grapImagePlus.getProcessor()
 						.getPixelValue(c, r));
 			}
 			System.out.printf("\t");
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%6d", sArray[r * ncols + c]);
+				System.out.printf("%4d", sArray[r * ncols + c]);
 			}
 			System.out.println();
 		}
@@ -217,12 +216,12 @@ public class GrapTest extends TestCase {
 		for (int r = 0; r < geoRaster.getHeight(); r++) {
 			System.out.printf("raw %d\t", r);
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%6.0f", grapImagePlus.getProcessor()
+				System.out.printf("%4.0f", grapImagePlus.getProcessor()
 						.getPixelValue(c, r));
 			}
 			System.out.printf("\t");
 			for (int c = 0; c < geoRaster.getWidth(); c++) {
-				System.out.printf("%6.0f", sArray[r * ncols + c]);
+				System.out.printf("%4.0f", sArray[r * ncols + c]);
 			}
 			System.out.println();
 		}
