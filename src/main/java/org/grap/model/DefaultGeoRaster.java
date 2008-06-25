@@ -413,14 +413,14 @@ public class DefaultGeoRaster implements GeoRaster {
 	}
 
 	private void setNDVValuesFloat(ImagePlus grapImagePlus) throws IOException {
-		float nan = (float) getNoDataValue();
+		float ndv = (float) getNoDataValue();
 		float min = Float.NEGATIVE_INFINITY;
 		if (!Double.isNaN(minThreshold)) {
 			min = (float) minThreshold;
 		}
 		float max = Float.POSITIVE_INFINITY;
 		if (!Double.isNaN(maxThreshold)) {
-			min = (float) maxThreshold;
+			max = (float) maxThreshold;
 		}
 		float[] pixels = (float[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
@@ -428,7 +428,7 @@ public class DefaultGeoRaster implements GeoRaster {
 				pixels[i] = FLOAT_NO_DATA_VALUE;
 			} else if (pixels[i] > max) {
 				pixels[i] = FLOAT_NO_DATA_VALUE;
-			} else if (pixels[i] == nan) {
+			} else if (pixels[i] == ndv) {
 				pixels[i] = FLOAT_NO_DATA_VALUE;
 			}
 		}
@@ -442,7 +442,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 		short max = Short.MAX_VALUE;
 		if (!Double.isNaN(maxThreshold)) {
-			min = (short) maxThreshold;
+			max = (short) maxThreshold;
 		}
 		short[] pixels = (short[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {
@@ -464,7 +464,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		}
 		byte max = Byte.MAX_VALUE;
 		if (!Double.isNaN(maxThreshold)) {
-			min = (byte) maxThreshold;
+			max = (byte) maxThreshold;
 		}
 		byte[] pixels = (byte[]) grapImagePlus.getProcessor().getPixels();
 		for (int i = 0; i < pixels.length; i++) {

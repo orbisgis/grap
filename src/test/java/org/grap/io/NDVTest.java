@@ -178,8 +178,8 @@ public class NDVTest extends GrapTest {
 
 	public void testMinMaxFloat() throws Exception {
 		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { -3, -4, -5,
-				-6 }, md);
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { -3, -4,
+				-5, -6 }, md);
 		gr.open();
 		assertTrue(gr.getMin() == -6);
 		assertTrue(gr.getMax() == -3);
@@ -201,35 +201,59 @@ public class NDVTest extends GrapTest {
 
 		assertTrue(someNDV);
 	}
-	
-	public void testRangeValue() throws Exception{
-		float ndv = -9999;
+
+	public void testFloatRangeValue() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { 1, 2, 3,
-				4, 5, 6, 7, 8, -9999 }, new RasterMetadata(0, 0, 1, 1, 3, 3, ndv));
+				4, 5, 6, 7, 8, -9999 }, new RasterMetadata(0, 0, 1, 1, 3, 3,
+				GeoRaster.FLOAT_NO_DATA_VALUE));
 		gr.open();
-		
+
+		testRangeValues(gr, GeoRaster.FLOAT_NO_DATA_VALUE);
+	}
+
+	//
+	// TODO This tests are related to a strange behaviour in
+	// ShortProcessor.getPixelValue in ImageJ. When ImageJ
+	// interface is removed from grap we must uncomment and fix them
+	//
+	// public void testShortRangeValue() throws Exception {
+	// GeoRaster gr = GeoRasterFactory.createGeoRaster(new short[] { 1, 2, 3,
+	// 4, 5, 6, 7, 8, GeoRaster.SHORT_NO_DATA_VALUE },
+	// new RasterMetadata(0, 0, 1, 1, 3, 3,
+	// GeoRaster.SHORT_NO_DATA_VALUE));
+	// gr.open();
+	//
+	// testRangeValues(gr, GeoRaster.SHORT_NO_DATA_VALUE);
+	// }
+	//
+	// public void testByteRangeValue() throws Exception {
+	// GeoRaster gr = GeoRasterFactory.createGeoRaster(new short[] { 1, 2, 3,
+	// 4, 5, 6, 7, 8, GeoRaster.BYTE_NO_DATA_VALUE },
+	// new RasterMetadata(0, 0, 1, 1, 3, 3,
+	// GeoRaster.BYTE_NO_DATA_VALUE));
+	// gr.open();
+	//
+	// testRangeValues(gr, GeoRaster.BYTE_NO_DATA_VALUE);
+	// }
+
+	private void testRangeValues(GeoRaster gr, float ndv) throws IOException {
 		double min = 3;
 		double max = 5;
 		gr.setRangeValues(min, max);
-		
+
 		for (int i = 0; i < gr.getWidth(); i++) {
 			for (int j = 0; j < gr.getHeight(); j++) {
-				
-				float value = gr.getImagePlus().getProcessor().getPixelValue(i, j);
-				
-				
-				if ((value>=min)&&(value<=max)){
+				float value = gr.getImagePlus().getProcessor().getPixelValue(i,
+						j);
+				if (value == ndv) {
+					continue;
+				} else if ((value >= min) && (value <= max)) {
 					assertTrue(true);
-				}
-				else if(value ==ndv){
-					
-				}
-				else {
+				} else {
 					assertTrue(false);
 				}
-				
+
 			}
 		}
-		
 	}
 }
