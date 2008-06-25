@@ -181,11 +181,13 @@ public class HydrologyUtilities {
 	}
 
 	public float getSlopeInRadians(final int x, final int y) {
-		return (float) Math.atan(getSlope(x, y));
+		float slope = getSlope(x, y);
+		return (float) ((ndv == slope) ? ndv : Math.atan(slope));
 	}
 
 	public float getSlopeInDegrees(final int x, final int y) {
-		return (float) (FACTOR * getSlopeInRadians(x, y));
+		float slope = getSlope(x, y);
+		return (float) ((ndv == slope) ? ndv : FACTOR * Math.atan(slope));
 	}
 
 	public Set<Integer> fromCellSlopeDirectionIdxToContributiveArea(
