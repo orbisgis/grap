@@ -221,6 +221,9 @@ public class NDVTest extends GrapTest {
 				if ((value>=min)&&(value<=max)){
 					assertTrue(true);
 				}
+				else if(value ==ndv){
+					
+				}
 				else {
 					assertTrue(false);
 				}
