@@ -52,7 +52,7 @@ public class FocalMeanTest {
 		final GeoRaster result = geoRaster.doOperation(new MeanFilter());
 		TestUtils.printFreeMemory();
 		result.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
+				LutGenerator.colorModel("fire",false));
 		TestUtils.printFreeMemory();
 		result.show();
 	}

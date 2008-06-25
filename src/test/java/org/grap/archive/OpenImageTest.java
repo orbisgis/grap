@@ -48,7 +48,7 @@ public class OpenImageTest {
 		final String src1 = "../../datas2tests/geotif/440606.tif";
 		final Opener opener = new Opener();
 		final ImagePlus imp1 = opener.openImage(src1);
-		imp1.getProcessor().setColorModel(LutGenerator.colorModel("fire"));
+		imp1.getProcessor().setColorModel(LutGenerator.colorModel("fire", false));
 		imp1.show();
 		System.out.println(imp1.getType() == ImagePlus.GRAY8);
 
@@ -57,7 +57,7 @@ public class OpenImageTest {
 		final ImageProcessor ip2 = textReader.open(src2);
 		final ImagePlus imp2 = new ImagePlus("", ip2);
 
-		ip2.setColorModel(LutGenerator.colorModel("fire"));
+		ip2.setColorModel(LutGenerator.colorModel("fire", false));
 		imp2.show();
 		System.out.println(imp2.getType() == ImagePlus.GRAY32);
 

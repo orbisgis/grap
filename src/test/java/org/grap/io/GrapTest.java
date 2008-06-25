@@ -70,7 +70,7 @@ public class GrapTest extends TestCase {
 		final RasterMetadata rmd = new RasterMetadata(0, 15, 1, -1, ncols,
 				nrows);
 		sampleRaster = GeoRasterFactory.createGeoRaster(values, LutGenerator
-				.colorModel("fire"), rmd);
+				.colorModel("fire",false), rmd);
 
 		final short[] DEM = new short[] {//
 		100, 100, 100, 100, 100, 100, 100, 100, 100, 100,//
@@ -86,7 +86,7 @@ public class GrapTest extends TestCase {
 		};
 
 		sampleDEM = GeoRasterFactory.createGeoRaster(DEM, LutGenerator
-				.colorModel("fire"), rmd);
+				.colorModel("fire",false), rmd);
 		slopesDirectionForDEM = new float[] {//
 		N, N, N, N, N, N, N, N, N, N,//
 				N, 7, 7, 7, 6, 1, 1, -1, 5, N,//

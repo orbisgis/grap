@@ -53,7 +53,7 @@ public class ShadowsTest {
 		final GeoRaster result = geoRaster.doOperation(shadows);
 		result.setRangeValues(0, 500);
 		result.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
+				LutGenerator.colorModel("fire",false));
 		result.show();
 	}
 }

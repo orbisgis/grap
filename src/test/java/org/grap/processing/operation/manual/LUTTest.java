@@ -47,7 +47,7 @@ public class LUTTest {
 	public static void main(String[] args) throws Exception {
 		String src = "../../datas2tests/grid/sample.asc";
 
-		ColorModel cm = LutGenerator.colorModel("fire");
+		ColorModel cm = LutGenerator.colorModel("fire",false);
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
 		geoRaster.getImagePlus().getProcessor().setColorModel(cm);

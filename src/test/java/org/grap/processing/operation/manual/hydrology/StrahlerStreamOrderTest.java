@@ -76,7 +76,7 @@ public class StrahlerStreamOrderTest {
 				.doOperation(strahlerStreamOrder);
 
 		grStrahlerStreamOrder.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
+				LutGenerator.colorModel("fire",false));
 		grStrahlerStreamOrder.show();
 		grStrahlerStreamOrder.save("../../datas2tests/tmp/2.tif");
 	}

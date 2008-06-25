@@ -88,7 +88,7 @@ public class WatershedWithThresholdTest {
 				.doOperation(watershedsWithThreshold);
 
 		grWatershedsWithThreshold.getImagePlus().getProcessor()
-				.setColorModel(LutGenerator.colorModel("fire"));
+				.setColorModel(LutGenerator.colorModel("fire",false));
 		grWatershedsWithThreshold.show();
 		grWatershedsWithThreshold.save("../../datas2tests/tmp/2.tif");
 	}

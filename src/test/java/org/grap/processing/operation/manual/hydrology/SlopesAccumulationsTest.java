@@ -65,7 +65,7 @@ public class SlopesAccumulationsTest {
 				.doOperation(slopesAccumulations);
 
 		grSlopesAccumulations.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
+				LutGenerator.colorModel("fire",false));
 		grSlopesAccumulations.show();
 		grSlopesAccumulations.save("../../datas2tests/tmp/2.tif");
 	}

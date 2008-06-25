@@ -64,7 +64,7 @@ public class AllWatershedsTest {
 		final GeoRaster grAllWatersheds = grSlopesDirections
 				.doOperation(allWatersheds);
 		grAllWatersheds.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
+				LutGenerator.colorModel("fire",false));
 		grAllWatersheds.show();
 		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
 	}
