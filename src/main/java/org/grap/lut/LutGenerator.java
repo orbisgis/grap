@@ -165,11 +165,27 @@ public class LutGenerator {
 		}
 	}
 
-	
+	/**
+	 * 
+	 * @param a name to generate a colormodel
+	 * Available names are "fire", "gray", "ice", "spectrum", "red",
+				"green", "blue", "cyan", "magenta", "yellow", "redgreen",
+				"3-3-2 RGB" .
+	 * @return a new colormodel
+	 */
 	public static ColorModel colorModel(String arg){
 		return colorModel(arg, false);
 	}
 	
+	/**
+	 * 
+	 * @param a name to generate a colormodel
+	 * Available names are "fire", "gray", "ice", "spectrum", "red",
+				"green", "blue", "cyan", "magenta", "yellow", "redgreen",
+				"3-3-2 RGB" .
+	 * @param invert a boolean argument to invert or not the colormodel order
+	 * @return a new colormodel
+	 */
 	public static ColorModel colorModel(String arg, boolean invert) {
 		final FileInfo fi = new FileInfo();
 		fi.reds = new byte[256];
@@ -222,6 +238,10 @@ public class LutGenerator {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return an array of available lut names
+	 */
 	public static String[] getDefaultLUTS() {
 		return new String[] { "fire", "gray", "ice", "spectrum", "red",
 				"green", "blue", "cyan", "magenta", "yellow", "redgreen",
