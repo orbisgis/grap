@@ -85,7 +85,6 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 
 public class D8OpAllOutlets extends D8OpAbstract implements Operation {
-	public final static float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
 	public final static float notProcessedYet = 0;
 	public final static float isNotAnOutletValue = 0.5f;
 	public final static float isAnOutletValue = 1;
@@ -106,7 +105,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 			int nbOfOutlets = computeAllOutlets();
 			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
 					outlets, rasterMetadata);
-			grAllOutlets.setNodataValue(ndv);
+			grAllOutlets.setNodataValue(hydrologyUtilities.ndv);
 			System.out.printf("%d outlets\n", nbOfOutlets);
 			return grAllOutlets;
 		} catch (IOException e) {
@@ -122,7 +121,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 			for (int x = 0; x < ncols; x++, i++) {
 				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
-					outlets[i] = ndv;
+					outlets[i] = hydrologyUtilities.ndv;
 				} else if (notProcessedYet == outlets[i]) {
 					// current cell value has not been yet modified...
 					final Stack<HydroCell> path = new Stack<HydroCell>();
