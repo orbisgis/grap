@@ -159,8 +159,8 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 		// 2nd step:
 		short step = 1;
 		do {
-			System.out.printf("%d junctions in step number %d\n",
-					junctionsStack.size(), step);
+			// System.out.printf("%d junctions in step number %d\n",
+			// junctionsStack.size(), step);
 			final Set<Integer> nextJunctionsStack = new HashSet<Integer>();
 			for (int riverStart : junctionsStack) {
 				// final Short colorTag = step;

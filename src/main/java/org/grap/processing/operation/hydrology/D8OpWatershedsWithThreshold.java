@@ -146,9 +146,9 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 								.getPixelValue(c, r) >= threshold)) {
 					// current cell is an outlet. It's slopes accumulation value
 					// is greater or equal to the threshold value.
-					System.out.printf("(%d, %d) : %.0f\n", c, r,
-							gipSlopesAccumulations.getProcessor()
-									.getPixelValue(c, r));
+					// System.out.printf("(%d, %d) : %.0f\n", c, r,
+					// gipSlopesAccumulations.getProcessor()
+					// .getPixelValue(c, r));
 					nbOfWatershedsWithThreshold++;
 					mapOfBigOutlets.put(gipAllWatersheds.getProcessor()
 							.getPixelValue(c, r), nbOfWatershedsWithThreshold);
