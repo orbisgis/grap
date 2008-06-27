@@ -84,6 +84,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements
 		Operation {
@@ -103,7 +104,7 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction)
+	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);
@@ -130,14 +131,6 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements
 		do {
 			parentsCell = computeSameWatershed(parentsCell);
 		} while (0 < parentsCell.size());
-
-		// TODO : remove !!!!!!!
-		// for (int y = 0; y < nrows; y++) {
-		// for (int x = 0; x < ncols; x++) {
-		// System.out.println(sameWatershed[x + y * ncols] + " ");
-		// }
-		// System.out.println();
-		// }
 	}
 
 	private Set<Integer> computeSameWatershed(final Set<Integer> sonsCell)

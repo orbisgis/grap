@@ -38,21 +38,22 @@ package org.grap.processing.operation.hydrology;
 
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public abstract class D8OpAbstractMultiThreads extends D8OpAbstract {
 	private static final boolean PARALLEL = false;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		if (PARALLEL) {
 			return parallel(geoRaster);
 		} else {
-			return sequential(geoRaster);
+			return sequential(geoRaster, pm);
 		}
 	}
 
-	abstract GeoRaster sequential(GeoRaster geoRaster)
+	abstract GeoRaster sequential(GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException;
 
 	abstract GeoRaster parallel(GeoRaster geoRaster) throws OperationException;

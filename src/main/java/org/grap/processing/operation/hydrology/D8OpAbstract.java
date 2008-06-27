@@ -46,8 +46,8 @@ import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
 public abstract class D8OpAbstract implements Operation {
-	public final GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
-			throws OperationException {
+	public final GeoRaster execute(final GeoRaster geoRaster,
+			IProgressMonitor pm) throws OperationException {
 		final long startTime = System.currentTimeMillis();
 		try {
 			if (ImagePlus.COLOR_RGB == geoRaster.getType()) {
@@ -58,13 +58,13 @@ public abstract class D8OpAbstract implements Operation {
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
-		GeoRaster result = evaluateResult(geoRaster);
+		GeoRaster result = evaluateResult(geoRaster, pm);
 
 		System.out.printf("D8Operation in %d ms\n", System.currentTimeMillis()
 				- startTime);
 		return result;
 	}
 
-	public abstract GeoRaster evaluateResult(GeoRaster geoRaster)
+	public abstract GeoRaster evaluateResult(GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException;
 }

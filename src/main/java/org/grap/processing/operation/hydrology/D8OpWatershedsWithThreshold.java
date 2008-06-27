@@ -86,6 +86,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		Operation {
@@ -112,15 +113,15 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster grSlopesAccumulations)
-			throws OperationException {
+	public GeoRaster evaluateResult(GeoRaster grSlopesAccumulations,
+			IProgressMonitor pm) throws OperationException {
 		try {
 			gipSlopesAccumulations = grSlopesAccumulations.getImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesAccumulations
 					.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold();
+			int nbOfWatershedsWithThreshold = computeAllwatershedsWithThreshold(pm);
 			final GeoRaster grWatershedsWithThreshold = GeoRasterFactory
 					.createGeoRaster(watershedsWithThreshold, rasterMetadata);
 			grWatershedsWithThreshold.setNodataValue(ndv);
@@ -132,26 +133,33 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		}
 	}
 
-	private int computeAllwatershedsWithThreshold() throws IOException {
+	private int computeAllwatershedsWithThreshold(IProgressMonitor pm)
+			throws IOException {
 		short nbOfWatershedsWithThreshold = 0;
 		final Map<Float, Short> mapOfBigOutlets = new HashMap<Float, Short>();
 
 		// 1st step: identify the "good" outlets...
 		int i = 0;
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++, i++) {
-				if ((!Float.isNaN(gipAllOutlets.getProcessor().getPixelValue(c,
-						r)))
+		for (int y = 0; y < nrows; y++) {
+
+			if (y / 100 == y / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * y / nrows));
+				}
+			}
+
+			for (int x = 0; x < ncols; x++, i++) {
+				if ((!Float.isNaN(gipAllOutlets.getProcessor().getPixelValue(x,
+						y)))
 						&& (gipSlopesAccumulations.getProcessor()
-								.getPixelValue(c, r) >= threshold)) {
+								.getPixelValue(x, y) >= threshold)) {
 					// current cell is an outlet. It's slopes accumulation value
 					// is greater or equal to the threshold value.
-					// System.out.printf("(%d, %d) : %.0f\n", c, r,
-					// gipSlopesAccumulations.getProcessor()
-					// .getPixelValue(c, r));
 					nbOfWatershedsWithThreshold++;
 					mapOfBigOutlets.put(gipAllWatersheds.getProcessor()
-							.getPixelValue(c, r), nbOfWatershedsWithThreshold);
+							.getPixelValue(x, y), nbOfWatershedsWithThreshold);
 				}
 			}
 		}

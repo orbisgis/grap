@@ -47,10 +47,11 @@ import org.grap.processing.cellularAutomata.CASlopeInRadians;
 import org.grap.processing.cellularAutomata.cam.CANFactory;
 import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAN;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 		Operation {
-	GeoRaster sequential(final GeoRaster grDEM) throws OperationException {
+	GeoRaster sequential(final GeoRaster grDEM, IProgressMonitor pm) throws OperationException {
 		try {
 			final HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(
 					grDEM);
@@ -60,6 +61,15 @@ public class D8OpSlopeInRadians extends D8OpAbstractMultiThreads implements
 			final float[] slopes = new float[nrows * ncols];
 			int i = 0;
 			for (int y = 0; y < nrows; y++) {
+
+				if (y / 100 == y / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * y / nrows));
+					}
+				}
+
 				for (int x = 0; x < ncols; x++, i++) {
 					slopes[i] = hydrologyUtilities.getSlopeInRadians(x, y);
 				}

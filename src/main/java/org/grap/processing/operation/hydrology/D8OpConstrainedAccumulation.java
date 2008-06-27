@@ -84,6 +84,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		Operation {
@@ -109,7 +110,7 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction)
+	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);
@@ -118,7 +119,7 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 			final RasterMetadata rasterMetadata = direction.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfOutlets = accumulateSlopes();
+			int nbOfOutlets = accumulateSlopes(pm);
 			final GeoRaster grAccumulation = GeoRasterFactory.createGeoRaster(
 					d8Accumulation, rasterMetadata);
 			grAccumulation.setNodataValue(ndv);
@@ -129,13 +130,22 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		}
 	}
 
-	private int accumulateSlopes() throws IOException {
+	private int accumulateSlopes(IProgressMonitor pm) throws IOException {
 		// slopes accumulations' array initialization
 		d8Accumulation = new float[nrows * ncols];
 
 		int nbOfOutlets = 0;
 
 		for (int y = 0, i = 0; y < nrows; y++) {
+
+			if (y / 100 == y / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * y / nrows));
+				}
+			}
+
 			for (int x = 0; x < ncols; x++, i++) {
 				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {

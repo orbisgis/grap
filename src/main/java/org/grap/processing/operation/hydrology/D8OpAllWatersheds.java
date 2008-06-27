@@ -83,6 +83,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 	public final static float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
@@ -94,14 +95,14 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 	private int nrows;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction)
+	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);
 			final RasterMetadata rasterMetadata = direction.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfWatersheds = computeAllWatersheds();
+			int nbOfWatersheds = computeAllWatersheds(pm);
 			final GeoRaster grAllWatersheds = GeoRasterFactory.createGeoRaster(
 					watersheds, rasterMetadata);
 			grAllWatersheds.setNodataValue(ndv);
@@ -112,11 +113,20 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private int computeAllWatersheds() throws IOException {
+	private int computeAllWatersheds(IProgressMonitor pm) throws IOException {
 		watersheds = new float[nrows * ncols];
 		float newDefaultColor = 1;
 
 		for (int y = 0, i = 0; y < nrows; y++) {
+
+			if (y / 100 == y / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * y / nrows));
+				}
+			}
+
 			for (int x = 0; x < ncols; x++, i++) {
 				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {

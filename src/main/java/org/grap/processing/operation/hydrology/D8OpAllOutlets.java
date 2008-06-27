@@ -83,6 +83,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 	public final static float notProcessedYet = 0;
@@ -95,17 +96,17 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 	private int nrows;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int nbOfOutlets = computeAllOutlets();
+			int nbOfOutlets = computeAllOutlets(pm);
 			final GeoRaster grAllOutlets = GeoRasterFactory.createGeoRaster(
 					outlets, rasterMetadata);
-			grAllOutlets.setNodataValue(hydrologyUtilities.ndv);
+			grAllOutlets.setNodataValue(isNotAnOutletValue);
 			System.out.printf("%d outlets\n", nbOfOutlets);
 			return grAllOutlets;
 		} catch (IOException e) {
@@ -113,15 +114,24 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private int computeAllOutlets() throws IOException {
+	private int computeAllOutlets(IProgressMonitor pm) throws IOException {
 		outlets = new float[nrows * ncols];
 		int nbOfOutlets = 0;
 
 		for (int y = 0, i = 0; y < nrows; y++) {
+
+			if (y / 100 == y / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * y / nrows));
+				}
+			}
+
 			for (int x = 0; x < ncols; x++, i++) {
 				if (hydrologyUtilities.isABorder(x, y)
 						|| Float.isNaN(hydrologyUtilities.getPixelValue(x, y))) {
-					outlets[i] = hydrologyUtilities.ndv;
+					outlets[i] = isNotAnOutletValue;
 				} else if (notProcessedYet == outlets[i]) {
 					// current cell value has not been yet modified...
 					final Stack<HydroCell> path = new Stack<HydroCell>();

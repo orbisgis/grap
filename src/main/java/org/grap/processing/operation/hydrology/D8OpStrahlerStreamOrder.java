@@ -88,10 +88,11 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	public final static short noDataValue = GeoRaster.SHORT_NO_DATA_VALUE;
-	public final static short riversStartValue =  Short.MAX_VALUE;
+	public final static short riversStartValue = Short.MAX_VALUE;
 
 	private ImagePlus gipDirection;
 	private ImagePlus gipSlopesAccumulations;
@@ -112,7 +113,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster)
+	public GeoRaster evaluateResult(GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);
@@ -121,7 +122,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();
 			nrows = rasterMetadata.getNRows();
 			ncols = rasterMetadata.getNCols();
-			int maxStrahlerStreamOrder = computeStrahlerStreamOrders();
+			int maxStrahlerStreamOrder = computeStrahlerStreamOrders(pm);
 			final GeoRaster grStrahlerStreamOrder = GeoRasterFactory
 					.createGeoRaster(strahlerStreamOrder, rasterMetadata);
 			grStrahlerStreamOrder.setNodataValue(noDataValue);
@@ -135,15 +136,24 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private int computeStrahlerStreamOrders() throws IOException {
+	private int computeStrahlerStreamOrders(IProgressMonitor pm) throws IOException {
 		short maxStrahlerStreamOrder = 1;
 		strahlerStreamOrder = new short[nrows * ncols];
 		Set<Integer> junctionsStack = new HashSet<Integer>();
 
 		// 1st step: identify all the rivers' starts...
 		int i = 0;
-		for (int r = 0; r < nrows; r++) {
-			for (int c = 0; c < ncols; c++, i++) {
+		for (int y = 0; y < nrows; y++) {
+
+			if (y / 100 == y / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * y / nrows));
+				}
+			}
+
+			for (int x = 0; x < ncols; x++, i++) {
 				if (hydrologyUtilities.isARiverStart(gipSlopesAccumulations,
 						riverThreshold, i)) {
 					// if (SlopesUtilities.isARiverStart(gipSlopesAccumulations,
