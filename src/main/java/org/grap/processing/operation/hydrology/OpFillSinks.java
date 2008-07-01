@@ -36,8 +36,6 @@
  */
 package org.grap.processing.operation.hydrology;
 
-import ij.ImagePlus;
-import ij.io.FileSaver;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
@@ -98,26 +96,27 @@ public class OpFillSinks implements Operation {
 	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
 
-		return processAlgorithm(geoRaster, minSlope);
+		return processAlgorithm(geoRaster, minSlope, pm);
 	}
 
 	/**
 	 * 
 	 * @param geoRaster
 	 *            the DEM to be processed.
+	 * @param pm 
 	 * @param dMinSlope
 	 *            is a slope parameters used to fill the sink, to find an
 	 *            outlet. Method from Olivier Planchon & Frederic Darboux (2001)
 	 */
 
 	public GeoRaster processAlgorithm(final GeoRaster geoRaster,
-			final double minSlope) {
+			final double minSlope, IProgressMonitor pm) {
 
 		GeoRaster grResult = null;
 		try {
 
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);
-			
+
 			m_DEM = geoRaster.getImagePlus().getProcessor();
 
 			int i;
@@ -193,6 +192,15 @@ public class OpFillSinks implements Operation {
 
 			// TODO : Add progress listenner setProgressText("Fase 1");
 			for (x = 0; x < ncols; x++) {
+
+				if (x / 100 == x / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * x / ncols));
+					}
+				}
+
 				for (y = 0; y < nrows; y++) {
 
 					iValue = m_Border.getPixelValue(x, y);
@@ -265,24 +273,23 @@ public class OpFillSinks implements Operation {
 
 	private void initAltitude() {
 		int x, y;
-		m_PreprocessedDEM = new FloatProcessor(ncols,nrows);
-		m_Border = new FloatProcessor(ncols,nrows);
+		m_PreprocessedDEM = new FloatProcessor(ncols, nrows);
+		m_Border = new FloatProcessor(ncols, nrows);
 		for (x = 0; x < ncols; x++) {
 			for (y = 0; y < nrows; y++) {
 				float dValue = m_DEM.getPixelValue(x, y);
-				if (hydrologyUtilities.isABorder(x, y)){
+				if (hydrologyUtilities.isABorder(x, y)) {
 					m_Border.putPixelValue(x, y, 1);
-					m_PreprocessedDEM.putPixelValue(x, y, m_DEM
-							.getPixelValue(x, y));
-				}
-				else {
+					m_PreprocessedDEM.putPixelValue(x, y, m_DEM.getPixelValue(
+							x, y));
+				} else {
 					m_Border.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
-					
-					if (dValue!= GeoRaster.FLOAT_NO_DATA_VALUE){
-					m_PreprocessedDEM.putPixelValue(x, y, INIT_ELEVATION);
-					}
-					else {
-						m_PreprocessedDEM.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
+
+					if (dValue != GeoRaster.FLOAT_NO_DATA_VALUE) {
+						m_PreprocessedDEM.putPixelValue(x, y, INIT_ELEVATION);
+					} else {
+						m_PreprocessedDEM.putPixelValue(x, y,
+								GeoRaster.FLOAT_NO_DATA_VALUE);
 					}
 				}
 			}
@@ -304,7 +311,8 @@ public class OpFillSinks implements Operation {
 				zw = m_PreprocessedDEM.getPixelValue(ix, iy);
 
 				zn = m_DEM.getPixelValue(ix, iy);
-				if ((zn!= GeoRaster.FLOAT_NO_DATA_VALUE) && zw == INIT_ELEVATION) {
+				if ((zn != GeoRaster.FLOAT_NO_DATA_VALUE)
+						&& zw == INIT_ELEVATION) {
 					zw = m_PreprocessedDEM.getPixelValue(x, y)
 							+ (float) dEpsilon[i];
 					if (zn >= zw) {
