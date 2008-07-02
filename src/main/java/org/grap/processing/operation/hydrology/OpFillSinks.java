@@ -95,7 +95,6 @@ public class OpFillSinks implements Operation {
 
 	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
 			throws OperationException {
-
 		return processAlgorithm(geoRaster, minSlope, pm);
 	}
 
@@ -103,20 +102,18 @@ public class OpFillSinks implements Operation {
 	 * 
 	 * @param geoRaster
 	 *            the DEM to be processed.
-	 * @param pm 
+	 * @param pm
 	 * @param dMinSlope
 	 *            is a slope parameters used to fill the sink, to find an
 	 *            outlet. Method from Olivier Planchon & Frederic Darboux (2001)
+	 * @throws OperationException
 	 */
 
-	public GeoRaster processAlgorithm(final GeoRaster geoRaster,
-			final double minSlope, IProgressMonitor pm) {
-
-		GeoRaster grResult = null;
+	private GeoRaster processAlgorithm(final GeoRaster geoRaster,
+			final double minSlope, IProgressMonitor pm)
+			throws OperationException {
 		try {
-
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);
-
 			m_DEM = geoRaster.getImagePlus().getProcessor();
 
 			int i;
@@ -258,17 +255,14 @@ public class OpFillSinks implements Operation {
 				}
 			}
 
-			grResult = GeoRasterFactory.createGeoRaster(m_PreprocessedDEM,
-					geoRaster.getMetadata());
-
-			grResult.setNodataValue(Float.NaN);
-
+			GeoRaster grResult = GeoRasterFactory.createGeoRaster(
+					m_PreprocessedDEM, geoRaster.getMetadata());
+			grResult.setNodataValue((float) geoRaster.getNoDataValue());
+			return grResult;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new OperationException(
+					"bug trying to access the raster in OpFillSinks", e);
 		}
-
-		return grResult;
-
 	}
 
 	private void initAltitude() {
@@ -351,7 +345,7 @@ public class OpFillSinks implements Operation {
 	 * @return
 	 */
 
-	public static double getDistToNeighborInDir(int iDir, float cellSize) {
+	private static double getDistToNeighborInDir(int iDir, float cellSize) {
 		final int m_iOffsetX[] = { 0, 1, 1, 1, 0, -1, -1, -1 };
 		final int m_iOffsetY[] = { 1, 1, 0, -1, -1, -1, 0, 1 };
 		final double m_dDist[] = new double[8];
