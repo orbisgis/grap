@@ -47,7 +47,7 @@ import java.awt.image.ColorModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.grap.io.FileReader;
+import org.grap.io.RasterReader;
 
 public class GeoRasterFactory {
 
@@ -155,11 +155,11 @@ public class GeoRasterFactory {
 		return new DefaultGeoRaster(imagePlus, metadata, imageType, min, max);
 	}
 
-	public static GeoRaster createGeoRaster(FileReader fileReader) {
+	public static GeoRaster createGeoRaster(RasterReader fileReader) {
 		return new DefaultGeoRaster(fileReader);
 	}
 
-	public static GeoRaster createGeoRaster(FileReader fileReader,
+	public static GeoRaster createGeoRaster(RasterReader fileReader,
 			int imageType, double min, double max) {
 		return new DefaultGeoRaster(fileReader, imageType, min, max);
 	}

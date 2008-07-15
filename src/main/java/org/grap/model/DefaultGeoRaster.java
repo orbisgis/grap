@@ -50,7 +50,7 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.grap.io.EsriGRIDWriter;
-import org.grap.io.FileReader;
+import org.grap.io.RasterReader;
 import org.grap.io.FileReaderFactory;
 import org.grap.io.WorldFile;
 import org.grap.processing.Operation;
@@ -68,7 +68,7 @@ public class DefaultGeoRaster implements GeoRaster {
 			.getName());
 
 	private RasterMetadata rasterMetadata;
-	private FileReader fileReader;
+	private RasterReader fileReader;
 	private ImagePlus cachedImagePlus;
 	private double maxThreshold = Double.NaN;
 	private double minThreshold = Double.NaN;
@@ -120,11 +120,11 @@ public class DefaultGeoRaster implements GeoRaster {
 		cachedType = imageType;
 	}
 
-	public DefaultGeoRaster(FileReader fileReader) {
+	public DefaultGeoRaster(RasterReader fileReader) {
 		this.fileReader = fileReader;
 	}
 
-	public DefaultGeoRaster(FileReader fileReader, int imageType, double min,
+	public DefaultGeoRaster(RasterReader fileReader, int imageType, double min,
 			double max) {
 		cachedMin = min;
 		cachedMax = max;

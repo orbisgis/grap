@@ -56,12 +56,12 @@ public class FileReaderFactory {
 		worldFileExtensions.add("png");
 	}
 
-	public static FileReader create(final String fileName)
+	public static RasterReader create(final String fileName)
 			throws FileNotFoundException, IOException {
 		return create(fileName, GeoProcessorType.FLOAT);
 	}
 
-	public static FileReader create(final String fileName,
+	public static RasterReader create(final String fileName,
 			final GeoProcessorType geoProcessorType)
 			throws FileNotFoundException, IOException {
 		final String fileNameExtension = getFileNameExtension(fileName);
@@ -77,7 +77,7 @@ public class FileReaderFactory {
 		}
 	}
 
-	public static FileReader create(final String fileName,
+	public static RasterReader create(final String fileName,
 			final GeoProcessorType geoProcessorType,
 			float pixelsize) throws FileNotFoundException, IOException {
 		final String fileNameExtension = getFileNameExtension(fileName);

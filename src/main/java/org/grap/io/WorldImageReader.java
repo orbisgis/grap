@@ -56,7 +56,7 @@ import org.grap.model.RasterMetadata;
 import com.sun.image.codec.jpeg.JPEGCodec;
 import com.sun.image.codec.jpeg.JPEGImageDecoder;
 
-public class WorldImageReader implements FileReader {
+public class WorldImageReader implements RasterReader {
 	private static Map<String, String[]> worldFileExtensions;
 
 	private String fileName;

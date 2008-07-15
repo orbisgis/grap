@@ -45,7 +45,7 @@ import java.net.URL;
 import org.grap.model.GeoProcessorType;
 import org.grap.model.RasterMetadata;
 
-public class XYZ2DEMReader implements FileReader {
+public class XYZ2DEMReader implements RasterReader {
 	private XYZ2DEM_Importer xyzImporter;
 
 	public XYZ2DEMReader(final String fileName) {

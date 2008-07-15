@@ -42,7 +42,7 @@ import java.io.IOException;
 
 import org.grap.model.RasterMetadata;
 
-public interface FileReader {
+public interface RasterReader {
 	public RasterMetadata readRasterMetadata() throws IOException;
 
 	public ImagePlus readImagePlus() throws IOException;

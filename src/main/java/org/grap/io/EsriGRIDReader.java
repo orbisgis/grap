@@ -105,7 +105,7 @@ import org.grap.model.RasterMetadata;
  *
  * NODATA_value -9999
  */
-public class EsriGRIDReader implements FileReader {
+public class EsriGRIDReader implements RasterReader {
 	private InputStream in;
 
 	private float noDataValue;
