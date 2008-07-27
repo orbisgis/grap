@@ -40,6 +40,7 @@ import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.process.ImageProcessor;
 
+import java.awt.Image;
 import java.awt.image.ColorModel;
 import java.awt.image.IndexColorModel;
 
@@ -68,7 +69,11 @@ public class LutDisplay {
 			imagePlus.getProcessor().setColorModel(colorModel);
 			imagePlus.updateAndDraw();
 		}
-		
+
 		return imagePlus;
+	}
+
+	public Image getImage() {
+		return getImagePlus().getImage();
 	}
 }
