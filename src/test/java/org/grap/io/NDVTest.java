@@ -256,17 +256,4 @@ public class NDVTest extends GrapTest {
 			}
 		}
 	}
-	//
-	// public void testInitialNDVArray2() throws Exception {
-	// float ndv = 32768;
-	// final RasterMetadata rasterMetadata = new RasterMetadata(0.5, 0.5, 1,
-	// -1, 3, 1, ndv);
-	// final GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { 1,
-	// 2, ndv }, rasterMetadata);
-	// assertEquals(ndv, gr.getNoDataValue());
-	// gr.setNodataValue(ndv);
-	// assertEquals(ndv, (float) gr.getNoDataValue());
-	// gr.setNodataValue(13);
-	// assertEquals(13d, gr.getNoDataValue());
-	// }
 }
