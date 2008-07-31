@@ -105,15 +105,22 @@ public class D8OpRiverDistance extends D8OpAbstract implements Operation {
 					d8Distances[i] = hydrologyUtilities.ndv;
 				} else if (notProcessedYet == d8Distances[i]) {
 					// current cell value has not been yet modified...
-					final Stack<HydroCell> path = new Stack<HydroCell>();
-					HydroCell top = hydrologyUtilities.shortHydrologicalPath(i,
-							path, d8Accumulations, riverThreshold);
+					if (riverThreshold < d8Accumulations[i]) {
+						// this pixel is part of a river
+						d8Distances[i] = 1.E-4f;
+					} else {
+						final Stack<HydroCell> path = new Stack<HydroCell>();
+						HydroCell top = hydrologyUtilities
+								.shortHydrologicalPath(i, path,
+										d8Accumulations, riverThreshold);
 
-					float accumulDist = (null == top) ? 0 : top.dist;
-					while (!path.empty()) {
-						HydroCell cell = path.pop();
-						accumulDist += cell.dist;
-						d8Distances[cell.index] = accumulDist;
+						float accumulDist = ((null == top) || (riverThreshold <= top.dist)) ? 0
+								: top.dist;
+						while (!path.empty()) {
+							HydroCell cell = path.pop();
+							accumulDist += cell.dist;
+							d8Distances[cell.index] = accumulDist;
+						}
 					}
 				}
 			}
