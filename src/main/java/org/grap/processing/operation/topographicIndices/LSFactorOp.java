@@ -36,6 +36,7 @@
  */
 package org.grap.processing.operation.topographicIndices;
 
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.io.IOException;
@@ -46,38 +47,46 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
-
-
 /**
+ * LS factor is a slope length index used by the Universal Soil Loss Equation
+ * (USLE).
+ * 
+ * A procedure for estimating the LS-factor using contributing area is provided
+ * by Moore et al. (1993).
+ * 
+ * LS = (n+1) [A s /22.13].n [sin B / 0.0896]m
+ * 
+ * where n = contant (0.4), B = local slope gradient (degrees), m = constant
+ * (1.3) A s = unit contributind area
  * 
  * @author bocher
- *
- * The wetness index (Beven and Kirkby, 1979) gives an idea of the spatial pattern of soil
- * moisture content.
  * 
- * Wetness =  ln(A s / S)
- * where A s =  unit contributing area (m²/m)
- * S = slope gradient in radians (m/m) (tan B = S)
- * 
- * To compute this index you need only a DEM.
  */
 
-
-public class WetnessIndex implements Operation {
-
-
-	private int ncols;
-	private int nrows;
-	private ImageProcessor m_Slope;
-	private GeoRaster accFlow;
-	private ImageProcessor m_WetnessIndex;
-	private ImageProcessor m_accFlow;
-	private float cellSize;
+public class LSFactorOp implements Operation {
 
 	private static final double ALMOST_ZERO = 0.0011;
 
-	public WetnessIndex(final GeoRaster accFlow){
-		this.accFlow=accFlow;
+	private int ncols;
+
+	private int nrows;
+
+	private ImageProcessor m_Slope;
+
+	private ImageProcessor slope;
+
+	private GeoRaster accFlow;
+
+	private ImageProcessor m_LSFactor;
+
+	private ImageProcessor m_accFlow;
+
+	private float cellSize;
+
+	private final static double FACTOR = 180 / Math.PI;
+
+	public LSFactorOp(final GeoRaster accFlow) {
+		this.accFlow = accFlow;
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
@@ -86,63 +95,55 @@ public class WetnessIndex implements Operation {
 		return processAlgorithm(geoRaster);
 	}
 
-
-
-	public GeoRaster processAlgorithm(final GeoRaster geoRaster){
-
-
+	public GeoRaster processAlgorithm(final GeoRaster geoRaster)
+			throws OperationException {
 
 		try {
 			m_Slope = geoRaster.getImagePlus().getProcessor();
+
+			// Convert the slope from radians to degrees.
+			m_Slope.multiply(FACTOR);
 			m_accFlow = accFlow.getImagePlus().getProcessor();
 
-			
-
-			nrows = geoRaster.getMetadata().getNRows() ;
+			nrows = geoRaster.getMetadata().getNRows();
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
+		
+			m_LSFactor = new FloatProcessor(ncols , nrows);
 
-			m_accFlow.multiply(cellSize * cellSize);
+			int x, y;
 
-			m_WetnessIndex =   m_Slope.duplicate();
-
-			m_WetnessIndex.multiply(0);
-
-
-			int x,y;
-
-			for(y = 0; y<ncols; y++){
-				for(x = 0; x < nrows; x++){
+			for (y = 0; y < nrows; y++) {
+				for (x = 0; x < ncols; x++) {
 
 					float dSlope = m_Slope.getPixelValue(x, y);
 					float dAccFlow = m_accFlow.getPixelValue(x, y);
 
-					if (((Float.isNaN(dSlope))||(Float.isNaN(dAccFlow)))){
-						m_WetnessIndex.putPixelValue(x, y, Float.NaN);
+					if (((Float.isNaN(dSlope)) || (Float.isNaN(dAccFlow)))) {
+						m_LSFactor.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
 
+					}
+					else if((dSlope==GeoRaster.FLOAT_NO_DATA_VALUE)||(dAccFlow==GeoRaster.FLOAT_NO_DATA_VALUE)){
+						m_LSFactor.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
 					}
 					else {
 						dAccFlow /= cellSize;
-						dSlope = (float) Math.max(Math.tan(dSlope),  ALMOST_ZERO);
-						m_WetnessIndex.putPixelValue(x, y, Math.log(dAccFlow / dSlope));
+						dSlope = (float) Math
+								.max(Math.tan(dSlope), ALMOST_ZERO);
+						m_LSFactor.putPixelValue(x, y, (0.4 + 1)
+								* Math.pow(dAccFlow / 22.13, 0.4)
+								* Math.pow(Math.sin(dSlope) / 0.0896, 1.3));
 					}
 				}
 			}
 
-
+			GeoRaster gr = GeoRasterFactory.createGeoRaster(m_LSFactor,
+					geoRaster.getMetadata());
+			gr.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			return gr;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new OperationException(e);
 		}
-
-
-
-
-
-		return GeoRasterFactory.createGeoRaster(m_WetnessIndex, geoRaster.getMetadata());
-
 	}
-
-
-
 
 }

@@ -36,6 +36,7 @@
  */
 package org.grap.processing.operation.topographicIndices;
 
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.io.IOException;
@@ -46,37 +47,39 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
-
-
 /**
- * The stream power index (Moore et al., 1992) is the first of several indices indicating
- * possibke erosion by concentrated flow.
  * 
- * StreamPowerIndex =  A s * S
- * 
- * where 
- * 
- * A s =  unit contributing area (m²/m)
- * S = slope gradient in radians (m/m) (tan B = S)
  * @author bocher
- *
+ * 
+ * The wetness index (Beven and Kirkby, 1979) gives an idea of the spatial
+ * pattern of soil moisture content.
+ * 
+ * Wetness = ln(A s / S) where A s = unit contributing area (m²/m) S = slope
+ * gradient in radians (m/m) (tan B = S)
+ * 
+ * To compute this index you need only a DEM.
  */
-public class StreamPowerIndex implements Operation {
 
+public class WetnessIndexOp implements Operation {
+
+	private int ncols;
+
+	private int nrows;
+
+	private ImageProcessor m_Slope;
+
+	private GeoRaster accFlow;
+
+	private ImageProcessor m_WetnessIndex;
+
+	private ImageProcessor m_accFlow;
+
+	private float cellSize;
 
 	private static final double ALMOST_ZERO = 0.0011;
 
-	private int ncols;
-	private int nrows;
-	private ImageProcessor m_Slope;
-	private ImageProcessor slope;
-	private GeoRaster accFlow;
-	private ImageProcessor m_StreamPowerIndex;
-	private ImageProcessor m_accFlow;
-	private float cellSize;
-
-	public StreamPowerIndex(final GeoRaster accFlow){
-		this.accFlow=accFlow;
+	public WetnessIndexOp(final GeoRaster accFlow) {
+		this.accFlow = accFlow;
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
@@ -85,63 +88,49 @@ public class StreamPowerIndex implements Operation {
 		return processAlgorithm(geoRaster);
 	}
 
-
-
-	public GeoRaster processAlgorithm(final GeoRaster geoRaster){
-
-
+	public GeoRaster processAlgorithm(final GeoRaster geoRaster) throws OperationException {
 
 		try {
 			m_Slope = geoRaster.getImagePlus().getProcessor();
 			m_accFlow = accFlow.getImagePlus().getProcessor();
 
-
-
-			nrows = geoRaster.getMetadata().getNRows() ;
+			nrows = geoRaster.getMetadata().getNRows();
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
 
-			m_accFlow.multiply(cellSize * cellSize);
+			m_WetnessIndex = new FloatProcessor(ncols , nrows);
 			
-			m_StreamPowerIndex =   m_Slope.duplicate();
+			int x, y;
 
-			m_StreamPowerIndex.multiply(0);
-
-
-			int x,y;
-
-			for(y = 0; y<ncols; y++){
-				for(x = 0; x < nrows; x++){
+			for (y = 0; y < nrows; y++) {
+				for (x = 0; x < ncols; x++) {
 
 					float dSlope = m_Slope.getPixelValue(x, y);
 					float dAccFlow = m_accFlow.getPixelValue(x, y);
 
-					if (((Float.isNaN(dSlope))||(Float.isNaN(dAccFlow)))){
-						m_StreamPowerIndex.putPixelValue(x, y, Float.NaN);
+					if (((Float.isNaN(dSlope)) || (Float.isNaN(dAccFlow)))) {
+						m_WetnessIndex.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
 
+					} 
+					else if((dSlope==GeoRaster.FLOAT_NO_DATA_VALUE)||(dAccFlow==GeoRaster.FLOAT_NO_DATA_VALUE)){
+						m_WetnessIndex.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
 					}
 					else {
 						dAccFlow /= cellSize;
-						dSlope = (float) Math.max(Math.tan(dSlope),  ALMOST_ZERO);
-						m_StreamPowerIndex.putPixelValue(x, y, dAccFlow * dSlope);
+						dSlope = (float) Math
+								.max(Math.tan(dSlope), ALMOST_ZERO);
+						m_WetnessIndex.putPixelValue(x, y, Math.log(dAccFlow
+								/ dSlope));
 					}
 				}
 			}
-
-
+			GeoRaster gr = GeoRasterFactory.createGeoRaster(m_WetnessIndex,
+					geoRaster.getMetadata());
+			gr.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			return gr;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new OperationException(e);
 		}
-
-
-
-
-
-		return GeoRasterFactory.createGeoRaster(m_StreamPowerIndex, geoRaster.getMetadata());
-
 	}
-
-
-
 
 }

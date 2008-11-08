@@ -36,6 +36,7 @@
  */
 package org.grap.processing.operation.topographicIndices;
 
+import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 
 import java.io.IOException;
@@ -46,43 +47,42 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
-
 /**
- * LS factor is a slope length index used by the Universal Soil Loss Equation (USLE).
+ * The stream power index (Moore et al., 1992) is the first of several indices
+ * indicating possibke erosion by concentrated flow.
  * 
- *  A procedure  for estimating the LS-factor using contributing area is provided by
- *  Moore et al. (1993).
- *  
- *  LS = (n+1) [A s /22.13].n [sin B / 0.0896]m
- *  
- *  where  n = contant (0.4),
- *  B = local slope gradient (degrees),
- *  m = constant (1.3)
- *  A s =  unit contributind area
- *  
+ * StreamPowerIndex = A s * S
+ * 
+ * where
+ * 
+ * A s = unit contributing area (m²/m) S = slope gradient in radians (m/m) (tan
+ * B = S)
+ * 
  * @author bocher
- *
+ * 
  */
-
-public class LSFactor implements Operation {
-
+public class StreamPowerIndexOp implements Operation {
 
 	private static final double ALMOST_ZERO = 0.0011;
 
 	private int ncols;
+
 	private int nrows;
+
 	private ImageProcessor m_Slope;
+
 	private ImageProcessor slope;
+
 	private GeoRaster accFlow;
-	private ImageProcessor m_LSFactor;
+
+	private ImageProcessor m_StreamPowerIndex;
+
 	private ImageProcessor m_accFlow;
+
 	private float cellSize;
 
-	private final static double FACTOR = 180 / Math.PI;
-
-	
-	public LSFactor(final GeoRaster accFlow){
-		this.accFlow=accFlow;
+	public StreamPowerIndexOp(final GeoRaster accFlow) {
+		this.accFlow = accFlow;
 	}
 
 	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
@@ -91,65 +91,52 @@ public class LSFactor implements Operation {
 		return processAlgorithm(geoRaster);
 	}
 
-
-
-	public GeoRaster processAlgorithm(final GeoRaster geoRaster){
-
-
+	public GeoRaster processAlgorithm(final GeoRaster geoRaster)
+			throws OperationException {
 
 		try {
 			m_Slope = geoRaster.getImagePlus().getProcessor();
-			
-			//Convert the slope from radians to degrees.
-			m_Slope.multiply(FACTOR);
 			m_accFlow = accFlow.getImagePlus().getProcessor();
-			
-			nrows = geoRaster.getMetadata().getNRows() ;
+
+			nrows = geoRaster.getMetadata().getNRows();
 			ncols = geoRaster.getMetadata().getNCols();
 			cellSize = geoRaster.getMetadata().getPixelSize_X();
 
-			m_accFlow.multiply(cellSize * cellSize);
-			
-			m_LSFactor =   m_Slope.duplicate();
+			m_StreamPowerIndex = new FloatProcessor(ncols, nrows);
 
-			m_LSFactor.multiply(0);
+			int x, y;
 
-
-			int x,y;
-
-			for(y = 0; y<ncols; y++){
-				for(x = 0; x < nrows; x++){
+			for (y = 0; y < nrows; y++) {
+				for (x = 0; x < ncols; x++) {
 
 					float dSlope = m_Slope.getPixelValue(x, y);
 					float dAccFlow = m_accFlow.getPixelValue(x, y);
 
-					if (((Float.isNaN(dSlope))||(Float.isNaN(dAccFlow)))){
-						m_LSFactor.putPixelValue(x, y, Float.NaN);
+					if (((Float.isNaN(dSlope)) || (Float.isNaN(dAccFlow)))) {
+						m_StreamPowerIndex.putPixelValue(x, y, GeoRaster.FLOAT_NO_DATA_VALUE);
 
-					}
-					else {
+					} else if ((dSlope == GeoRaster.FLOAT_NO_DATA_VALUE)
+							|| (dAccFlow == GeoRaster.FLOAT_NO_DATA_VALUE)) {
+						m_StreamPowerIndex.putPixelValue(x, y,
+								GeoRaster.FLOAT_NO_DATA_VALUE);
+					} else {
 						dAccFlow /= cellSize;
-						dSlope = (float) Math.max(Math.tan(dSlope),  ALMOST_ZERO);
-						m_LSFactor.putPixelValue(x, y,(0.4 + 1) * Math.pow(dAccFlow / 22.13, 0.4)
-								* Math.pow(Math.sin(dSlope) / 0.0896, 1.3));
+						dSlope = (float) Math
+								.max(Math.tan(dSlope), ALMOST_ZERO);
+						m_StreamPowerIndex.putPixelValue(x, y, dAccFlow
+								* dSlope);
 					}
 				}
 			}
 
-
+			GeoRaster gr = GeoRasterFactory.createGeoRaster(m_StreamPowerIndex,
+					geoRaster.getMetadata());
+			gr.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			return gr;
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new OperationException(e);
 		}
 
-
-
-
-
-		return GeoRasterFactory.createGeoRaster(m_LSFactor, geoRaster.getMetadata());
-
 	}
-
-
-
 
 }
