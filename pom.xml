@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/maven-v4_0_0.xsd http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>platform</artifactId>
@@ -24,7 +25,6 @@
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
 			<version>1.10</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.orbisgis</groupId>
@@ -35,7 +35,6 @@
 			<groupId>ij</groupId>
 			<artifactId>imagej</artifactId>
 			<version>1.39p</version>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -50,21 +49,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<downloadSources>true</downloadSources>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
