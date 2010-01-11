@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>2.2.0</version>
+		<version>3.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.grap</groupId>
@@ -27,11 +27,10 @@
 			<version>1.10</version>
 		</dependency>
 		<dependency>
- 	        <groupId>org.orbisgis</groupId>
-	        <artifactId>commons</artifactId>
- 	        <version>1.1.0</version>
- 	        <scope>provided</scope> 	             
- 	    </dependency>		
+			<groupId>org.orbisgis</groupId>
+			<artifactId>commons</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 		<dependency>
 			<groupId>ij</groupId>
 			<artifactId>imagej</artifactId>
