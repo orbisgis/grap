@@ -40,11 +40,6 @@ import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
-import org.grap.processing.operation.math.AbsValueOperation;
-import org.grap.processing.operation.math.AddValueOperation;
-import org.grap.processing.operation.math.DivideValueOperation;
-import org.grap.processing.operation.math.MultiplyValueOperation;
-import org.grap.processing.operation.math.SubtractValueOperation;
 
 public class Mathtest extends GrapTest {
 	private final static float EPSILON = 1E-4f;
@@ -56,7 +51,8 @@ public class Mathtest extends GrapTest {
 		geoRasterSrc.open();
 
 		int addedValue = 20;
-		final Operation addValue = new AddValueOperation(addedValue);
+		final Operation addValue = new GeoRasterMath(addedValue,
+				GeoRasterMath.ADD);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
 		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
@@ -80,7 +76,8 @@ public class Mathtest extends GrapTest {
 		geoRasterSrc.open();
 
 		int addedValue = 20;
-		final Operation addValue = new SubtractValueOperation(addedValue);
+		final Operation addValue = new GeoRasterMath(addedValue,
+				GeoRasterMath.SUBSTRACT);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
 		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
@@ -104,7 +101,8 @@ public class Mathtest extends GrapTest {
 		geoRasterSrc.open();
 
 		int addedValue = 20;
-		final Operation addValue = new MultiplyValueOperation(addedValue);
+		final Operation addValue = new GeoRasterMath(addedValue,
+				GeoRasterMath.MULTIPLY);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
 		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
@@ -128,7 +126,8 @@ public class Mathtest extends GrapTest {
 		geoRasterSrc.open();
 
 		int addedValue = 20;
-		final Operation addValue = new DivideValueOperation(addedValue);
+		final Operation addValue = new GeoRasterMath(addedValue,
+				GeoRasterMath.DIVIDE);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
 
 		float[] pixelsSrc = geoRasterSrc.getFloatPixels();
@@ -151,10 +150,8 @@ public class Mathtest extends GrapTest {
 				.createGeoRaster(externalData + "grid/sample.asc");
 		geoRasterSrc.open();
 
-		int addedValue = 20;
-		final Operation addValue = new AbsValueOperation();
+		final Operation addValue = new GeoRasterMath(0d, GeoRasterMath.ABS);
 		final GeoRaster gResult = geoRasterSrc.doOperation(addValue);
-
 
 		float[] pixelsResult = gResult.getFloatPixels();
 
@@ -162,7 +159,7 @@ public class Mathtest extends GrapTest {
 			if (Float.isNaN(pixelsResult[i])) {
 				assertTrue(Float.isNaN(pixelsResult[i]));
 			} else {
-				assertTrue(pixelsResult[i]>0);
+				assertTrue(pixelsResult[i] > 0);
 			}
 		}
 	}
