@@ -34,12 +34,16 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-
-package org.grap.processing.operation.math;
+package org.grap.processing.operation;
 
 import ij.ImagePlus;
+import ij.measure.Calibration;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -47,25 +51,65 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class MultiplyValueOperation implements Operation {
-	private double valueToMultiply;
+public class GeoRasterMorpho implements Operation {
+	public static final int DILATE = 1, ERODE = 2, SMOOTH = 4, EDGES = 8,
+			INVERT = 16;
 
-	public MultiplyValueOperation(final double valueToMultiply) {
-		this.valueToMultiply = valueToMultiply;
+	public static Map<String, Integer> operators = new HashMap<String, Integer>();
+	static {
+		operators.put("erode", ERODE);
+		operators.put("dilate", DILATE);
+		operators.put("smooth", SMOOTH);
+		operators.put("edges", EDGES);
+		operators.put("invert", INVERT);
+
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
+	private int method;
+
+	public GeoRasterMorpho(final int method) {
+		this.method = method;
+	}
+
+	public GeoRaster execute(final GeoRaster gr1, IProgressMonitor pm)
 			throws OperationException {
 		try {
-			geoRaster.open();
-			final ImagePlus imagePlus = geoRaster.getImagePlus();
-			imagePlus.getProcessor().multiply(valueToMultiply);
+			final ImagePlus img1 = gr1.getImagePlus();
 
-			return GeoRasterFactory.createGeoRaster(imagePlus, geoRaster
-					.getMetadata());
+			final ImageProcessor ip1 = img1.getProcessor();
+			final Calibration cal1 = img1.getCalibration();
+			switch (method) {
+			case ERODE:
+				ip1.erode();
+				break;
+			case DILATE:
+				ip1.dilate();
+				break;
+			case SMOOTH:
+				ip1.smooth();
+				break;
+			case EDGES:
+				ip1.findEdges();
+				break;
+			case INVERT:
+				ip1.invert();
+				break;
+			default:
+				break;
+			}
+
+			if (!(ip1 instanceof ByteProcessor)) {
+				ip1.resetMinAndMax();
+			}
+			final ImagePlus img3 = new ImagePlus("Result of "
+					+ img1.getShortTitle(), ip1);
+			img3.setCalibration(cal1);
+
+			return GeoRasterFactory.createGeoRaster(img3, gr1.getMetadata());
+
 		} catch (IOException e) {
-			throw new OperationException("Cannot do multiply value operation",
-					e);
+			throw new OperationException(e);
 		}
 	}
+
 }

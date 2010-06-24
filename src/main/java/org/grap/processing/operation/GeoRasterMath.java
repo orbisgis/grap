@@ -51,62 +51,101 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class GeoRasterCalculator implements Operation {
+public class GeoRasterMath implements Operation {
 	public static final int ADD = 3, SUBSTRACT = 4, MULTIPLY = 5, DIVIDE = 6,
-			AND = 9, OR = 10, XOR = 11, MIN = 12, MAX = 13, AVERAGE = 7,
-			DIFFERENCE = 8, COPY = 0;
+			AND = 9, MIN = 12, MAX = 13, AVERAGE = 7, DIFFERENCE = 8, OR = 16,
+			XOR = 32, ABS = 128, SQR = 256, SQRT = 512, EXP = 1024;
 
 	public static Map<String, Integer> operators = new HashMap<String, Integer>();
 	static {
+		operators.put("abs", ABS);
 		operators.put("add", ADD);
-		operators.put("substract", SUBSTRACT);
 		operators.put("multiply", MULTIPLY);
 		operators.put("divide", DIVIDE);
-		operators.put("avg", AVERAGE);
-		operators.put("diff", DIFFERENCE);
-		operators.put("and", AND);
-		operators.put("or", OR);
-		operators.put("xor", XOR);
 		operators.put("min", MIN);
 		operators.put("max", MAX);
-		operators.put("copy", COPY);
+		operators.put("substract", SUBSTRACT);
+		operators.put("or", OR);
+		operators.put("xor", XOR);
+		operators.put("sqr", SQR);
+		operators.put("sqrt", SQRT);
+		operators.put("exp", EXP);
 	}
 
-	private GeoRaster gr2;
 	private int method;
 
-	public GeoRasterCalculator(final GeoRaster gr2, final int method) {
-		this.gr2 = gr2;
+	private double value;
+
+	public GeoRasterMath(final double value, final int method) {
 		this.method = method;
+		this.value = value;
+	}
+
+	public GeoRasterMath(final int method) {
+		new GeoRasterMath(0, method);
 	}
 
 	public GeoRaster execute(final GeoRaster gr1, IProgressMonitor pm)
 			throws OperationException {
 		try {
 			final ImagePlus img1 = gr1.getImagePlus();
-			final ImagePlus img2 = gr2.getImagePlus();
 
-			if (gr1.getMetadata().getEnvelope().equals(
-					gr2.getMetadata().getEnvelope())) {
-				final ImageProcessor ip1 = img1.getProcessor();
-				final ImageProcessor ip2 = img2.getProcessor();
-				final Calibration cal1 = img1.getCalibration();
-				ip1.copyBits(ip2, 0, 0, method);
+			final ImageProcessor ip1 = img1.getProcessor();
+			final Calibration cal1 = img1.getCalibration();
 
-				if (!(ip1 instanceof ByteProcessor)) {
-					ip1.resetMinAndMax();
-				}
-				final ImagePlus img3 = new ImagePlus("Result of "
-						+ img1.getShortTitle(), ip1);
-				img3.setCalibration(cal1);
-
-				return GeoRasterFactory
-						.createGeoRaster(img3, gr1.getMetadata());
+			switch (method) {
+			case ADD:
+				ip1.add(value);
+				break;
+			case DIVIDE:
+				ip1.multiply(1.0 / value);
+				break;
+			case MIN:
+				ip1.min(value);
+				break;
+			case MAX:
+				ip1.max(value);
+				break;
+			case MULTIPLY:
+				ip1.multiply(value);
+				break;
+			case SUBSTRACT:
+				ip1.add(-value);
+				break;
+			case OR:
+				ip1.or((int) value);
+				break;
+			case XOR:
+				ip1.xor((int) value);
+				break;
+			case ABS:
+				ip1.abs();
+				break;
+			case EXP:
+				ip1.exp();
+				break;
+			case SQR:
+				ip1.sqr();
+				break;
+			case SQRT:
+				ip1.sqrt();
+				break;
+			default:
+				break;
 			}
+
+			if (!(ip1 instanceof ByteProcessor)) {
+				ip1.resetMinAndMax();
+			}
+			final ImagePlus img3 = new ImagePlus("Result of "
+					+ img1.getShortTitle(), ip1);
+			img3.setCalibration(cal1);
+
+			return GeoRasterFactory.createGeoRaster(img3, gr1.getMetadata());
+
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
-		return GeoRasterFactory.createNullGeoRaster();
 	}
 
 }
