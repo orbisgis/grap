@@ -41,15 +41,19 @@ import ij.measure.Calibration;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.orbisgis.progress.IProgressMonitor;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class GeoRasterCalculator implements Operation {
 	public static final int ADD = 3, SUBSTRACT = 4, MULTIPLY = 5, DIVIDE = 6,
@@ -80,33 +84,73 @@ public class GeoRasterCalculator implements Operation {
 		this.method = method;
 	}
 
-	public GeoRaster execute(final GeoRaster gr1, IProgressMonitor pm)
+	public GeoRaster execute(GeoRaster gr1, IProgressMonitor pm)
 			throws OperationException {
 		try {
-			final ImagePlus img1 = gr1.getImagePlus();
-			final ImagePlus img2 = gr2.getImagePlus();
 
-			if (gr1.getMetadata().getEnvelope().equals(
-					gr2.getMetadata().getEnvelope())) {
-				final ImageProcessor ip1 = img1.getProcessor();
-				final ImageProcessor ip2 = img2.getProcessor();
-				final Calibration cal1 = img1.getCalibration();
-				ip1.copyBits(ip2, 0, 0, method);
+			RasterMetadata gr1Metadata = gr1.getMetadata();
+			RasterMetadata gr2Metadata = gr2.getMetadata();
 
-				if (!(ip1 instanceof ByteProcessor)) {
-					ip1.resetMinAndMax();
+			Envelope gr1Envelope = gr1Metadata.getEnvelope();
+			Envelope gr2Envelope = gr2Metadata.getEnvelope();
+
+			if (gr1Envelope.equals(gr2Envelope)) {
+				return applyRasterAlgebra(gr1, gr2);
+
+			} else if (gr1Envelope.intersects(gr2Envelope)) {
+
+				Envelope grResultEnvelope = gr1Envelope
+						.intersection(gr2Envelope);
+				if (gr1Envelope.contains(gr2Envelope)) {
+
+					gr2 = cropGeoRaster(gr2, grResultEnvelope);
+					return applyRasterAlgebra(gr1, gr2);
+
+				} else if (gr2Envelope.contains(gr1Envelope)) {
+					gr1 = cropGeoRaster(gr1, grResultEnvelope);
+					return applyRasterAlgebra(gr1, gr2);
+
+				} else {
+					gr1 = cropGeoRaster(gr1, grResultEnvelope);
+					gr2 = cropGeoRaster(gr2, grResultEnvelope);
+					return applyRasterAlgebra(gr1, gr2);
 				}
-				final ImagePlus img3 = new ImagePlus("Result of "
-						+ img1.getShortTitle(), ip1);
-				img3.setCalibration(cal1);
 
-				return GeoRasterFactory
-						.createGeoRaster(img3, gr1.getMetadata());
 			}
 		} catch (IOException e) {
 			throw new OperationException(e);
 		}
 		return GeoRasterFactory.createNullGeoRaster();
+	}
+
+	private GeoRaster applyRasterAlgebra(GeoRaster gr1, GeoRaster gr2)
+			throws IOException {
+		final ImagePlus img1 = gr1.getImagePlus();
+		final ImagePlus img2 = gr2.getImagePlus();
+
+		final ImageProcessor ip1 = img1.getProcessor();
+		final ImageProcessor ip2 = img2.getProcessor();
+		final Calibration cal1 = img1.getCalibration();
+		ip1.copyBits(ip2, 0, 0, method);
+		if (!(ip1 instanceof ByteProcessor)) {
+			ip1.resetMinAndMax();
+		}
+		final ImagePlus img3 = new ImagePlus("Result of "
+				+ img1.getShortTitle(), ip1);
+		img3.setCalibration(cal1);
+
+		return GeoRasterFactory.createGeoRaster(img3, gr1.getMetadata());
+
+	}
+
+	private GeoRaster cropGeoRaster(GeoRaster gr2, Envelope intersection)
+			throws OperationException {
+		Rectangle2D rect = new Rectangle2D.Double(intersection.getMinX(),
+				intersection.getMinY(), intersection.getWidth(), intersection
+						.getHeight());
+
+		GeoRaster ret = gr2.doOperation(new Crop(rect));
+		return ret;
 	}
 
 }
