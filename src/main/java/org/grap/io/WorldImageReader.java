@@ -53,9 +53,6 @@ import java.util.Map;
 
 import org.grap.model.RasterMetadata;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageDecoder;
-
 public class WorldImageReader implements RasterReader {
 	private static Map<String, String[]> worldFileExtensions;
 
@@ -69,8 +66,6 @@ public class WorldImageReader implements RasterReader {
 	private String fileNamePrefix;
 
 	private String fileNameExtension;
-
-	private JPEGImageDecoder jpgDecoder;
 
 	private BufferedImage bufJpg;
 
@@ -139,9 +134,6 @@ public class WorldImageReader implements RasterReader {
 
 		} else if (isJpg) {
 
-			jpgDecoder = JPEGCodec.createJPEGDecoder(inputStream);
-
-			bufJpg = jpgDecoder.decodeAsBufferedImage();
 			ncols = bufJpg.getWidth();
 			nrows = bufJpg.getHeight();
 
