@@ -11,7 +11,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GeoRasterResample implements Operation {
 
@@ -22,7 +22,7 @@ public class GeoRasterResample implements Operation {
 	}
 
 	@Override
-	public GeoRaster execute(GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster execute(GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			RasterMetadata metadata = geoRaster.getMetadata();

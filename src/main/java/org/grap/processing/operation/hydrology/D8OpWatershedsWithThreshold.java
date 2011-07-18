@@ -47,7 +47,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		Operation {
@@ -75,7 +75,7 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 
 	@Override
 	public GeoRaster evaluateResult(GeoRaster grSlopesAccumulations,
-			IProgressMonitor pm) throws OperationException {
+			ProgressMonitor pm) throws OperationException {
 		try {
 			gipSlopesAccumulations = grSlopesAccumulations.getImagePlus();
 			final RasterMetadata rasterMetadata = grSlopesAccumulations
@@ -94,7 +94,7 @@ public class D8OpWatershedsWithThreshold extends D8OpAbstract implements
 		}
 	}
 
-	private int computeAllwatershedsWithThreshold(IProgressMonitor pm)
+	private int computeAllwatershedsWithThreshold(ProgressMonitor pm)
 			throws IOException {
 		short nbOfWatershedsWithThreshold = 0;
 		final Map<Float, Short> mapOfBigOutlets = new HashMap<Float, Short>();

@@ -45,7 +45,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * 
@@ -82,7 +82,7 @@ public class WetnessIndexOp implements Operation {
 		this.accFlow = accFlow;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster execute(final GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 
 		return processAlgorithm(geoRaster);

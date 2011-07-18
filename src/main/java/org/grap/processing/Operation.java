@@ -37,7 +37,7 @@
 package org.grap.processing;
 
 import org.grap.model.GeoRaster;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public interface Operation {
 	/**
@@ -51,6 +51,6 @@ public interface Operation {
 	 * @throws OperationException
 	 *             If the operation couldn't be executed
 	 */
-	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster execute(final GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException;
 }

@@ -46,7 +46,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpRiverDistance extends D8OpAbstract implements Operation {
 	public final static float notProcessedYet = 0;
@@ -66,7 +66,7 @@ public class D8OpRiverDistance extends D8OpAbstract implements Operation {
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
+	public GeoRaster evaluateResult(GeoRaster direction, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);
@@ -84,7 +84,7 @@ public class D8OpRiverDistance extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private void calculateDistances(IProgressMonitor pm) throws IOException {
+	private void calculateDistances(ProgressMonitor pm) throws IOException {
 		float[] d8Accumulations = (float[]) accumulation.getPixels();
 		// distances' array initialization
 		d8Distances = new float[nrows * ncols];

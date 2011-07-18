@@ -44,7 +44,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 	public final static float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
@@ -56,7 +56,7 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 	private int nrows;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
+	public GeoRaster evaluateResult(GeoRaster direction, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);
@@ -74,7 +74,7 @@ public class D8OpAllWatersheds extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private int computeAllWatersheds(IProgressMonitor pm) throws IOException {
+	private int computeAllWatersheds(ProgressMonitor pm) throws IOException {
 		watersheds = new float[nrows * ncols];
 		float newDefaultColor = 1;
 

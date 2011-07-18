@@ -45,7 +45,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		Operation {
@@ -71,7 +71,7 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
+	public GeoRaster evaluateResult(GeoRaster direction, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);
@@ -91,7 +91,7 @@ public class D8OpConstrainedAccumulation extends D8OpAbstract implements
 		}
 	}
 
-	private int accumulateSlopes(IProgressMonitor pm) throws IOException {
+	private int accumulateSlopes(ProgressMonitor pm) throws IOException {
 		// slopes accumulations' array initialization
 		d8Accumulation = new float[nrows * ncols];
 

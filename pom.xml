@@ -3,16 +3,16 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/maven-v4_0_0.xsd http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<artifactId>platform</artifactId>
+		<artifactId>orbisgis</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>3.1</version>
+		<version>4.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.grap</groupId>
 	<artifactId>grap</artifactId>
 	<packaging>jar</packaging>
 	<name>grap</name>
-	<version>1.4.0</version>
+	<version>1.4.1-SNAPSHOT</version>
 	<url>http://maven.apache.org</url>
         <repositories>
                 <repository>
@@ -35,8 +35,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.orbisgis</groupId>
-			<artifactId>commons</artifactId>
-			<version>1.1.0</version>
+                        <artifactId>commons</artifactId>
+                        <version>1.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ij</groupId>

@@ -49,7 +49,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class GeoRasterMorpho implements Operation {
 	public static final int DILATE = 1, ERODE = 2, SMOOTH = 4, EDGES = 8,
@@ -71,7 +71,7 @@ public class GeoRasterMorpho implements Operation {
 		this.method = method;
 	}
 
-	public GeoRaster execute(final GeoRaster gr1, IProgressMonitor pm)
+	public GeoRaster execute(final GeoRaster gr1, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			final ImagePlus img1 = gr1.getImagePlus();

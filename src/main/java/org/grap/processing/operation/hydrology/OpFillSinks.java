@@ -45,7 +45,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class OpFillSinks implements Operation {
 
@@ -93,7 +93,7 @@ public class OpFillSinks implements Operation {
 		this.minSlope = minSlope;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster execute(final GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 		return processAlgorithm(geoRaster, minSlope, pm);
 	}
@@ -110,7 +110,7 @@ public class OpFillSinks implements Operation {
 	 */
 
 	private GeoRaster processAlgorithm(final GeoRaster geoRaster,
-			final double minSlope, IProgressMonitor pm)
+			final double minSlope, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);

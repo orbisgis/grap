@@ -49,7 +49,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	public final static short noDataValue = GeoRaster.SHORT_NO_DATA_VALUE;
@@ -74,7 +74,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster evaluateResult(GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);
@@ -97,7 +97,7 @@ public class D8OpStrahlerStreamOrder extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private int computeStrahlerStreamOrders(IProgressMonitor pm)
+	private int computeStrahlerStreamOrders(ProgressMonitor pm)
 			throws IOException {
 		short maxStrahlerStreamOrder = 1;
 		strahlerStreamOrder = new short[nrows * ncols];

@@ -45,7 +45,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements
 		Operation {
@@ -65,7 +65,7 @@ public class D8OpWatershedFromOutletIndex extends D8OpAbstract implements
 	}
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster direction, IProgressMonitor pm)
+	public GeoRaster evaluateResult(GeoRaster direction, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(direction);

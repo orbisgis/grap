@@ -45,7 +45,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * The stream power index (Moore et al., 1992) is the first of several indices
@@ -85,7 +85,7 @@ public class StreamPowerIndexOp implements Operation {
 		this.accFlow = accFlow;
 	}
 
-	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster execute(final GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 
 		return processAlgorithm(geoRaster);

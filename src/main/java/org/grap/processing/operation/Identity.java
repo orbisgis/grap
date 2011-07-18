@@ -47,10 +47,10 @@ import org.grap.processing.cellularAutomata.CAFIdentity;
 import org.grap.processing.cellularAutomata.cam.CANFactory;
 import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAN;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class Identity implements Operation {
-	public GeoRaster execute(final GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster execute(final GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			final RasterMetadata rasterMetadata = geoRaster.getMetadata();

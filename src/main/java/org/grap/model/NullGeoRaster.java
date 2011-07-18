@@ -46,7 +46,7 @@ import java.io.IOException;
 
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 class NullGeoRaster implements GeoRaster {
 	static GeoRaster instance = new NullGeoRaster();
@@ -57,7 +57,7 @@ class NullGeoRaster implements GeoRaster {
 	private NullGeoRaster() {
 	}
 
-	public GeoRaster doOperation(Operation operation, IProgressMonitor pm)
+	public GeoRaster doOperation(Operation operation, ProgressMonitor pm)
 			throws OperationException {
 		return instance;
 	}

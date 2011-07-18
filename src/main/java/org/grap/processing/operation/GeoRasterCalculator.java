@@ -51,7 +51,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -84,7 +84,7 @@ public class GeoRasterCalculator implements Operation {
 		this.method = method;
 	}
 
-	public GeoRaster execute(GeoRaster gr1, IProgressMonitor pm)
+	public GeoRaster execute(GeoRaster gr1, ProgressMonitor pm)
 			throws OperationException {
 		try {
 

@@ -55,7 +55,7 @@ import org.grap.io.FileReaderFactory;
 import org.grap.io.WorldFile;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**
@@ -218,7 +218,7 @@ public class DefaultGeoRaster implements GeoRaster {
 		return operation.execute(this, new NullProgressMonitor());
 	}
 
-	public GeoRaster doOperation(final Operation operation, IProgressMonitor pm)
+	public GeoRaster doOperation(final Operation operation, ProgressMonitor pm)
 			throws OperationException {
 		return operation.execute(this, pm);
 	}

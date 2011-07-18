@@ -44,7 +44,7 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 	public final static float notProcessedYet = 0;
@@ -57,7 +57,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 	private int nrows;
 
 	@Override
-	public GeoRaster evaluateResult(GeoRaster geoRaster, IProgressMonitor pm)
+	public GeoRaster evaluateResult(GeoRaster geoRaster, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			hydrologyUtilities = new HydrologyUtilities(geoRaster);
@@ -75,7 +75,7 @@ public class D8OpAllOutlets extends D8OpAbstract implements Operation {
 		}
 	}
 
-	private int computeAllOutlets(IProgressMonitor pm) throws IOException {
+	private int computeAllOutlets(ProgressMonitor pm) throws IOException {
 		outlets = new float[nrows * ncols];
 		int nbOfOutlets = 0;
 

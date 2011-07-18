@@ -47,11 +47,11 @@ import org.grap.processing.cellularAutomata.CAD8Direction;
 import org.grap.processing.cellularAutomata.cam.CANFactory;
 import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAN;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class D8OpDirection extends D8OpAbstractMultiThreads implements
 		Operation {
-	GeoRaster sequential(final GeoRaster grDEM, IProgressMonitor pm)
+	GeoRaster sequential(final GeoRaster grDEM, ProgressMonitor pm)
 			throws OperationException {
 		try {
 			final HydrologyUtilities hydrologyUtilities = new HydrologyUtilities(

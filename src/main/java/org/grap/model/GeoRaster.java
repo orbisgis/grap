@@ -45,7 +45,7 @@ import java.io.IOException;
 
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * <p>
@@ -197,7 +197,7 @@ public interface GeoRaster {
 	 *             If the operation couldn't be applied
 	 */
 	public abstract GeoRaster doOperation(final Operation operation,
-			IProgressMonitor pm) throws OperationException;
+			ProgressMonitor pm) throws OperationException;
 
 	/**
 	 * @return ImagePlus.COLOR_256, ImagePlus.COLOR_RGB, ImagePlus.GRAY8,
