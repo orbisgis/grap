@@ -36,18 +36,21 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import org.junit.Test;
+import org.junit.Before;
 import ij.process.ImageProcessor;
 
 import java.util.Set;
 import java.util.Stack;
 
-import junit.framework.TestCase;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
-public class HydrologyUtilitiesTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class HydrologyUtilitiesTest {
 	private static final double EPSILON = 1.0E-6;
 
 	private static float ND = GeoRaster.FLOAT_NO_DATA_VALUE;
@@ -64,8 +67,8 @@ public class HydrologyUtilitiesTest extends TestCase {
 	private GeoRaster accumulation;
 	private float[] accumulationArray;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+	public void setUp() throws Exception {
 
 		demArray = new float[] {//
 		ND, ND, ND, ND, ND, ND, ND, ND, ND, ND,// 
@@ -148,10 +151,6 @@ public class HydrologyUtilitiesTest extends TestCase {
 		}
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
 	public void testHydrologyUtilities() {
 		// TODO
 	}
@@ -184,6 +183,7 @@ public class HydrologyUtilitiesTest extends TestCase {
 		// TODO
 	}
 
+        @Test
 	public void testFromCellSlopeDirectionIdxToContributiveArea()
 			throws Exception {
 		HydrologyUtilities hu = new HydrologyUtilities(direction);
@@ -211,6 +211,7 @@ public class HydrologyUtilitiesTest extends TestCase {
 		// TODO
 	}
 
+        @Test
 	public void testHydrologicalPath() throws Exception {
 		HydrologyUtilities hu = new HydrologyUtilities(direction);
 
@@ -229,6 +230,7 @@ public class HydrologyUtilitiesTest extends TestCase {
 		}
 	}
 
+        @Test
 	public void testShortHydrologicalPath() throws Exception {
 		HydrologyUtilities hu = new HydrologyUtilities(direction);
 		Stack<HydroCell> path = new Stack<HydroCell>();

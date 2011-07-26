@@ -42,15 +42,18 @@ import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpDirection;
+import org.junit.Before;
+import org.junit.Test;
 
 public class D8OpAllOutletsTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+	public void setUp() throws Exception {
 		geoRasterSrc = sampleDEM;
 	}
 
+        @Test
 	public void testAllOutlets() throws Exception {
 		// load the DEM
 		geoRasterSrc.open();

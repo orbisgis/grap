@@ -36,6 +36,7 @@
  */
 package org.grap.io;
 
+import org.junit.Test;
 import ij.ImagePlus;
 
 import java.io.File;
@@ -46,119 +47,116 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
+import static org.junit.Assert.*;
+
 public class BasicTest extends GrapTest {
 
-	public void testGridWithoutHeader() throws Exception {
-		try {
-			final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-					+ "grid/ij3x3.asc");
-			gr.open();
-			assertTrue(false);
-		} catch (IOException e) {
-		}
-	}
+        @Test(expected = IOException.class)
+        public void testGridWithoutHeader() throws Exception {
+                final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                        + "grid/ij3x3.asc");
+                gr.open();
+        }
 
-	public void testJPGReader() throws Exception {
-		final GeoRaster gr = GeoRasterFactory
-				.createGeoRaster("src/test/resources/smallChezineLambert.jpg");
+        @Test
+        public void testJPGReader() throws Exception {
+                final GeoRaster gr = GeoRasterFactory.createGeoRaster("src/test/resources/smallChezineLambert.jpg");
+                gr.open();
+        }
 
-		gr.open();
-		assertTrue(true);
-	}
+        @Test
+        public void testXYZDEMReader() throws Exception {
+                final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                        + "/xyz/MNT_Nantes_Lambert.xyz", GeoProcessorType.FLOAT, 10);
+                gr.open();
+                gr.save(tmpData + "xyzdem.tif");
+        }
 
-	public void testXYZDEMReader() throws Exception {
-		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "/xyz/MNT_Nantes_Lambert.xyz", GeoProcessorType.FLOAT, 10);
-		gr.open();
-		gr.save(tmpData + "xyzdem.tif");
-	}
+        @Test(expected = IOException.class)
+        public void testPNGWithoutWorldFile() throws Exception {
+                final GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
+                        + "noWorldFile.png");
+                gr.open();
+                gr.getType();
+        }
 
-	public void testPNGWithoutWorldFile() throws Exception {
-		try {
-			final GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
-					+ "noWorldFile.png");
-			gr.open();
-			gr.getType();
-			assertTrue(false);
-		} catch (IOException e) {
-		}
-	}
+        @Test
+        public void testGrid2Tif() throws Exception {
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                        + "grid/sample.asc");
+                gr.open();
+                final RasterMetadata originalMetadata = gr.getMetadata();
+                final float[] pixels = gr.getFloatPixels();
+                final File file = new File(tmpData + "1.tif");
+                gr.save(file.getAbsolutePath());
+                gr = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
+                gr.open();
+                final float[] tifPixels = gr.getFloatPixels();
+                assertTrue(tifPixels.length == pixels.length);
+                equals(pixels, tifPixels);
+                final RasterMetadata newM = gr.getMetadata();
 
-	public void testGrid2Tif() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "grid/sample.asc");
-		gr.open();
-		final RasterMetadata originalMetadata = gr.getMetadata();
-		final float[] pixels = gr.getFloatPixels();
-		final File file = new File(tmpData + "1.tif");
-		gr.save(file.getAbsolutePath());
-		gr = GeoRasterFactory.createGeoRaster(file.getAbsolutePath());
-		gr.open();
-		final float[] tifPixels = gr.getFloatPixels();
-		assertTrue(tifPixels.length == pixels.length);
-		equals(pixels, tifPixels);
-		final RasterMetadata newM = gr.getMetadata();
+                assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
+                assertTrue(newM.getNCols() == originalMetadata.getNCols());
+                assertTrue(newM.getNRows() == originalMetadata.getNRows());
+                assertTrue(newM.getPixelSize_X() == originalMetadata.getPixelSize_X());
+                assertTrue(newM.getPixelSize_Y() == originalMetadata.getPixelSize_Y());
+                assertTrue(newM.getRotation_X() == originalMetadata.getRotation_X());
+                assertTrue(newM.getRotation_Y() == originalMetadata.getRotation_Y());
+                assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
+                assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
+        }
 
-		assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
-		assertTrue(newM.getNCols() == originalMetadata.getNCols());
-		assertTrue(newM.getNRows() == originalMetadata.getNRows());
-		assertTrue(newM.getPixelSize_X() == originalMetadata.getPixelSize_X());
-		assertTrue(newM.getPixelSize_Y() == originalMetadata.getPixelSize_Y());
-		assertTrue(newM.getRotation_X() == originalMetadata.getRotation_X());
-		assertTrue(newM.getRotation_Y() == originalMetadata.getRotation_Y());
-		assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
-		assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
-	}
+        @Test
+        public void testGrid2Grid() throws Exception {
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                        + "grid/sample.asc");
+                gr.open();
+                final RasterMetadata originalMetadata = gr.getMetadata();
+                final float[] pixels = gr.getFloatPixels();
 
-	public void testGrid2Grid() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "grid/sample.asc");
-		gr.open();
-		final RasterMetadata originalMetadata = gr.getMetadata();
-		final float[] pixels = gr.getFloatPixels();
+                final File file2 = new File(tmpData + "1.asc");
+                gr.save(file2.getAbsolutePath());
+                gr = GeoRasterFactory.createGeoRaster(file2.getAbsolutePath());
+                gr.open();
 
-		final File file2 = new File(tmpData + "1.asc");
-		gr.save(file2.getAbsolutePath());
-		gr = GeoRasterFactory.createGeoRaster(file2.getAbsolutePath());
-		gr.open();
+                final float[] gridPixels = gr.getFloatPixels();
+                assertTrue(gridPixels.length == pixels.length);
+                equals(pixels, gridPixels);
+                final RasterMetadata newM = gr.getMetadata();
 
-		final float[] gridPixels = gr.getFloatPixels();
-		assertTrue(gridPixels.length == pixels.length);
-		equals(pixels, gridPixels);
-		final RasterMetadata newM = gr.getMetadata();
+                assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
+                assertTrue(newM.getNCols() == originalMetadata.getNCols());
+                assertTrue(newM.getNRows() == originalMetadata.getNRows());
+                assertTrue(newM.getPixelSize_X() == originalMetadata.getPixelSize_X());
+                assertTrue(newM.getPixelSize_Y() == originalMetadata.getPixelSize_Y());
+                assertTrue(newM.getRotation_X() == originalMetadata.getRotation_X());
+                assertTrue(newM.getRotation_Y() == originalMetadata.getRotation_Y());
+                assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
+                assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
+        }
 
-		assertTrue(newM.getEnvelope().equals(originalMetadata.getEnvelope()));
-		assertTrue(newM.getNCols() == originalMetadata.getNCols());
-		assertTrue(newM.getNRows() == originalMetadata.getNRows());
-		assertTrue(newM.getPixelSize_X() == originalMetadata.getPixelSize_X());
-		assertTrue(newM.getPixelSize_Y() == originalMetadata.getPixelSize_Y());
-		assertTrue(newM.getRotation_X() == originalMetadata.getRotation_X());
-		assertTrue(newM.getRotation_Y() == originalMetadata.getRotation_Y());
-		assertTrue(newM.getXulcorner() == originalMetadata.getXulcorner());
-		assertTrue(newM.getYulcorner() == originalMetadata.getYulcorner());
-	}
+        @Test
+        public void testLoadSaveGrid() throws Exception {
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                        + "grid/3x3.asc");
+                gr.open();
+                check3x3(gr);
+                gr.save(tmpData + "1.png");
 
-	public void testLoadSaveGrid() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "grid/3x3.asc");
-		gr.open();
-		check3x3(gr);
-		gr.save(tmpData + "1.png");
+                gr = GeoRasterFactory.createGeoRaster(tmpData + "1.png");
+                gr.open();
+                check3x3(gr);
+        }
 
-		gr = GeoRasterFactory.createGeoRaster(tmpData + "1.png");
-		gr.open();
-		check3x3(gr);
-	}
-
-	private void check3x3(GeoRaster gr) throws Exception {
-		final ImagePlus grapImagePlus = gr.getImagePlus();
-		float previous = -1;
-		for (int y = 0; y < gr.getHeight(); y++) {
-			for (int x = 0; x < gr.getWidth(); x++) {
-				assertTrue(grapImagePlus.getProcessor().getPixelValue(x, y) > previous);
-				previous = grapImagePlus.getProcessor().getPixelValue(x, y);
-			}
-		}
-	}
-
+        private void check3x3(GeoRaster gr) throws Exception {
+                final ImagePlus grapImagePlus = gr.getImagePlus();
+                float previous = -1;
+                for (int y = 0; y < gr.getHeight(); y++) {
+                        for (int x = 0; x < gr.getWidth(); x++) {
+                                assertTrue(grapImagePlus.getProcessor().getPixelValue(x, y) > previous);
+                                previous = grapImagePlus.getProcessor().getPixelValue(x, y);
+                        }
+                }
+        }
 }

@@ -36,22 +36,34 @@
  */
 package org.grap.archive;
 
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
+import ij.plugin.TextReader;
+import ij.process.ImageProcessor;
 
-public class NodataValueRangeTest {
-	public static void main(String[] args) throws Exception {
-		// String fileName = "../../datas2tests/geotif/440607.tif";
-		String fileName = "../../datas2tests/grid/sample.asc";
+public class ManualNodataValue {
+	public static void main(String[] args) {
+		// Opener opener = new Opener();
+		// ImagePlus imp = opener.openImage(src );
+		final String src = "../../datas2tests/grid/ijsample.asc";
+		final TextReader textReader = new TextReader();
+		final ImageProcessor ip = textReader.open(src);
+		System.out.println(ip.getMin());
+		System.out.println(ip.getMax());
 
-		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(fileName);
-		geoRaster.open();
+		// Cette option permet d'ajuster les valeurs affichées.
+		// ip.setMinAndMax(0, 500);
 
-		System.out.println(geoRaster.getMin());
-		geoRaster.setRangeValues(0, 1000);
-		System.out.println(geoRaster.getMin());
-		geoRaster.show();
+		ip.setThreshold(0.0d, 500.0d, ImageProcessor.NO_LUT_UPDATE);
 
-		geoRaster.save("../../datas2tests/tmp/1.png");
+		// ip.setBackgroundValue(550d);
+		final ImagePlus imp = new ImagePlus("", ip);
+		WindowManager.setTempCurrentImage(imp);
+		IJ.run("NaN Background");
+
+		imp.show();
+		System.out.println(imp.getProcessor().getf(0, 0));
+		System.out.println(ip.getPixelValue(10, 10));
 	}
 }

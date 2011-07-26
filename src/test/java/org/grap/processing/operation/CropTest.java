@@ -52,19 +52,24 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class CropTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
 
 	private GeoRaster geoRasterDst;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+	public void setUp() throws Exception {
 		geoRasterSrc = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
 		geoRasterSrc.open();
 	}
 
+        @Test
 	public void testCropPolygon() throws Exception {
 		Envelope rasterEnvelope = geoRasterSrc.getMetadata().getEnvelope();
 		final int bufferSize = (int) (rasterEnvelope.getWidth() / 2.3);
@@ -87,6 +92,7 @@ public class CropTest extends GrapTest {
 				dstImagePlus);
 	}
 
+        @Test
 	public void testCropPolygonOutside() throws Exception {
 		final LinearRing polygon = new GeometryFactory()
 				.createLinearRing(new Coordinate[] {
@@ -101,6 +107,7 @@ public class CropTest extends GrapTest {
 		assertTrue(geoRasterDst.isEmpty());
 	}
 
+        @Test
 	public void testCropAll() throws Exception {
 		final Envelope rasterEnvelope = geoRasterSrc.getMetadata()
 				.getEnvelope();
@@ -117,6 +124,7 @@ public class CropTest extends GrapTest {
 		assertTrue(dstMetadata.equals(srcMetadata));
 	}
 
+        @Test
 	public void testCropRectangle() throws Exception {
 		final Envelope rasterEnvelope = geoRasterSrc.getMetadata()
 				.getEnvelope();
@@ -201,6 +209,7 @@ public class CropTest extends GrapTest {
 		}
 	}
 
+        @Test
 	public void testCropLeHavre() throws Exception {
 		String src = externalData + "geotif/littlelehavre.tif";
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
@@ -210,7 +219,5 @@ public class CropTest extends GrapTest {
 				metadata.getYulcorner(), 10, -110));
 		// Just test it doesn't throw any exception
 		geoRaster.doOperation(crop);
-
-		assertTrue(true);
 	}
 }

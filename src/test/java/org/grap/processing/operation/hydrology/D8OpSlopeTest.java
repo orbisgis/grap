@@ -36,11 +36,15 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import org.junit.Test;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 
+import static org.junit.Assert.*;
+
 public class D8OpSlopeTest extends D8Commons {
+        @Test
 	public void testExecute() throws Exception {
 		assertTrue(test("dem_1.asc", "TauDEM/d8slope_1.asc"));
 		assertTrue(test("dem.asc", "TauDEM/d8slope.asc"));

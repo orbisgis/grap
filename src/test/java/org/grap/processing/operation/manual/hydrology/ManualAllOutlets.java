@@ -42,7 +42,7 @@ import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 
-public class AllOutletsTest {
+public class ManualAllOutlets {
 	public static void main(String[] args) throws Exception {
 		final String src = "../../datas2tests/grid/sample.asc";
 		// final String src = "../../datas2tests/grid/mntzee_500.asc";

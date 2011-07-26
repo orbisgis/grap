@@ -34,26 +34,68 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual.hydrology;
+package org.grap.processing.operation.manual;
+
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import ij.gui.Wand;
+
+import java.awt.geom.Point2D;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.operation.hydrology.OpFillSinks;
 
-public class FillSinksTest {
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+
+public class ManualShapeExtraction {
 	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/sample.asc";
-		
-		long start = System.currentTimeMillis();
-		
+		String src = "../../datas2tests/grid/sample.asc";
+
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		final GeoRaster result = geoRaster.doOperation(new OpFillSinks(0.01));
-		result.show();
-		result.save("/tmp/nosinks.tif");
+
+		Wand w = new Wand(geoRaster.getImagePlus().getProcessor());
+
+		w.autoOutline(150, 150);
+
+		System.out.println("Points:" + w.npoints);
+
+		int x[] = w.xpoints;
+		int y[] = w.ypoints;
+		Roi roi = new PolygonRoi(w.xpoints, w.ypoints, w.npoints,
+				Roi.TRACED_ROI);
+		final Coordinate[] jtsCoords = new Coordinate[w.npoints];
+		for (int i = 0; i < roi.getPolygon().npoints; i++) {
+			final int xWand = roi.getPolygon().xpoints[i];
+			final int yWand = roi.getPolygon().ypoints[i];
+			final Point2D worldXY = geoRaster.fromPixelToRealWorld(xWand,
+					yWand);
+
+			jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());
+		}
 		
-		System.out.println(System.currentTimeMillis()-start);
+		final CoordinateList cl = new CoordinateList(jtsCoords);
+		cl.closeRing();
+
+		final LinearRing geomRing = new GeometryFactory()
+				.createLinearRing(cl.toCoordinateArray());
+
+		final Polygon geomResult = new GeometryFactory().createPolygon(
+				geomRing, null);
 		
+		System.out.println(geomResult.toText());
+			
 		
+
+		geoRaster.show();
 	}
+	
+	
+	
+	
+	
 }

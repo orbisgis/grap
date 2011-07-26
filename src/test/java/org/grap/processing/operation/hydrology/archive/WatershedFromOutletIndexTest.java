@@ -41,15 +41,18 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
+import org.junit.Before;
+import org.junit.Test;
 
 public class WatershedFromOutletIndexTest extends GrapTest {
 	private GeoRaster geoRasterSrc;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+	public void setUp() throws Exception {
 		geoRasterSrc = sampleDEM;
 	}
 
+        @Test
 	public void testWatershedFromOutletIndex() throws Exception {
 		// load the DEM
 		geoRasterSrc.open();

@@ -36,8 +36,8 @@
  */
 package org.grap.processing.operation;
 
+import org.junit.Test;
 import org.grap.io.GrapTest;
-import org.grap.model.GeoRaster;
 import org.grap.processing.cellularAutomata.cam.ICA;
 import org.grap.processing.cellularAutomata.cam.ICAFloat;
 import org.grap.processing.cellularAutomata.cam.ICAN;
@@ -48,15 +48,12 @@ import org.grap.processing.cellularAutomata.useless.CAGetAllSubWatershed;
 import org.grap.processing.cellularAutomata.useless.CASlopesAccumulation;
 import org.grap.processing.cellularAutomata.useless.CASlopesDirections;
 
+import static org.junit.Assert.*;
+
 public class CANImplementationsTest extends GrapTest {
-	private GeoRaster geoRasterSrc;
 	private short[] slopesDirections = null;
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		geoRasterSrc = sampleDEM;
-	}
-
+        @Test
 	public void testSeqAndParImplementations() throws Exception {
 		// load the DEM
 		// geoRasterSrc.open();

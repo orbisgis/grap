@@ -40,8 +40,13 @@ import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class IdentityTest extends GrapTest {
+        
+        @Test
 	public void testIdentity() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory

@@ -34,40 +34,29 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.archive;
+package org.grap.processing.operation.manual;
 
 import java.awt.image.ColorModel;
-import java.awt.image.DirectColorModel;
 
-import ij.ImagePlus;
-import ij.io.Opener;
-import ij.plugin.TextReader;
-import ij.process.ImageProcessor;
-
+import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 
-public class InvertImageBandsTest {
-	public static void main(String[] args) {
-		final String src1 = "../../datas2tests/geotif/littlelehavre.tif";
-		final Opener opener = new Opener();
-		final ImagePlus imp1 = opener.openImage(src1);
-		//imp1.getProcessor().setColorModel(LutGenerator.colorModel("fire"));
-	//	imp1.show();
-		
-		
-		ColorModel cm = imp1.getProcessor().getColorModel();
-		
-		 int rmask =  ((DirectColorModel) cm).getRedMask();
-		 int gmask = ((DirectColorModel) cm).getGreenMask();
-		 int bmask = ((DirectColorModel) cm).getBlueMask();
-		
-		System.out.println( cm.getNumColorComponents());
-		
-		DirectColorModel dcm = new DirectColorModel(24,  rmask, bmask, gmask);
-		
-		imp1.getProcessor().setColorModel(dcm);
-		imp1.show();
-		
-		
+public class ManualLUT {
+	public static void main(String[] args) throws Exception {
+		String src = "../../datas2tests/grid/sample.asc";
+
+		ColorModel cm = LutGenerator.colorModel("fire");
+		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		geoRaster.open();
+		geoRaster.getImagePlus().getProcessor().setColorModel(cm);
+		geoRaster.show();
+
+		LutDisplay lutDisplay = new LutDisplay(cm);
+
+		lutDisplay.getImagePlus().show();
+
 	}
+
 }

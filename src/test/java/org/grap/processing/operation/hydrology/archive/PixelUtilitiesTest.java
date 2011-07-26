@@ -36,20 +36,23 @@
  */
 package org.grap.processing.operation.hydrology.archive;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.operation.hydrology.HydrologyUtilities;
 
-public class PixelUtilitiesTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class PixelUtilitiesTest {
 	private static final double EPSILON = 1.0E-5;
 	private float[][] arrayOfDEMs;
 	private RasterMetadata[] arrayOfRMDs;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+	public void setUp() throws Exception {
 
 		arrayOfDEMs = new float[][] { //
 		new float[] { 10, 10, 10, 10, Float.NaN, 10, 10, 10, 10 }, //
@@ -64,10 +67,7 @@ public class PixelUtilitiesTest extends TestCase {
 		};
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
-	}
-
+        @Test
 	public void testGetMaxSlopeDirection() throws Exception {
 		for (int i = 0; i < arrayOfRMDs.length; i++) {
 			for (int j = 0; j < arrayOfDEMs.length; j++) {
@@ -79,15 +79,15 @@ public class PixelUtilitiesTest extends TestCase {
 				switch (j) {
 				case 0:
 					assertEquals(GeoRaster.FLOAT_NO_DATA_VALUE,
-							hydrologyUtilities.getD8Direction(1, 1));
+							hydrologyUtilities.getD8Direction(1, 1), 0);
 					break;
 				case 1:
 					assertEquals(HydrologyUtilities.indecisionDirection,
-							hydrologyUtilities.getD8Direction(1, 1));
+							hydrologyUtilities.getD8Direction(1, 1), 0);
 					break;
 				case 2:
 				case 3:
-					assertEquals(16, hydrologyUtilities.getD8Direction(1, 1));
+					assertEquals(16, hydrologyUtilities.getD8Direction(1, 1), 0);
 					break;
 				default:
 					fail();
@@ -96,6 +96,7 @@ public class PixelUtilitiesTest extends TestCase {
 		}
 	}
 
+        @Test
 	public void testGetMaxSlopeAngleInDegrees() throws Exception {
 		for (int i = 0; i < arrayOfRMDs.length; i++) {
 			for (int j = 0; j < arrayOfDEMs.length; j++) {
@@ -110,7 +111,7 @@ public class PixelUtilitiesTest extends TestCase {
 							.getSlopeInDegrees(1, 1)));
 					break;
 				case 1:
-					assertEquals(hydrologyUtilities.getSlopeInDegrees(1, 1), 0f);
+					assertEquals(hydrologyUtilities.getSlopeInDegrees(1, 1), 0f, 0);
 					break;
 				case 2:
 				case 3:
@@ -120,7 +121,7 @@ public class PixelUtilitiesTest extends TestCase {
 								- 180 * Math.atan(5) / Math.PI) < EPSILON);
 					} else if (1 == i) {
 						assertEquals(
-								hydrologyUtilities.getSlopeInDegrees(1, 1), 45f);
+								hydrologyUtilities.getSlopeInDegrees(1, 1), 45f, 0);
 					}
 					break;
 				default:

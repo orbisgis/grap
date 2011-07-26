@@ -34,26 +34,40 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual;
+package org.grap.archive;
 
-import org.grap.TestUtils;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
+
+import ij.ImagePlus;
+import ij.io.Opener;
+import ij.plugin.TextReader;
+import ij.process.ImageProcessor;
+
 import org.grap.lut.LutGenerator;
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.processing.operation.filter.MeanFilter;
 
-public class FocalMeanTest {
-	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/geotif/440706.tif";
-		// final String src = "/tmp/mypng.png";
-
-		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
-		geoRaster.open();
-		final GeoRaster result = geoRaster.doOperation(new MeanFilter());
-		TestUtils.printFreeMemory();
-		result.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
-		TestUtils.printFreeMemory();
-		result.show();
+public class ManualInvertImageBands {
+	public static void main(String[] args) {
+		final String src1 = "../../datas2tests/geotif/littlelehavre.tif";
+		final Opener opener = new Opener();
+		final ImagePlus imp1 = opener.openImage(src1);
+		//imp1.getProcessor().setColorModel(LutGenerator.colorModel("fire"));
+	//	imp1.show();
+		
+		
+		ColorModel cm = imp1.getProcessor().getColorModel();
+		
+		 int rmask =  ((DirectColorModel) cm).getRedMask();
+		 int gmask = ((DirectColorModel) cm).getGreenMask();
+		 int bmask = ((DirectColorModel) cm).getBlueMask();
+		
+		System.out.println( cm.getNumColorComponents());
+		
+		DirectColorModel dcm = new DirectColorModel(24,  rmask, bmask, gmask);
+		
+		imp1.getProcessor().setColorModel(dcm);
+		imp1.show();
+		
+		
 	}
 }

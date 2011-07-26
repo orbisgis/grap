@@ -36,41 +36,28 @@
  */
 package org.grap;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+public class AllTests {
 
-import org.grap.io.BasicTest;
-import org.grap.io.GeoreferencingTest;
-import org.grap.io.NDVTest;
-import org.grap.processing.operation.CANImplementationsTest;
-import org.grap.processing.operation.CropTest;
-import org.grap.processing.operation.IdentityTest;
-import org.grap.processing.operation.hydrology.D8OpAccumulationTest;
-import org.grap.processing.operation.hydrology.D8OpDirectionTest;
-import org.grap.processing.operation.hydrology.D8OpSlopeTest;
-
-public class AllTests extends TestSuite {
-
-	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for grap");
-		// $JUnit-BEGIN$
-
-		suite.addTestSuite(BasicTest.class);
-		suite.addTestSuite(NDVTest.class);
-		suite.addTestSuite(GeoreferencingTest.class);
-
-		suite.addTestSuite(CropTest.class);
-		suite.addTestSuite(IdentityTest.class);
-
-		suite.addTestSuite(CANImplementationsTest.class);
-
-		suite.addTestSuite(D8OpSlopeTest.class);
-		suite.addTestSuite(D8OpDirectionTest.class);
-		
-		// TODO : re-enable following test asap!
-//		suite.addTestSuite(D8OpAccumulationTest.class);
-
-		// $JUnit-END$
-		return suite;
-	}
+//	public static Test suite() {
+//		TestSuite suite = new TestSuite("Test for grap");
+//		// $JUnit-BEGIN$
+//
+//		suite.addTestSuite(BasicTest.class);
+//		suite.addTestSuite(NDVTest.class);
+//		suite.addTestSuite(GeoreferencingTest.class);
+//
+//		suite.addTestSuite(CropTest.class);
+//		suite.addTestSuite(IdentityTest.class);
+//
+//		suite.addTestSuite(CANImplementationsTest.class);
+//
+//		suite.addTestSuite(D8OpSlopeTest.class);
+//		suite.addTestSuite(D8OpDirectionTest.class);
+//		
+//		// TODO : re-enable following test asap!
+////		suite.addTestSuite(D8OpAccumulationTest.class);
+//
+//		// $JUnit-END$
+//		return suite;
+//	}
 }

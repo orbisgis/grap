@@ -37,12 +37,11 @@
 package org.grap.processing.operation.hydrology;
 
 import ij.ImagePlus;
-import junit.framework.TestCase;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 
-public class D8Commons extends TestCase {
+public class D8Commons {
 	public static String rep = "../../datatestjunit/hydrology/";
 
 	private static final double EPSILON = 1E-6;

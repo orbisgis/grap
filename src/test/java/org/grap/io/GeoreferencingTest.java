@@ -38,13 +38,13 @@ package org.grap.io;
 
 import java.awt.geom.Point2D;
 
-import junit.framework.TestCase;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class GeoreferencingTest extends TestCase {
+public class GeoreferencingTest {
 	private static GeoRaster sampleRaster;
 
 	static {
@@ -65,6 +65,7 @@ public class GeoreferencingTest extends TestCase {
 		sampleRaster = GeoRasterFactory.createGeoRaster(values, rmd);
 	}
 
+        @Test
 	public void testToPixel() throws Exception {
 		final RasterMetadata md = sampleRaster.getMetadata();
 
@@ -89,6 +90,7 @@ public class GeoreferencingTest extends TestCase {
 		}
 	}
 
+        @Test
 	public void testToWorld() throws Exception {
 		final RasterMetadata md = sampleRaster.getMetadata();
 

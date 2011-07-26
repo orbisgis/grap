@@ -37,14 +37,13 @@
 package org.grap.io;
 
 import ij.ImagePlus;
-import junit.framework.TestCase;
-
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
+import static org.junit.Assert.*;
 
-public class GrapTest extends TestCase {
+public class GrapTest {
 	public final static String externalData = "../../datas2tests/";
 	public final static String internalData = "src/test/resources/";
 	public final static String tmpData = "../../datas2tests/tmp/";

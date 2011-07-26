@@ -36,13 +36,17 @@
  */
 package org.grap.processing.operation;
 
+import org.junit.Test;
 import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
 
+import static org.junit.Assert.*;
+
 public class GeoRasterCalculatortest extends GrapTest {
 
+        @Test
 	public void testSubtract() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory

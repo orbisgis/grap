@@ -34,34 +34,30 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.archive;
+package org.grap.io.manual;
 
-import ij.ImagePlus;
-import ij.io.Opener;
-import ij.plugin.TextReader;
-import ij.process.ImageProcessor;
 
-import org.grap.lut.LutGenerator;
 
-public class OpenImageTest {
-	public static void main(String[] args) {
-		final String src1 = "../../datas2tests/geotif/440606.tif";
-		final Opener opener = new Opener();
-		final ImagePlus imp1 = opener.openImage(src1);
-		imp1.getProcessor().setColorModel(LutGenerator.colorModel("fire"));
-		imp1.show();
-		System.out.println(imp1.getType() == ImagePlus.GRAY8);
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 
-		final String src2 = "../../datas2tests/grid/ijsample.asc";
-		final TextReader textReader = new TextReader();
-		final ImageProcessor ip2 = textReader.open(src2);
-		final ImagePlus imp2 = new ImagePlus("", ip2);
+/**
+ * 
+ * @author bocher
+ *
+ */
 
-		ip2.setColorModel(LutGenerator.colorModel("fire"));
-		imp2.show();
-		System.out.println(imp2.getType() == ImagePlus.GRAY32);
+public class ManualXYZDEM {
+	
+	public static void main(String[] args) throws Exception {
+		String src = "../../datas2tests/xyzdem/nantesdemLambert.xyz";
 
-		int[] v = imp2.getPixel(300, 300);
-		System.out.println(Float.intBitsToFloat(v[0]));
+		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		geoRaster.open();
+		
+		
+		System.out.println(geoRaster.getMetadata().getEnvelope());
+		
+		geoRaster.save("../../datas2tests/tmp/1.tif");
 	}
 }

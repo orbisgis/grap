@@ -34,38 +34,34 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual.hydrology;
+package org.grap.archive;
+
+import ij.ImagePlus;
+import ij.io.Opener;
+import ij.plugin.TextReader;
+import ij.process.ImageProcessor;
 
 import org.grap.lut.LutGenerator;
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
-import org.grap.processing.operation.hydrology.D8OpDirection;
 
-public class AllWatershedsTest {
-	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/sample.asc";
-		// final String src = "../../datas2tests/grid/mntzee_500.asc";
-		// final String src = "../../datas2tests/grid/saipan-5.asc";
+public class ManualOpenImage {
+	public static void main(String[] args) {
+		final String src1 = "../../datas2tests/geotif/440606.tif";
+		final Opener opener = new Opener();
+		final ImagePlus imp1 = opener.openImage(src1);
+		imp1.getProcessor().setColorModel(LutGenerator.colorModel("fire"));
+		imp1.show();
+		System.out.println(imp1.getType() == ImagePlus.GRAY8);
 
-		// load the DEM
-		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
-		grDEM.open();
+		final String src2 = "../../datas2tests/grid/ijsample.asc";
+		final TextReader textReader = new TextReader();
+		final ImageProcessor ip2 = textReader.open(src2);
+		final ImagePlus imp2 = new ImagePlus("", ip2);
 
-		// compute the slopes directions
-		final Operation slopesDirections = new D8OpDirection();
-		final GeoRaster grSlopesDirections = grDEM
-				.doOperation(slopesDirections);
-		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
+		ip2.setColorModel(LutGenerator.colorModel("fire"));
+		imp2.show();
+		System.out.println(imp2.getType() == ImagePlus.GRAY32);
 
-		// compute all the watersheds
-		final Operation allWatersheds = new D8OpAllWatersheds();
-		final GeoRaster grAllWatersheds = grSlopesDirections
-				.doOperation(allWatersheds);
-		grAllWatersheds.getImagePlus().getProcessor().setColorModel(
-				LutGenerator.colorModel("fire"));
-		grAllWatersheds.show();
-		grAllWatersheds.save("../../datas2tests/tmp/2.tif");
+		int[] v = imp2.getPixel(300, 300);
+		System.out.println(Float.intBitsToFloat(v[0]));
 	}
 }

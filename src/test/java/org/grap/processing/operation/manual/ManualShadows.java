@@ -34,36 +34,26 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.archive;
+package org.grap.processing.operation.manual;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.WindowManager;
-import ij.plugin.TextReader;
-import ij.process.ImageProcessor;
+import org.grap.lut.LutGenerator;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.processing.Operation;
+import org.grap.processing.operation.others.Orientations;
+import org.grap.processing.operation.others.Shadows;
 
-public class NodataValueTest {
-	public static void main(String[] args) {
-		// Opener opener = new Opener();
-		// ImagePlus imp = opener.openImage(src );
-		final String src = "../../datas2tests/grid/ijsample.asc";
-		final TextReader textReader = new TextReader();
-		final ImageProcessor ip = textReader.open(src);
-		System.out.println(ip.getMin());
-		System.out.println(ip.getMax());
+public class ManualShadows {
+	public static void main(String[] args) throws Exception {
+		final String src = "../../datas2tests/grid/sample.asc";
 
-		// Cette option permet d'ajuster les valeurs affichées.
-		// ip.setMinAndMax(0, 500);
-
-		ip.setThreshold(0.0d, 500.0d, ImageProcessor.NO_LUT_UPDATE);
-
-		// ip.setBackgroundValue(550d);
-		final ImagePlus imp = new ImagePlus("", ip);
-		WindowManager.setTempCurrentImage(imp);
-		IJ.run("NaN Background");
-
-		imp.show();
-		System.out.println(imp.getProcessor().getf(0, 0));
-		System.out.println(ip.getPixelValue(10, 10));
+		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		geoRaster.open();
+		final Operation shadows = new Shadows(Orientations.NORTH);
+		final GeoRaster result = geoRaster.doOperation(shadows);
+		result.setRangeValues(0, 500);
+		result.getImagePlus().getProcessor().setColorModel(
+				LutGenerator.colorModel("fire"));
+		result.show();
 	}
 }

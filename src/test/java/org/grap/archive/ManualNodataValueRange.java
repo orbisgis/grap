@@ -34,36 +34,24 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual.hydrology;
+package org.grap.archive;
 
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.Operation;
-import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
 
-public class WatershedFromOutletIndexTest {
+public class ManualNodataValueRange {
 	public static void main(String[] args) throws Exception {
-		final String src = "../../datas2tests/grid/sample.asc";
-		// final String src = "../../datas2tests/grid/mntzee_500.asc";
-		// final String src = "../../datas2tests/grid/saipan-5.asc";
+		// String fileName = "../../datas2tests/geotif/440607.tif";
+		String fileName = "../../datas2tests/grid/sample.asc";
 
-		// load the DEM
-		final GeoRaster grDEM = GeoRasterFactory.createGeoRaster(src);
-		grDEM.open();
+		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(fileName);
+		geoRaster.open();
 
-		// compute the slopes directions
-		final Operation slopesDirections = new D8OpDirection();
-		final GeoRaster grSlopesDirections = grDEM
-				.doOperation(slopesDirections);
-		grSlopesDirections.save("../../datas2tests/tmp/1.tif");
+		System.out.println(geoRaster.getMin());
+		geoRaster.setRangeValues(0, 1000);
+		System.out.println(geoRaster.getMin());
+		geoRaster.show();
 
-		// find the good outlet
-		final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
-				268 + 466 * 344);
-		final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
-				.doOperation(watershedFromOutletIndex);
-		grWatershedFromOutletIndex.show();
-		grWatershedFromOutletIndex.save("../../datas2tests/tmp/2.tif");
+		geoRaster.save("../../datas2tests/tmp/1.png");
 	}
 }

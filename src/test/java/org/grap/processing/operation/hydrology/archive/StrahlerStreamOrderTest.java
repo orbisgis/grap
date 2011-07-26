@@ -43,6 +43,8 @@ import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
+import org.junit.Before;
+import org.junit.Test;
 
 public class StrahlerStreamOrderTest extends GrapTest {
 	private RasterMetadata rasterMetadata = new RasterMetadata(0, 15, 1, -1,
@@ -52,8 +54,8 @@ public class StrahlerStreamOrderTest extends GrapTest {
 	private static int nrows = 10;
 	private static int ncols = 10;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+        @Before
+	public void setUp() throws Exception {
 
 		slopesDirections[0] = new short[] {//
 		2, 0, 0, 0, 0, 0, 0, 4, 0, 8,//
@@ -161,6 +163,7 @@ public class StrahlerStreamOrderTest extends GrapTest {
 
 	}
 
+        @Test
 	public void testStrahlerStreamOrder() throws Exception {
 		for (int i = 0; i < strahlerStreamOrder.length; i++) {
 			final GeoRaster grSlopesDirections = GeoRasterFactory

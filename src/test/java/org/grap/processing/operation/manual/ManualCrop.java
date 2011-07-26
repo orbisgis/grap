@@ -47,7 +47,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class CropTest {
+public class ManualCrop {
 	public static void main(String[] args) throws Exception {
 		String src = "../../datas2tests/geotif/440607.tif";
 		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);

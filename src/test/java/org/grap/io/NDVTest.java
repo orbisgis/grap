@@ -36,6 +36,7 @@
  */
 package org.grap.io;
 
+import org.junit.Test;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -43,12 +44,16 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 
+import static org.junit.Assert.*;
+
 public class NDVTest extends GrapTest {
 
+        @Test
 	public void testSourceWithNDV() throws Exception {
 		testNDV(externalData + "grid/sample.asc", -9999.0f);
 	}
 
+        @Test
 	public void testSourceWithoutNDV() throws Exception {
 		testNDV(externalData + "geotif/440606.tif", Float.NaN);
 	}
@@ -64,6 +69,7 @@ public class NDVTest extends GrapTest {
 		}
 	}
 
+        @Test
 	public void testSetNDVToSourceWithout() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "geotif/440606.tif");
@@ -72,6 +78,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getNoDataValue() == 4.3f);
 	}
 
+        @Test
 	public void testNDVWithEsriGRIDReader() throws Exception {
 		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
@@ -89,6 +96,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(originalNDV < ndvCount(pixels));
 	}
 
+        @Test
 	public void testNDVFromProcessor() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
@@ -98,7 +106,6 @@ public class NDVTest extends GrapTest {
 		int nanCount = ndvCount(pixels);
 		pixels = (float[]) gr.getImagePlus().getProcessor().getPixels();
 		assertTrue(nanCount == ndvCount(pixels));
-
 	}
 
 	private int ndvCount(float[] pixels) {
@@ -111,6 +118,7 @@ public class NDVTest extends GrapTest {
 		return nanCount;
 	}
 
+        @Test
 	public void testMinMaxAndNDV() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "grid/sample.asc");
@@ -125,6 +133,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMin() != gr.getNoDataValue());
 	}
 
+        @Test
 	public void testNDVMinMax() throws Exception {
 		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
 		testNDVMinMax(GeoRasterFactory.createGeoRaster(new byte[] { -3, -4, 5,
@@ -142,6 +151,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMin() == min);
 	}
 
+        @Test
 	public void testMinMax() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
 				+ "/geotif/littlelehavre.tif");
@@ -150,6 +160,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMin() < gr.getMax());
 	}
 
+        @Test
 	public void testNDVForRGB() throws Exception {
 		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(new int[] { -3, -4, 5,
@@ -157,16 +168,17 @@ public class NDVTest extends GrapTest {
 		gr.open();
 		try {
 			gr.setNodataValue(23);
-			assertTrue(false);
+			fail();
 		} catch (UnsupportedOperationException e) {
 		}
 		try {
 			gr.setRangeValues(23, 24);
-			assertTrue(false);
+			fail();
 		} catch (UnsupportedOperationException e) {
 		}
 	}
 
+        @Test
 	public void testMinMaxRGB() throws Exception {
 		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(new int[] { -3, -4, 5,
@@ -176,6 +188,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMax() == 6);
 	}
 
+        @Test
 	public void testMinMaxFloat() throws Exception {
 		RasterMetadata md = new RasterMetadata(0, 0, 0, 0, 2, 2);
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { -3, -4,
@@ -185,6 +198,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(gr.getMax() == -3);
 	}
 
+        @Test
 	public void testInitialNDVArray() throws Exception {
 		float ndv = 3;
 
@@ -202,6 +216,7 @@ public class NDVTest extends GrapTest {
 		assertTrue(someNDV);
 	}
 
+        @Test
 	public void testFloatRangeValue() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(new float[] { 1, 2, 3,
 				4, 5, 6, 7, 8, -9999 }, new RasterMetadata(0, 0, 1, 1, 3, 3,

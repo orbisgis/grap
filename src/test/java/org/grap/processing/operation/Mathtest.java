@@ -40,10 +40,14 @@ import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class Mathtest extends GrapTest {
 	private final static float EPSILON = 1E-4f;
 
+        @Test
 	public void testAddValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -69,6 +73,7 @@ public class Mathtest extends GrapTest {
 		}
 	}
 
+        @Test
 	public void testSubtractValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -94,6 +99,7 @@ public class Mathtest extends GrapTest {
 		}
 	}
 
+        @Test
 	public void testMultiplyValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -119,6 +125,7 @@ public class Mathtest extends GrapTest {
 		}
 	}
 
+        @Test
 	public void testDivideValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
@@ -144,6 +151,7 @@ public class Mathtest extends GrapTest {
 		}
 	}
 
+        @Test
 	public void testABSValue() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory

@@ -34,29 +34,26 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.grap.processing.operation.manual;
+package org.grap.processing.operation.manual.hydrology;
 
-import java.awt.image.ColorModel;
-
-import org.grap.lut.LutDisplay;
-import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.processing.operation.hydrology.OpFillSinks;
 
-public class LUTTest {
+public class ManualFillSinks {
 	public static void main(String[] args) throws Exception {
-		String src = "../../datas2tests/grid/sample.asc";
-
-		ColorModel cm = LutGenerator.colorModel("fire");
-		GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
+		final String src = "../../datas2tests/grid/sample.asc";
+		
+		long start = System.currentTimeMillis();
+		
+		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
-		geoRaster.getImagePlus().getProcessor().setColorModel(cm);
-		geoRaster.show();
-
-		LutDisplay lutDisplay = new LutDisplay(cm);
-
-		lutDisplay.getImagePlus().show();
-
+		final GeoRaster result = geoRaster.doOperation(new OpFillSinks(0.01));
+		result.show();
+		result.save("/tmp/nosinks.tif");
+		
+		System.out.println(System.currentTimeMillis()-start);
+		
+		
 	}
-
 }
