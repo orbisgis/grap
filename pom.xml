@@ -5,14 +5,14 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>3.0</version>
+		<version>3.0.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.grap</groupId>
 	<artifactId>grap</artifactId>
 	<packaging>jar</packaging>
 	<name>grap</name>
-	<version>1.4.0</version>
+	<version>1.4.0-1</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
