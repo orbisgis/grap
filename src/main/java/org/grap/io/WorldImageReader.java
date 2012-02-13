@@ -133,7 +133,9 @@ public class WorldImageReader implements RasterReader {
 			nrows = fileInfo[0].height;
 
 		} else if (isJpg) {
-
+                        if(bufJpg == null){
+                                readImagePlus();
+                        }
 			ncols = bufJpg.getWidth();
 			nrows = bufJpg.getHeight();
 
