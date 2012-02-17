@@ -54,7 +54,7 @@ public class BasicTest extends GrapTest {
         @Test(expected = IOException.class)
         public void testGridWithoutHeader() throws Exception {
                 final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-                        + "grid/ij3x3.asc");
+                        + "ij3x3.asc");
                 gr.open();
         }
 
@@ -83,7 +83,7 @@ public class BasicTest extends GrapTest {
         @Test
         public void testGrid2Tif() throws Exception {
                 GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-                        + "grid/sample.asc");
+                        + "sample.asc");
                 gr.open();
                 final RasterMetadata originalMetadata = gr.getMetadata();
                 final float[] pixels = gr.getFloatPixels();
@@ -110,7 +110,7 @@ public class BasicTest extends GrapTest {
         @Test
         public void testGrid2Grid() throws Exception {
                 GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-                        + "grid/sample.asc");
+                        + "sample.asc");
                 gr.open();
                 final RasterMetadata originalMetadata = gr.getMetadata();
                 final float[] pixels = gr.getFloatPixels();
@@ -138,8 +138,8 @@ public class BasicTest extends GrapTest {
 
         @Test
         public void testLoadSaveGrid() throws Exception {
-                GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-                        + "grid/3x3.asc");
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
+                        + "3x3.asc");
                 gr.open();
                 check3x3(gr);
                 gr.save(tmpData + "1.png");

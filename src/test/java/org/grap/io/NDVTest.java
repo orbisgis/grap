@@ -50,12 +50,12 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testSourceWithNDV() throws Exception {
-		testNDV(externalData + "grid/sample.asc", -9999.0f);
+		testNDV(externalData + "sample.asc", -9999.0f);
 	}
 
         @Test
 	public void testSourceWithoutNDV() throws Exception {
-		testNDV(externalData + "geotif/440606.tif", Float.NaN);
+		testNDV(internalData + "geotif/440606.tif", Float.NaN);
 	}
 
 	private void testNDV(String source, float ndv)
@@ -71,7 +71,7 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testSetNDVToSourceWithout() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
 				+ "geotif/440606.tif");
 		gr.open();
 		gr.setNodataValue(4.3f);
@@ -81,7 +81,7 @@ public class NDVTest extends GrapTest {
         @Test
 	public void testNDVWithEsriGRIDReader() throws Exception {
 		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "grid/sample.asc");
+				+ "sample.asc");
 		gr.open();
 		float[] pixels = gr.getFloatPixels();
 		int originalNDV = ndvCount(pixels);
@@ -99,7 +99,7 @@ public class NDVTest extends GrapTest {
         @Test
 	public void testNDVFromProcessor() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "grid/sample.asc");
+				+ "sample.asc");
 		gr.open();
 		gr.setNodataValue((float) gr.getMin());
 		float[] pixels = gr.getFloatPixels();
@@ -121,7 +121,7 @@ public class NDVTest extends GrapTest {
         @Test
 	public void testMinMaxAndNDV() throws Exception {
 		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
-				+ "grid/sample.asc");
+				+ "sample.asc");
 		gr.open();
 		float originalMin = (float) gr.getMin();
 		assertTrue(gr.getMetadata().getNoDataValue() == -9999);
@@ -153,7 +153,7 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testMinMax() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData
 				+ "/geotif/littlelehavre.tif");
 
 		gr.open();

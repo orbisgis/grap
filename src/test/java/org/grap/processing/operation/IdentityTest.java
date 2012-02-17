@@ -50,7 +50,7 @@ public class IdentityTest extends GrapTest {
 	public void testIdentity() throws Exception {
 		// load the DEM
 		final GeoRaster geoRasterSrc = GeoRasterFactory
-				.createGeoRaster(externalData + "grid/smallsample.asc");
+				.createGeoRaster(internalData + "smallsample.asc");
 		geoRasterSrc.open();
 
 		final Operation identity = new Identity();

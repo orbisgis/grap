@@ -37,18 +37,20 @@
 package org.grap.io;
 
 import ij.ImagePlus;
+import java.io.File;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
 
 public class GrapTest {
-	public final static String externalData = "../../datas2tests/";
+	public final static String externalData = "../gdmstest/src/main/resources/";
 	public final static String internalData = "src/test/resources/";
-	public final static String tmpData = "../../datas2tests/tmp/";
-	private static int nrows = 10;
-	private static int ncols = 10;
+	public final static String tmpData = "target/tmp/";
+	private static final int nrows = 10;
+	private static final int ncols = 10;
 	public static GeoRaster sampleRaster;
 	public static GeoRaster sampleDEM;
 	public static short[] slopesAccumulationForDEM;
@@ -163,6 +165,12 @@ public class GrapTest {
 				1, 1, 1, 1, 1, 0, 0, 0, 0, 0,//
 		};
 	}
+
+        @BeforeClass
+        public static void setUpClass(){
+                File f = new File("target/tmp");
+                f.mkdirs();
+        }
 
 	public static void compareGeoRasterAndArray(final GeoRaster geoRaster,
 			final short[] sArray) throws Exception {

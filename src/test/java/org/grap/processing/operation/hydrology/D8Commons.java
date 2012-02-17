@@ -42,7 +42,6 @@ import org.grap.model.GeoRaster;
 import org.grap.model.RasterMetadata;
 
 public class D8Commons {
-	public static String rep = "../../datatestjunit/hydrology/";
 
 	private static final double EPSILON = 1E-6;
 

@@ -36,6 +36,7 @@
  */
 package org.grap.processing.operation.hydrology;
 
+import org.grap.io.GrapTest;
 import org.junit.Test;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -46,18 +47,18 @@ import static org.junit.Assert.*;
 public class D8OpDirectionTest extends D8Commons {
         @Test
 	public void testExecute() throws Exception {
-		assertTrue(test("dem_1.asc", "TauDEM/d8direction_1.asc"));
-		assertTrue(test("dem.asc", "TauDEM/d8direction.asc"));
+		assertTrue(test("hydrology/dem_1.asc", "hydrology/TauDEM/d8direction_1.asc"));
+		assertTrue(test("hydrology/dem.asc", "hydrology/TauDEM/d8direction.asc"));
 	}
 
 	private boolean test(String inFile, String refFile) throws Exception {
-		GeoRaster dem = GeoRasterFactory.createGeoRaster(rep + inFile);
+		GeoRaster dem = GeoRasterFactory.createGeoRaster(GrapTest.internalData + inFile);
 		Operation d8OpDirection = new D8OpDirection();
 		GeoRaster directionCalc = dem.doOperation(d8OpDirection);
 
 		// compare to the reference
 		GeoRaster directionRef = GeoRasterFactory
-				.createGeoRaster(rep + refFile);
+				.createGeoRaster(GrapTest.internalData + refFile);
 		return equals(directionRef, directionCalc, true);
 	}
 }
