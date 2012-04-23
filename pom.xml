@@ -5,14 +5,14 @@
 	<parent>
 		<artifactId>orbisgis</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>4.0-alpha-2</version>
+		<version>4.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.grap</groupId>
 	<artifactId>grap</artifactId>
 	<packaging>jar</packaging>
 	<name>grap</name>
-	<version>1.4.2</version>
+	<version>1.4.3-SNAPSHOT</version>
 	<url>http://maven.apache.org</url>
         <repositories>
                 <repository>
@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>org.orbisgis</groupId>
                         <artifactId>commons</artifactId>
-                        <version>1.3</version>
+                        <version>1.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ij</groupId>
