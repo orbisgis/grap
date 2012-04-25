@@ -47,6 +47,7 @@ import org.junit.BeforeClass;
 
 public class GrapTest {
 	public final static String externalData = "../gdmstest/src/main/resources/";
+	public final static String otherData = "../gdmstest/src/main/resources/other/";
 	public final static String internalData = "src/test/resources/";
 	public final static String tmpData = "target/tmp/";
 	private static final int nrows = 10;

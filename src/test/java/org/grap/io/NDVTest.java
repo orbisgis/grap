@@ -50,7 +50,7 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testSourceWithNDV() throws Exception {
-		testNDV(externalData + "sample.asc", -9999.0f);
+		testNDV(otherData + "sample.asc", -9999.0f);
 	}
 
         @Test
@@ -80,7 +80,7 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testNDVWithEsriGRIDReader() throws Exception {
-		final GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+		final GeoRaster gr = GeoRasterFactory.createGeoRaster(otherData
 				+ "sample.asc");
 		gr.open();
 		float[] pixels = gr.getFloatPixels();
@@ -98,7 +98,7 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testNDVFromProcessor() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(otherData
 				+ "sample.asc");
 		gr.open();
 		gr.setNodataValue((float) gr.getMin());
@@ -120,7 +120,7 @@ public class NDVTest extends GrapTest {
 
         @Test
 	public void testMinMaxAndNDV() throws Exception {
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(otherData
 				+ "sample.asc");
 		gr.open();
 		float originalMin = (float) gr.getMin();

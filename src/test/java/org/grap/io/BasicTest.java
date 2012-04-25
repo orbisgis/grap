@@ -82,7 +82,7 @@ public class BasicTest extends GrapTest {
 
         @Test
         public void testGrid2Tif() throws Exception {
-                GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(otherData
                         + "sample.asc");
                 gr.open();
                 final RasterMetadata originalMetadata = gr.getMetadata();
@@ -109,7 +109,7 @@ public class BasicTest extends GrapTest {
 
         @Test
         public void testGrid2Grid() throws Exception {
-                GeoRaster gr = GeoRasterFactory.createGeoRaster(externalData
+                GeoRaster gr = GeoRasterFactory.createGeoRaster(otherData
                         + "sample.asc");
                 gr.open();
                 final RasterMetadata originalMetadata = gr.getMetadata();

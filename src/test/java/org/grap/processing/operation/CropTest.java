@@ -64,7 +64,7 @@ public class CropTest extends GrapTest {
 
         @Before
 	public void setUp() throws Exception {
-		geoRasterSrc = GeoRasterFactory.createGeoRaster(externalData
+		geoRasterSrc = GeoRasterFactory.createGeoRaster(otherData
 				+ "sample.asc");
 		geoRasterSrc.open();
 	}
