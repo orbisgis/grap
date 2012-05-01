@@ -36,7 +36,6 @@
  */
 package org.grap.processing.operation.manual;
 
-import org.grap.TestUtils;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -50,10 +49,26 @@ public class ManualFocalMean {
 		final GeoRaster geoRaster = GeoRasterFactory.createGeoRaster(src);
 		geoRaster.open();
 		final GeoRaster result = geoRaster.doOperation(new MeanFilter());
-		TestUtils.printFreeMemory();
+		printFreeMemory();
 		result.getImagePlus().getProcessor().setColorModel(
 				LutGenerator.colorModel("fire"));
-		TestUtils.printFreeMemory();
+		printFreeMemory();
 		result.show();
+	}
+        
+        /**
+	 * TODO this method is duplicated in gdms and should be removed when the two
+	 * projects become one
+	 */
+	public static void printFreeMemory() {
+		Runtime runtime = Runtime.getRuntime();
+		long maxMemory = runtime.maxMemory();
+		long allocatedMemory = runtime.totalMemory();
+		long freeMemory = runtime.freeMemory();
+		// System.out.println("free memory: " + freeMemory / 1024);
+		// System.out.println("allocated memory: " + allocatedMemory / 1024);
+		// System.out.println("max memory: " + maxMemory / 1024);
+		System.out.println("total free memory: "
+				+ (freeMemory + (maxMemory - allocatedMemory)) / 1024);
 	}
 }
