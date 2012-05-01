@@ -51,143 +51,135 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import org.grap.model.RasterMetadata;
 
 public class WorldImageReader implements RasterReader {
-	private static Map<String, String[]> worldFileExtensions;
 
-	private String fileName;
+        private static Map<String, String[]> worldFileExtensions;
+        private String fileName;
+        private File worldFile;
+        private boolean isTiff = false;
+        private boolean isJpg = false;
+        private String fileNamePrefix;
+        private String fileNameExtension;
+        private BufferedImage bufJpg;
 
-	private File worldFile;
+        static {
+                worldFileExtensions = new HashMap<String, String[]>();
+                worldFileExtensions.put("tif", new String[]{"tfw"});
+                worldFileExtensions.put("tiff", new String[]{"tfw", "tiffw"});
+                worldFileExtensions.put("jpg", new String[]{"jpw", "jgw", "jpgw",
+                                "jpegw"});
+                worldFileExtensions.put("jpeg", new String[]{"jpw", "jgw", "jpgw",
+                                "jpegw"});
+                worldFileExtensions.put("gif", new String[]{"gfw", "gifw"});
+                worldFileExtensions.put("bmp", new String[]{"bmw", "bmpw"});
+                worldFileExtensions.put("png", new String[]{"pgw", "pngw"});
+        }
 
-	private boolean isTiff = false;
-	private boolean isJpg = false;
+        // constructor
+        public WorldImageReader(final String fileName) {
+                this.fileName = fileName;
 
-	private String fileNamePrefix;
+                final int dotIndex = fileName.lastIndexOf('.');
+                fileNamePrefix = fileName.substring(0, dotIndex);
+                fileNameExtension = fileName.substring(dotIndex + 1).toLowerCase();
 
-	private String fileNameExtension;
+                if (fileNameExtension.equals("tif") || fileNameExtension.equals("tiff")) {
+                        isTiff = true;
+                } else if (fileNameExtension.equals("jpg")
+                        || fileNameExtension.equals("jpeg")) {
+                        isJpg = true;
+                }
+        }
 
-	private BufferedImage bufJpg;
+        // private method
+        private boolean isThereAnyWorldFile() throws IOException {
+                worldFile = null;
 
-	static {
-		worldFileExtensions = new HashMap<String, String[]>();
-		worldFileExtensions.put("tif", new String[] { "tfw" });
-		worldFileExtensions.put("tiff", new String[] { "tfw", "tiffw" });
-		worldFileExtensions.put("jpg", new String[] { "jpw", "jgw", "jpgw",
-				"jpegw" });
-		worldFileExtensions.put("jpeg", new String[] { "jpw", "jgw", "jpgw",
-				"jpegw" });
-		worldFileExtensions.put("gif", new String[] { "gfw", "gifw" });
-		worldFileExtensions.put("bmp", new String[] { "bmw", "bmpw" });
-		worldFileExtensions.put("png", new String[] { "pgw", "pngw" });
-	}
+                for (String extension : worldFileExtensions.get(fileNameExtension)) {
+                        if (new File(fileNamePrefix + "." + extension).exists()) {
+                                worldFile = new File(fileNamePrefix + "." + extension);
+                                return true;
+                        } else if (new File(fileNamePrefix + "." + extension.toUpperCase()).exists()) {
+                                worldFile = new File(fileNamePrefix + "."
+                                        + extension.toUpperCase());
+                                return true;
+                        }
+                }
+                return false;
+        }
 
-	// constructor
-	public WorldImageReader(final String fileName) {
-		this.fileName = fileName;
+        // public methods
+        public RasterMetadata readRasterMetadata() throws IOException {
+                final File file = new File(fileName);
+                InputStream inputStream = new BufferedInputStream(new FileInputStream(
+                        file));
 
-		final int dotIndex = fileName.lastIndexOf('.');
-		fileNamePrefix = fileName.substring(0, dotIndex);
-		fileNameExtension = fileName.substring(dotIndex + 1).toLowerCase();
+                // read image's dimensions
+                int ncols;
+                int nrows;
+                if (isTiff) {
+                        final TiffDecoder tiffDecoder = new TiffDecoder(inputStream,
+                                fileName);
+                        final FileInfo[] fileInfo = tiffDecoder.getTiffInfo();
+                        ncols = fileInfo[0].width;
+                        nrows = fileInfo[0].height;
 
-		if (fileNameExtension.equals("tif") || fileNameExtension.equals("tiff")) {
-			isTiff = true;
-		} else if (fileNameExtension.equals("jpg")
-				|| fileNameExtension.equals("jpeg")) {
-			isJpg = true;
-		}
-	}
-
-	// private method
-	private boolean isThereAnyWorldFile() throws IOException {
-		worldFile = null;
-
-		for (String extension : worldFileExtensions.get(fileNameExtension)) {
-			if (new File(fileNamePrefix + "." + extension).exists()) {
-				worldFile = new File(fileNamePrefix + "." + extension);
-				return true;
-			} else if (new File(fileNamePrefix + "." + extension.toUpperCase())
-					.exists()) {
-				worldFile = new File(fileNamePrefix + "."
-						+ extension.toUpperCase());
-				return true;
-			}
-		}
-		return false;
-	}
-
-	// public methods
-	public RasterMetadata readRasterMetadata() throws IOException {
-		final File file = new File(fileName);
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(
-				file));
-
-		// read image's dimensions
-		int ncols;
-		int nrows;
-		if (isTiff) {
-			final TiffDecoder tiffDecoder = new TiffDecoder(inputStream,
-					fileName);
-			final FileInfo[] fileInfo = tiffDecoder.getTiffInfo();
-			ncols = fileInfo[0].width;
-			nrows = fileInfo[0].height;
-
-		} else if (isJpg) {
-                        if(bufJpg == null){
+                } else if (isJpg) {
+                        if (bufJpg == null) {
+                                bufJpg = ImageIO.read(inputStream);
                                 readImagePlus();
                         }
-			ncols = bufJpg.getWidth();
-			nrows = bufJpg.getHeight();
+                        ncols = bufJpg.getWidth();
+                        nrows = bufJpg.getHeight();
 
-		}
+                } else {
+                        final ImageInfo imageInfo = new ImageInfo();
+                        imageInfo.setInput(inputStream);
+                        if (imageInfo.check()) {
+                                ncols = imageInfo.getWidth();
+                                nrows = imageInfo.getHeight();
+                        } else {
+                                throw new RuntimeException("Unsupported image file format.");
+                        }
+                }
 
-		else {
-			final ImageInfo imageInfo = new ImageInfo();
-			imageInfo.setInput(inputStream);
-			if (imageInfo.check()) {
-				ncols = imageInfo.getWidth();
-				nrows = imageInfo.getHeight();
-			} else {
-				throw new RuntimeException("Unsupported image file format.");
-			}
-		}
+                inputStream.close();
 
-		inputStream.close();
+                // read other image's metadata
+                if (isThereAnyWorldFile() == true) {
+                        final WorldFile wf = WorldFile.read(worldFile);
 
-		// read other image's metadata
-		if (isThereAnyWorldFile() == true) {
-			final WorldFile wf = WorldFile.read(worldFile);
+                        final double upperLeftX = wf.getXUpperLeft();
+                        final double upperLeftY = wf.getYUpperLeft();
+                        final float pixelSize_X = wf.getXSize();
+                        final float pixelSize_Y = wf.getYSize();
+                        final float xRotation = wf.getColRotation();
+                        final float yRotation = wf.getRowRotation();
 
-			final double upperLeftX = wf.getXUpperLeft();
-			final double upperLeftY = wf.getYUpperLeft();
-			final float pixelSize_X = wf.getXSize();
-			final float pixelSize_Y = wf.getYSize();
-			final float xRotation = wf.getColRotation();
-			final float yRotation = wf.getRowRotation();
+                        return new RasterMetadata(upperLeftX, upperLeftY, pixelSize_X,
+                                pixelSize_Y, ncols, nrows, xRotation, yRotation);
+                } else {
+                        throw new IOException("Could not find world file for " + fileName);
+                }
+        }
 
-			return new RasterMetadata(upperLeftX, upperLeftY, pixelSize_X,
-					pixelSize_Y, ncols, nrows, xRotation, yRotation);
-		} else {
-			throw new IOException("Could not find world file for " + fileName);
-		}
-	}
+        public ImagePlus readImagePlus() throws IOException {
+                // return new Opener().openImage(fileName);
 
-	public ImagePlus readImagePlus() throws IOException {
-		// return new Opener().openImage(fileName);
+                ImagePlus imagePlus;
+                final ImageProcessor imageProcessor;
+                if (isJpg) {
+                        imagePlus = new ImagePlus("jpg", bufJpg);
+                        imageProcessor = imagePlus.getProcessor();
+                } else {
+                        imagePlus = new Opener().openImage(fileName);
+                        imageProcessor = imagePlus.getProcessor();
+                        imagePlus = null;
+                }
 
-		ImagePlus imagePlus;
-		final ImageProcessor imageProcessor;
-		if (isJpg) {
-
-			imagePlus = new ImagePlus("jpg", bufJpg);
-			imageProcessor = imagePlus.getProcessor();
-		} else {
-
-			imagePlus = new Opener().openImage(fileName);
-			imageProcessor = imagePlus.getProcessor();
-			imagePlus = null;
-		}
-
-		return new ImagePlus("", imageProcessor);
-	}
+                return new ImagePlus("", imageProcessor);
+        }
 }

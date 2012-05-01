@@ -60,7 +60,7 @@ public class BasicTest extends GrapTest {
 
         @Test
         public void testJPGReader() throws Exception {
-                final GeoRaster gr = GeoRasterFactory.createGeoRaster("src/test/resources/smallChezineLambert.jpg");
+                final GeoRaster gr = GeoRasterFactory.createGeoRaster(internalData+"smallChezineLambert.jpg");
                 gr.open();
         }
 
