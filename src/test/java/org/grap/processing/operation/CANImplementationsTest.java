@@ -79,7 +79,7 @@ public class CANImplementationsTest extends GrapTest {
 		final ICAN scan = new SCAN(ca);
 		final ICAN pcan = new PCAN(ca);
 
-		System.out.println(ca.getClass().getSimpleName());
+		// System.out.println(ca.getClass().getSimpleName());
 		final int scanNbOfIter = scan.getStableState();
 		final int pcanNbOfIter = pcan.getStableState();
 		// TODO assertTrue(scanNbOfIter == pcanNbOfIter);
@@ -87,19 +87,19 @@ public class CANImplementationsTest extends GrapTest {
 		if (ca instanceof ICAShort) {
 			final short[] seq = (short[]) scan.getCANValues();
 			final short[] par = (short[]) pcan.getCANValues();
-			assertTrue(seq.length == par.length);
+                        assertEquals(seq.length, par.length);
 			for (int i = 0; i < seq.length; i++) {
-				assertTrue(seq[i] == par[i]);
+				assertEquals(seq[i], par[i]);
 			}
 		} else if (ca instanceof ICAFloat) {
 			final float[] seq = (float[]) scan.getCANValues();
 			final float[] par = (float[]) pcan.getCANValues();
-			assertTrue(seq.length == par.length);
+			assertEquals(seq.length, par.length);
 			for (int i = 0; i < seq.length; i++) {
-				assertTrue(seq[i] == par[i]);
+				assertEquals(seq[i], par[i], 10e-5);
 			}
 		} else {
-			assertTrue(false);
+			fail();
 		}
 
 		if (ca instanceof CASlopesDirections) {
