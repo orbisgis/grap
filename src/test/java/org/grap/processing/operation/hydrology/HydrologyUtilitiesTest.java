@@ -47,6 +47,7 @@ import java.util.Stack;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
+import org.junit.Ignore;
 
 import static org.junit.Assert.*;
 
@@ -230,6 +231,7 @@ public class HydrologyUtilitiesTest {
 		}
 	}
 
+        @Ignore("These tests shall disappear with the hydrology code in grap: they will be implemented on top of JAI.")
         @Test
 	public void testShortHydrologicalPath() throws Exception {
 		HydrologyUtilities hu = new HydrologyUtilities(direction);

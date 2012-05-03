@@ -45,10 +45,12 @@ import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+@Ignore("These tests shall disappear with the hydrology code in grap: they will be implemented on top of JAI.")
 public class WatershedWithThresholdTest extends GrapTest {
 
         private GeoRaster geoRasterSrc;

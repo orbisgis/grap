@@ -44,8 +44,10 @@ import org.grap.processing.Operation;
 import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore("These tests shall disappear with the hydrology code in grap: they will be implemented on top of JAI.")
 public class StrahlerStreamOrderTest extends GrapTest {
 	private RasterMetadata rasterMetadata = new RasterMetadata(0, 15, 1, -1,
 			ncols, nrows);

@@ -36,16 +36,17 @@
  */
 package org.grap.processing.operation.hydrology.archive;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.grap.processing.operation.hydrology.HydrologyUtilities;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+@Ignore("These tests shall disappear with the hydrology code in grap: they will be implemented on top of JAI.")
 public class PixelUtilitiesTest {
 	private static final double EPSILON = 1.0E-5;
 	private float[][] arrayOfDEMs;

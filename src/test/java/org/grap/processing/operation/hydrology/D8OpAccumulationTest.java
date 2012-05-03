@@ -40,9 +40,11 @@ import org.grap.io.GrapTest;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.Operation;
+import org.junit.Ignore;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+@Ignore("These tests shall disappear with the hydrology code in grap: they will be implemented on top of JAI.")
 public class D8OpAccumulationTest extends D8Commons {
         @Test
 	public void testExecute() throws Exception {
