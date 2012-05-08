@@ -45,8 +45,13 @@ import org.grap.processing.cellularAutomata.cam.ICAFloat;
 import org.grap.processing.cellularAutomata.cam.ICAShort;
 
 public class PCAN extends ACAN {
-	private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
-			.availableProcessors();
+        // WARNING: fixed the number of thead to 1: this algorithm is broken!!
+        // it is not thread safe, you get race conditions when using it
+        // on a processor with several core.
+        // (see CANImplementationsTest.testSeqAndParImplementations())
+        // all this should be migrated (...rewritten from scratch) to
+        // grap2, whatever it is in the end...
+	private final static int NUMBER_OF_THREADS = 1;
 
 	private CyclicBarrier barrier;
 
