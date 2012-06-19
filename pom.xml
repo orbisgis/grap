@@ -2,18 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/maven-v4_0_0.xsd http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <artifactId>orbisgis</artifactId>
-                <groupId>org.orbisgis</groupId>
-                <version>4.0-SNAPSHOT</version>
-        </parent>
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.grap</groupId>
         <artifactId>grap</artifactId>
         <packaging>jar</packaging>
         <name>grap</name>
         <version>1.4.3-SNAPSHOT</version>
-        <url>http://maven.apache.org</url>
+        <organization>
+                <name>IRSTV CNRS-FR-2488</name>
+                <url>http://www.irstv.fr/</url>
+        </organization>
+        <url>http://orbisgis.org</url>
         <repositories>
                 <repository>
                         <id>IRSTV</id>
@@ -21,6 +20,17 @@
                         <url>http://repo.orbisgis.org</url>
                 </repository>
         </repositories>
+        <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
+        </properties>
+        <distributionManagement>
+                <repository>
+                        <id>IRSTV</id>
+                        <name>IRSTV repository</name>
+                        <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
+                </repository>
+        </distributionManagement>
         <dependencies>
                 <dependency>
                         <groupId>junit</groupId>
@@ -44,4 +54,54 @@
                         <version>1.43</version>
                 </dependency>
         </dependencies>
+        <build>
+                <plugins>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-compiler-plugin</artifactId>
+                                <version>2.3.2</version>
+                                <configuration>
+                                        <source>1.6</source>
+                                        <target>1.6</target>
+                                </configuration>
+                        </plugin>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-jar-plugin</artifactId>
+                                <version>2.4</version>
+                                <configuration>
+                                        <archive>
+                                                <manifest>
+                                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                                </manifest>
+                                                <manifestEntries>
+                                                        <Specification-Vendor-URL>${pom.organization.url}</Specification-Vendor-URL>
+                                                        <Specification-URL>${pom.url}</Specification-URL>
+                                                </manifestEntries>
+                                        </archive>
+                                </configuration>
+                        </plugin>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-javadoc-plugin</artifactId>
+                                <version>2.8.1</version>
+                                <configuration>
+                                        <detectOfflineLinks>false</detectOfflineLinks>
+                                        <offlineLinks>
+                                                <offlineLink>
+                                                        <url>http://javadoc.orbisgis.org/latest/commons-1.4-SNAPSHOT</url>
+                                                        <location>${basedir}/../commons/target/site/apidocs/</location>
+                                                </offlineLink>
+                                        </offlineLinks>
+                                </configuration>
+                        </plugin>
+                </plugins>
+                <extensions>
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId> 
+                                <artifactId>wagon-ssh</artifactId> 
+                                <version>2.2</version> 
+                        </extension> 
+                </extensions>
+        </build>
 </project>
