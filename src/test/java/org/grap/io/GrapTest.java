@@ -37,10 +37,12 @@ import org.grap.model.RasterMetadata;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 
+import org.gdms.TestResourceHandler;
+
 public abstract class GrapTest {
-	public final static String externalData = "../gdmstest/src/main/resources/";
-	public final static String otherData = "../gdmstest/src/main/resources/other/";
-	public final static String internalData = "src/test/resources/";
+	public final static String externalData = TestResourceHandler.TESTRESOURCES.getAbsolutePath() + "/";
+	public final static String otherData = TestResourceHandler.OTHERRESOURCES.getAbsolutePath() + "/";
+	public final static String internalData = externalData + "grap/";
 	public final static String tmpData = "target/tmp/";
 	private static final int nrows = 10;
 	private static final int ncols = 10;
@@ -54,6 +56,8 @@ public abstract class GrapTest {
 	public static short[] watershedFromOutletIndexForDEM;
 
 	static {
+                TestResourceHandler.init();
+                
 		final byte[] values = new byte[nrows * ncols];
 		for (int i = 0; i < nrows * ncols; i++) {
 			values[i] = (byte) i;
