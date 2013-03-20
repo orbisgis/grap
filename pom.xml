@@ -41,7 +41,7 @@
                 <dependency>
                         <groupId>com.vividsolutions</groupId>
                         <artifactId>jts</artifactId>
-                        <version>1.12</version>
+                        <version>1.13</version>
                 </dependency>
                 <dependency>
                         <groupId>org.orbisgis</groupId>
@@ -51,7 +51,7 @@
                 <dependency>
                         <groupId>gov.nih.imagej</groupId>
                         <artifactId>imagej</artifactId>
-                        <version>1.43</version>
+                        <version>1.46</version>
                 </dependency>
                 <dependency>
                         <groupId>org.gdms.test</groupId>
